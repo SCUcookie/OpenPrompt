@@ -1,0 +1,19 @@
+model:
+  name: openrsd_baseline
+  type: baseline
+  image_size: 256
+  embedding_dim: 256
+  backbone_dim: 256
+  grid_size: 8
+  alignment_weight: 0.45
+  fusion_weight: 0.55
+  use_class_offsets: true
+  hierarchy_smoothing_lambda: 0.10
+
+criterion:
+  cls_weight: 1.0
+  box_weight: 2.0
+  hierarchy_weight: 0.05
+  focal_alpha: 0.25
+  focal_gamma: 2.0
+

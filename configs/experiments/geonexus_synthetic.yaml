@@ -1,0 +1,23 @@
+_base_:
+  - ../models/geonexus_rsd.yaml
+  - ../datasets/synthetic.yaml
+
+experiment:
+  name: geonexus_synthetic
+  seed: 7
+  epochs: 2
+  batch_size: 4
+  learning_rate: 0.0005
+  weight_decay: 0.0001
+  device: cpu
+  taxonomy_path: assets/hierarchies/remote_sensing_taxonomy.json
+  prompt_template_path: assets/prompts/prompt_templates.json
+  output_dir: outputs/geonexus_synthetic
+
+pseudo_label:
+  score_threshold: 0.10
+  semantic_threshold: 0.00
+  scene_threshold: 0.00
+  hierarchy_bonus: 0.10
+  negative_penalty: 0.10
+  final_threshold: 0.10

@@ -1,0 +1,77 @@
+{
+  "classes": [
+    {
+      "name": "ship",
+      "parent": "vessel",
+      "synonyms": ["boat", "cargo ship", "tanker"],
+      "confusing_classes": ["storage-tank", "large-vehicle"],
+      "scene_priors": ["harbor", "coastline", "dock", "river"],
+      "geometry": ["elongated", "arbitrary-orientation", "medium-scale"],
+      "negative_cues": ["parking-lot", "residential-roof"]
+    },
+    {
+      "name": "small-vehicle",
+      "parent": "vehicle",
+      "synonyms": ["car", "van", "pickup"],
+      "confusing_classes": ["container", "roof-structure", "large-vehicle"],
+      "scene_priors": ["road", "parking-lot", "industrial-area"],
+      "geometry": ["tiny-footprint", "dense-cluster", "weak-texture"],
+      "negative_cues": ["harbor", "runway"]
+    },
+    {
+      "name": "large-vehicle",
+      "parent": "vehicle",
+      "synonyms": ["truck", "bus", "trailer"],
+      "confusing_classes": ["ship", "storage-tank"],
+      "scene_priors": ["road", "yard", "industrial-area"],
+      "geometry": ["elongated", "medium-scale", "arbitrary-orientation"],
+      "negative_cues": ["runway", "water"]
+    },
+    {
+      "name": "plane",
+      "parent": "aircraft",
+      "synonyms": ["airplane", "jet", "aircraft"],
+      "confusing_classes": ["helicopter", "bridge"],
+      "scene_priors": ["airport", "runway", "airfield"],
+      "geometry": ["high-aspect-ratio", "symmetric", "arbitrary-orientation"],
+      "negative_cues": ["harbor", "residential-area"]
+    },
+    {
+      "name": "storage-tank",
+      "parent": "industrial-facility",
+      "synonyms": ["tank", "oil tank", "cylindrical storage"],
+      "confusing_classes": ["ship", "roundabout"],
+      "scene_priors": ["industrial-area", "refinery", "port"],
+      "geometry": ["round-shape", "compact", "medium-scale"],
+      "negative_cues": ["runway", "bridge"]
+    },
+    {
+      "name": "harbor",
+      "parent": "infrastructure",
+      "synonyms": ["port", "dockyard"],
+      "confusing_classes": ["bridge", "storage-tank"],
+      "scene_priors": ["coastline", "waterfront", "industrial-area"],
+      "geometry": ["large-extent", "complex-layout"],
+      "negative_cues": ["runway", "forest"]
+    },
+    {
+      "name": "bridge",
+      "parent": "infrastructure",
+      "synonyms": ["overpass", "viaduct"],
+      "confusing_classes": ["plane", "ship"],
+      "scene_priors": ["river", "road", "urban-area"],
+      "geometry": ["long-thin", "high-aspect-ratio", "crossing-structure"],
+      "negative_cues": ["airport", "open-sea"]
+    },
+    {
+      "name": "baseball-diamond",
+      "parent": "sports-field",
+      "synonyms": ["baseball field", "diamond"],
+      "confusing_classes": ["tennis-court", "ground-track-field"],
+      "scene_priors": ["school", "sports-complex", "urban-area"],
+      "geometry": ["geometric-layout", "medium-scale", "low-rotation-variance"],
+      "negative_cues": ["harbor", "industrial-area"]
+    }
+  ]
+}
+

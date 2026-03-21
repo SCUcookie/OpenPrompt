@@ -1,0 +1,16 @@
+dataset:
+  type: synthetic
+  image_size: 256
+  num_samples: 64
+  max_objects: 4
+  seed: 7
+  class_names:
+    - ship
+    - small-vehicle
+    - large-vehicle
+    - plane
+    - storage-tank
+    - harbor
+    - bridge
+    - baseball-diamond
+

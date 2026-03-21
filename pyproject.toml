@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openprompt-rs"
+version = "0.1.0"
+description = "Baseline-first open-prompt remote sensing detection research scaffold rebuilt from the OpenRSD paper."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+  {name = "SCUcookie"}
+]
+dependencies = [
+  "numpy>=1.24",
+  "Pillow>=10.0",
+  "PyYAML>=6.0",
+  "torch>=2.1",
+  "tqdm>=4.66"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/SCUcookie/openprompt"
+Repository = "https://github.com/SCUcookie/openprompt"
+Issues = "https://github.com/SCUcookie/openprompt/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+

@@ -1,0 +1,15 @@
+dataset:
+  type: dota
+  image_dir: /abs/path/to/DOTA-v2.0/images/train
+  label_dir: /abs/path/to/DOTA-v2.0/labelTxt/train
+  image_size: 512
+  class_names:
+    - plane
+    - baseball-diamond
+    - bridge
+    - ship
+    - small-vehicle
+    - large-vehicle
+    - harbor
+    - storage-tank
+
