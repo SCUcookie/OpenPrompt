@@ -13,6 +13,7 @@ def evaluate_model(
     dataloader: torch.utils.data.DataLoader,
     criterion: torch.nn.Module,
     relation_matrix: torch.Tensor | None,
+    confusing_matrix: torch.Tensor | None,
     device: str,
 ) -> dict[str, float]:
     model.eval()
@@ -26,7 +27,12 @@ def evaluate_model(
         images = batch["images"].to(device)
         targets = batch["targets"]
         outputs = model(images)
-        losses = criterion(outputs, targets, relation_matrix=relation_matrix)
+        losses = criterion(
+            outputs,
+            targets,
+            relation_matrix=relation_matrix,
+            confusing_matrix=confusing_matrix,
+        )
         supervision = build_supervision_targets(outputs["query_centers"], targets, outputs["logits"].size(-1))
         predictions = outputs["logits"].argmax(dim=-1)
         mask = supervision["positive_mask"]
@@ -49,4 +55,3 @@ def evaluate_model(
     metrics["positive_cls_acc"] = positive_correct / max(positive_total, 1.0)
     metrics["positive_box_l1"] = box_l1_total / max(steps, 1)
     return metrics
-

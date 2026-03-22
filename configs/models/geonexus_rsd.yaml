@@ -12,6 +12,17 @@ model:
   use_scene_adapter: true
   use_router: true
   router_hidden_dim: 128
+  innovations:
+    scene_adapter:
+      enabled: true
+    router:
+      enabled: true
+      hidden_dim: 128
+    scene_temperature:
+      enabled: false
+      hidden_dim: 128
+      min_tau: 0.75
+      max_tau: 1.50
 
 criterion:
   cls_weight: 1.0
@@ -19,6 +30,8 @@ criterion:
   hierarchy_weight: 0.10
   focal_alpha: 0.25
   focal_gamma: 2.0
+  margin_weight: 0.0
+  margin_value: 0.2
 
 pseudo_label:
   score_threshold: 0.55
@@ -27,4 +40,3 @@ pseudo_label:
   hierarchy_bonus: 0.10
   negative_penalty: 0.15
   final_threshold: 0.60
-

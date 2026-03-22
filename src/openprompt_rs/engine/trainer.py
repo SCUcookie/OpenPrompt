@@ -19,11 +19,13 @@ def build_dataloader(dataset: object, batch_size: int, shuffle: bool) -> DataLoa
 
 def build_criterion(criterion_cfg: dict[str, Any]) -> OpenPromptCriterion:
     return OpenPromptCriterion(
-        cls_weight=criterion_cfg["cls_weight"],
-        box_weight=criterion_cfg["box_weight"],
-        hierarchy_weight=criterion_cfg["hierarchy_weight"],
-        focal_alpha=criterion_cfg["focal_alpha"],
-        focal_gamma=criterion_cfg["focal_gamma"],
+        cls_weight=criterion_cfg.get("cls_weight", 1.0),
+        box_weight=criterion_cfg.get("box_weight", 1.0),
+        hierarchy_weight=criterion_cfg.get("hierarchy_weight", 0.0),
+        focal_alpha=criterion_cfg.get("focal_alpha", 0.25),
+        focal_gamma=criterion_cfg.get("focal_gamma", 2.0),
+        margin_weight=criterion_cfg.get("margin_weight", 0.0),
+        margin_value=criterion_cfg.get("margin_value", 0.2),
     )
 
 
@@ -33,6 +35,7 @@ def train_experiment(
     experiment_cfg: dict[str, Any],
     criterion_cfg: dict[str, Any],
     relation_matrix: torch.Tensor | None,
+    confusing_matrix: torch.Tensor | None,
     output_dir: str | Path,
 ) -> dict[str, float]:
     device = experiment_cfg["device"]
@@ -56,7 +59,12 @@ def train_experiment(
             images = batch["images"].to(device)
             targets = batch["targets"]
             outputs = model(images)
-            losses = criterion(outputs, targets, relation_matrix=relation_matrix)
+            losses = criterion(
+                outputs,
+                targets,
+                relation_matrix=relation_matrix,
+                confusing_matrix=confusing_matrix,
+            )
             optimizer.zero_grad(set_to_none=True)
             losses["loss"].backward()
             optimizer.step()
@@ -67,10 +75,10 @@ def train_experiment(
             dataloader=eval_loader,
             criterion=criterion,
             relation_matrix=relation_matrix,
+            confusing_matrix=confusing_matrix,
             device=device,
         )
 
     output_dir = ensure_dir(output_dir)
     torch.save({"model": model.state_dict(), "metrics": last_metrics}, output_dir / "last.pt")
     return last_metrics
-

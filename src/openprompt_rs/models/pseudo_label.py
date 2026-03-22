@@ -34,7 +34,14 @@ class HierarchyConsistentPseudoLabeler:
         confidence, labels = probabilities.max(dim=-1)
         query_embeddings = F.normalize(outputs["query_embeddings"], dim=-1)
         prompt_embeddings = F.normalize(prompt_embeddings, dim=-1)
-        gathered_prompts = prompt_embeddings[labels]
+        if prompt_embeddings.dim() == 2:
+            gathered_prompts = prompt_embeddings[labels]
+        else:
+            gathered_prompts = torch.gather(
+                prompt_embeddings,
+                dim=1,
+                index=labels.unsqueeze(-1).expand(-1, -1, prompt_embeddings.size(-1)),
+            )
         semantic = (query_embeddings * gathered_prompts).sum(dim=-1)
 
         if scene_scores is None:
@@ -70,4 +77,3 @@ class HierarchyConsistentPseudoLabeler:
                 }
             )
         return pseudo_targets
-

@@ -58,6 +58,7 @@ def main() -> None:
         dataloader=dataloader,
         criterion=criterion,
         relation_matrix=prompt_bank.hierarchy.relation_matrix,
+        confusing_matrix=prompt_bank.hierarchy.confusing_matrix,
         device=experiment_cfg["device"],
     )
     print(metrics)
@@ -65,4 +66,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -67,6 +65,29 @@ def hierarchy_laplacian_loss(logits: torch.Tensor, relation_matrix: torch.Tensor
     return torch.einsum("bc,cd,bd->b", probabilities, laplacian, probabilities).mean()
 
 
+def confusing_class_margin_loss(
+    logits: torch.Tensor,
+    positive_mask: torch.Tensor,
+    label_indices: torch.Tensor,
+    confusing_matrix: torch.Tensor,
+    margin: float,
+) -> torch.Tensor:
+    if not positive_mask.any():
+        return logits.sum() * 0.0
+
+    positive_logits = logits[positive_mask]
+    positive_labels = label_indices[positive_mask]
+    positive_scores = positive_logits.gather(dim=-1, index=positive_labels.unsqueeze(-1)).squeeze(-1)
+
+    confusing_rows = confusing_matrix.to(logits.device)[positive_labels].bool()
+    valid_rows = confusing_rows.any(dim=-1)
+    if not valid_rows.any():
+        return logits.sum() * 0.0
+
+    confusing_scores = positive_logits.masked_fill(~confusing_rows, float("-inf")).max(dim=-1).values
+    return F.relu(margin + confusing_scores[valid_rows] - positive_scores[valid_rows]).mean()
+
+
 class OpenPromptCriterion(nn.Module):
     def __init__(
         self,
@@ -75,6 +96,8 @@ class OpenPromptCriterion(nn.Module):
         hierarchy_weight: float,
         focal_alpha: float,
         focal_gamma: float,
+        margin_weight: float = 0.0,
+        margin_value: float = 0.2,
     ) -> None:
         super().__init__()
         self.cls_weight = cls_weight
@@ -82,12 +105,15 @@ class OpenPromptCriterion(nn.Module):
         self.hierarchy_weight = hierarchy_weight
         self.focal_alpha = focal_alpha
         self.focal_gamma = focal_gamma
+        self.margin_weight = margin_weight
+        self.margin_value = margin_value
 
     def forward(
         self,
         outputs: dict[str, torch.Tensor],
         targets: list[dict[str, torch.Tensor]],
         relation_matrix: torch.Tensor | None = None,
+        confusing_matrix: torch.Tensor | None = None,
     ) -> dict[str, torch.Tensor]:
         supervision = build_supervision_targets(
             query_centers=outputs["query_centers"],
@@ -115,11 +141,26 @@ class OpenPromptCriterion(nn.Module):
         if relation_matrix is not None and self.hierarchy_weight > 0.0:
             hierarchy_loss = hierarchy_laplacian_loss(outputs["logits"], relation_matrix)
 
-        total = self.cls_weight * cls_loss + self.box_weight * box_loss + self.hierarchy_weight * hierarchy_loss
+        margin_loss = outputs["logits"].sum() * 0.0
+        if confusing_matrix is not None and self.margin_weight > 0.0:
+            margin_loss = confusing_class_margin_loss(
+                logits=outputs["logits"],
+                positive_mask=positive_mask,
+                label_indices=supervision["label_indices"],
+                confusing_matrix=confusing_matrix,
+                margin=self.margin_value,
+            )
+
+        total = (
+            self.cls_weight * cls_loss
+            + self.box_weight * box_loss
+            + self.hierarchy_weight * hierarchy_loss
+            + self.margin_weight * margin_loss
+        )
         return {
             "loss": total,
             "loss_cls": cls_loss.detach(),
             "loss_box": box_loss.detach(),
             "loss_hier": hierarchy_loss.detach(),
+            "loss_margin": margin_loss.detach(),
         }
-

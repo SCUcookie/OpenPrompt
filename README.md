@@ -25,6 +25,7 @@ This rebuild turns that handoff folder into a usable research repo with:
 - a pseudo-label export entrypoint for self-training
 - a lightweight `OpenRSD`-like baseline scaffold
 - the planned `GeoNexus-RSD` innovation modules
+- a modular innovation registry for later ablations
 - sample taxonomy assets and prompt-bank generation
 - preserved handoff notes under `docs/research_handoff`
 
@@ -39,6 +40,8 @@ This rebuild turns that handoff folder into a usable research repo with:
   - scene-context prompt adapter
   - scale/rotation-aware routing
   - hierarchy-consistent pseudo-label filtering
+  - scene-conditioned temperature scaling hook
+  - confusing-class margin-loss hook
 - dataset support:
   - synthetic smoke-test dataset
   - DOTA-style rotated annotation loader template
@@ -94,9 +97,36 @@ openprompt/
 1. Run the synthetic smoke test to verify the environment.
 2. Fill in real dataset paths in `configs/datasets/*.yaml`.
 3. Replace the hash text embedder with CLIP, SkyCLIP, or another stronger text encoder if available.
-4. Run the baseline configuration first.
+4. Run the pure baseline configuration first.
 5. Enable `GeoNexus-RSD` modules one by one for ablations.
-6. Add official rotated mAP evaluation before making any paper-level claims.
+6. Try the math-ready config after the structure modules are stable.
+7. Add official rotated mAP evaluation before making any paper-level claims.
+
+## Innovation toggles
+
+You can now switch most research ideas by config instead of rewriting the detector. Example:
+
+```yaml
+model:
+  innovations:
+    scene_adapter:
+      enabled: true
+    router:
+      enabled: true
+      hidden_dim: 128
+    scene_temperature:
+      enabled: true
+      hidden_dim: 128
+      min_tau: 0.70
+      max_tau: 1.40
+
+criterion:
+  hierarchy_weight: 0.10
+  margin_weight: 0.10
+  margin_value: 0.20
+```
+
+This lets you test structure innovations and mathematical regularizers as separate ablations.
 
 ## Innovation tracks already prepared
 
@@ -105,6 +135,7 @@ Low-risk directions:
 - hierarchy-aware prompt smoothing
 - scene-conditioned prompt gating
 - hierarchy-consistent pseudo-label scoring
+- scene-conditioned temperature scaling
 
 Medium-risk directions:
 

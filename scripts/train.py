@@ -56,6 +56,7 @@ def main() -> None:
         experiment_cfg=experiment_cfg,
         criterion_cfg=criterion_cfg,
         relation_matrix=prompt_bank.hierarchy.relation_matrix,
+        confusing_matrix=prompt_bank.hierarchy.confusing_matrix,
         output_dir=output_dir,
     )
     dump_json(metrics, output_dir / "metrics.json")

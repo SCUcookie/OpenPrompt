@@ -51,7 +51,12 @@ def main() -> None:
     criterion = OpenPromptCriterion(**criterion_cfg)
 
     outputs = model(batch["images"])
-    losses = criterion(outputs, batch["targets"], relation_matrix=prompt_bank.hierarchy.relation_matrix)
+    losses = criterion(
+        outputs,
+        batch["targets"],
+        relation_matrix=prompt_bank.hierarchy.relation_matrix,
+        confusing_matrix=prompt_bank.hierarchy.confusing_matrix,
+    )
     losses["loss"].backward()
 
     result = {
@@ -59,6 +64,8 @@ def main() -> None:
         "boxes_shape": tuple(outputs["boxes"].shape),
         "loss": float(losses["loss"].item()),
     }
+    if outputs["scene_temperature"] is not None:
+        result["scene_temperature"] = [float(value) for value in outputs["scene_temperature"].detach().cpu().tolist()]
 
     if "pseudo_label" in config:
         pseudo_labeler = HierarchyConsistentPseudoLabeler(
@@ -77,4 +84,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

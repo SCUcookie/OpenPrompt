@@ -3,10 +3,12 @@
 ## Immediate execution
 
 1. Install the package and run the synthetic smoke test.
-2. Fill in real dataset paths.
-3. Build a prompt bank artifact from the provided taxonomy JSON.
-4. Run the baseline config before any innovation config.
-5. Add official rotated mAP evaluation before claiming paper-ready results.
+2. Run `configs/experiments/baseline_synthetic.yaml` first to verify the pure baseline path.
+3. Run `configs/experiments/geonexus_synthetic.yaml` for the structure-only version.
+4. Run `configs/experiments/geonexus_math_synthetic.yaml` after that if you want the first math-heavy ablation.
+5. Fill in real dataset paths.
+6. Build a prompt bank artifact from the provided taxonomy JSON.
+7. Add official rotated mAP evaluation before claiming paper-ready results.
 
 ## First strong experiment sequence
 
@@ -36,6 +38,13 @@
 - composite pseudo-label energy function
 - asymmetric margin penalties for confusing class pairs
 
+## Already wired in this repo
+
+- pure baseline config without hierarchy regularization
+- structure modules toggled through `model.innovations`
+- scene-conditioned temperature scaling through `model.innovations.scene_temperature`
+- confusing-class margin loss through `criterion.margin_weight`
+
 ## Best reviewer-facing package
 
 - one clean failure mode: small and confusing rotated objects
@@ -49,4 +58,3 @@
 - add official DOTA metrics
 - verify results on at least two real datasets
 - produce qualitative confusion maps and prompt-robustness plots
-
