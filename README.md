@@ -80,6 +80,10 @@ python3 scripts/self_train.py \
   --output outputs/geonexus_synthetic/pseudo_labels.pt
 ```
 
+Local asset setup is documented in [LOCAL_SETUP.md](LOCAL_SETUP.md).
+The current reproduction status and next-step decisions are tracked in
+[RESEARCH_STATUS.md](RESEARCH_STATUS.md).
+
 ## Main structure
 
 ```text
@@ -98,9 +102,14 @@ openprompt/
 2. Fill in real dataset paths in `configs/datasets/*.yaml`.
 3. Replace the hash text embedder with CLIP, SkyCLIP, or another stronger text encoder if available.
 4. Run the pure baseline configuration first.
+   For DOTA-style reproduction, prefer `configs/experiments/dota_v2_baseline_repro.yaml`.
 5. Enable `GeoNexus-RSD` modules one by one for ablations.
 6. Try the math-ready config after the structure modules are stable.
 7. Add official rotated mAP evaluation before making any paper-level claims.
+
+The `dota_v2_baseline_repro.yaml` config uses `1024x1024` tiles and a `16x16`
+query grid. That gives the baseline a more realistic query budget for dense
+DOTA tiles than the lighter `8x8` query setup.
 
 ## Innovation toggles
 

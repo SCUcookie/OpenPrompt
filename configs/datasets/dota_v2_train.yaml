@@ -1,7 +1,7 @@
 dataset:
   type: dota
-  image_dir: /abs/path/to/DOTA-v2.0/images/train
-  label_dir: /abs/path/to/DOTA-v2.0/labelTxt/train
+  image_dir: DOTAv2/images/train
+  label_dir: DOTAv2/labels/train
   image_size: 512
   class_names:
     - plane

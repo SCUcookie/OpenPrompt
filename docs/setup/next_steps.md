@@ -7,8 +7,22 @@
 3. Run `configs/experiments/geonexus_synthetic.yaml` for the structure-only version.
 4. Run `configs/experiments/geonexus_math_synthetic.yaml` after that if you want the first math-heavy ablation.
 5. Fill in real dataset paths.
-6. Build a prompt bank artifact from the provided taxonomy JSON.
-7. Add official rotated mAP evaluation before claiming paper-ready results.
+6. For DOTA reproduction, start from `configs/experiments/dota_v2_baseline_repro.yaml` instead of the lighter `dota_v2_baseline.yaml`.
+7. Build a prompt bank artifact from the provided taxonomy JSON.
+8. Add official rotated mAP evaluation before claiming paper-ready results.
+
+## DOTA reproduction note
+
+The lighter DOTA configs are useful smoke baselines, but they are not a strong
+default reproduction target.
+
+- `grid_size: 8` means only `64` query slots per image.
+- With `2048`-pixel tiles, many positive DOTA tiles still contain well above
+  `64` objects.
+- `configs/experiments/dota_v2_baseline_repro.yaml` switches to
+  `1024`-pixel tiles and a `16x16` query grid (`256` queries), which is a more
+  plausible starting point for baseline reproduction before adding any
+  GeoNexus-RSD modules.
 
 ## First strong experiment sequence
 

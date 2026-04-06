@@ -20,6 +20,9 @@ def build_dataset(dataset_cfg: dict) -> object:
             label_dir=dataset_cfg["label_dir"],
             class_names=dataset_cfg["class_names"],
             image_size=dataset_cfg["image_size"],
+            tile_size=dataset_cfg.get("tile_size"),
+            tile_stride=dataset_cfg.get("tile_stride"),
+            include_empty_tiles=dataset_cfg.get("include_empty_tiles", True),
+            max_tiles_per_image=dataset_cfg.get("max_tiles_per_image"),
         )
     raise ValueError(f"Unsupported dataset type: {dataset_type}")
-

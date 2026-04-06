@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from collections import defaultdict
+import math
+from typing import Any
 
+import cv2
 import torch
 
 from openprompt_rs.models.losses import build_supervision_targets
@@ -54,4 +57,226 @@ def evaluate_model(
     metrics = {key: value / steps for key, value in meters.items()}
     metrics["positive_cls_acc"] = positive_correct / max(positive_total, 1.0)
     metrics["positive_box_l1"] = box_l1_total / max(steps, 1)
+    return metrics
+
+
+def _cv2_rotated_rect(box: torch.Tensor) -> tuple[tuple[float, float], tuple[float, float], float]:
+    cx, cy, width, height, theta = [float(value) for value in box.tolist()]
+    return ((cx, cy), (max(width, 1e-6), max(height, 1e-6)), theta * 180.0 / math.pi)
+
+
+def rotated_box_iou(box_a: torch.Tensor, box_b: torch.Tensor) -> float:
+    area_a = float(box_a[2].item() * box_a[3].item())
+    area_b = float(box_b[2].item() * box_b[3].item())
+    if area_a <= 0.0 or area_b <= 0.0:
+        return 0.0
+
+    _, intersection_points = cv2.rotatedRectangleIntersection(
+        _cv2_rotated_rect(box_a),
+        _cv2_rotated_rect(box_b),
+    )
+    if intersection_points is None:
+        intersection = 0.0
+    else:
+        hull = cv2.convexHull(intersection_points, returnPoints=True)
+        intersection = float(abs(cv2.contourArea(hull)))
+
+    union = area_a + area_b - intersection
+    if union <= 0.0:
+        return 0.0
+    return float(intersection / union)
+
+
+def _classwise_rotated_nms(
+    boxes: torch.Tensor,
+    scores: torch.Tensor,
+    labels: torch.Tensor,
+    iou_threshold: float,
+) -> torch.Tensor:
+    if boxes.numel() == 0:
+        return torch.zeros((0,), dtype=torch.long)
+
+    keep: list[int] = []
+    for class_id in labels.unique(sorted=True).tolist():
+        class_indices = torch.nonzero(labels == class_id, as_tuple=False).flatten()
+        ordered = class_indices[scores[class_indices].argsort(descending=True)]
+        class_keep: list[int] = []
+        for candidate in ordered.tolist():
+            if all(rotated_box_iou(boxes[candidate], boxes[saved]) < iou_threshold for saved in class_keep):
+                class_keep.append(candidate)
+        keep.extend(class_keep)
+
+    keep_tensor = torch.tensor(keep, dtype=torch.long)
+    if keep_tensor.numel() == 0:
+        return keep_tensor
+    return keep_tensor[scores[keep_tensor].argsort(descending=True)]
+
+
+def decode_detections(
+    outputs: dict[str, torch.Tensor],
+    score_threshold: float = 0.05,
+    nms_iou_threshold: float = 0.3,
+    max_detections: int = 100,
+) -> list[dict[str, torch.Tensor]]:
+    probabilities = torch.sigmoid(outputs["logits"])
+    scores, labels = probabilities.max(dim=-1)
+    detections: list[dict[str, torch.Tensor]] = []
+
+    for batch_idx in range(outputs["boxes"].size(0)):
+        batch_scores = scores[batch_idx].detach().cpu()
+        batch_labels = labels[batch_idx].detach().cpu()
+        batch_boxes = outputs["boxes"][batch_idx].detach().cpu()
+
+        keep = batch_scores >= score_threshold
+        batch_scores = batch_scores[keep]
+        batch_labels = batch_labels[keep]
+        batch_boxes = batch_boxes[keep]
+        if batch_scores.numel() == 0:
+            detections.append(
+                {
+                    "boxes": torch.zeros((0, 5), dtype=torch.float32),
+                    "labels": torch.zeros((0,), dtype=torch.long),
+                    "scores": torch.zeros((0,), dtype=torch.float32),
+                }
+            )
+            continue
+
+        keep_indices = _classwise_rotated_nms(
+            boxes=batch_boxes,
+            scores=batch_scores,
+            labels=batch_labels,
+            iou_threshold=nms_iou_threshold,
+        )
+        if max_detections > 0:
+            keep_indices = keep_indices[:max_detections]
+        detections.append(
+            {
+                "boxes": batch_boxes[keep_indices],
+                "labels": batch_labels[keep_indices],
+                "scores": batch_scores[keep_indices],
+            }
+        )
+    return detections
+
+
+def _average_precision(recalls: torch.Tensor, precisions: torch.Tensor) -> float:
+    if recalls.numel() == 0:
+        return 0.0
+    recall_points = torch.cat([torch.tensor([0.0]), recalls, torch.tensor([1.0])])
+    precision_points = torch.cat([torch.tensor([0.0]), precisions, torch.tensor([0.0])])
+    for index in range(precision_points.numel() - 1, 0, -1):
+        precision_points[index - 1] = torch.maximum(precision_points[index - 1], precision_points[index])
+    changes = torch.nonzero(recall_points[1:] != recall_points[:-1], as_tuple=False).flatten()
+    return float(((recall_points[changes + 1] - recall_points[changes]) * precision_points[changes + 1]).sum().item())
+
+
+@torch.no_grad()
+def evaluate_detection_map50(
+    model: torch.nn.Module,
+    dataloader: torch.utils.data.DataLoader,
+    device: str,
+    class_names: list[str],
+    score_threshold: float = 0.05,
+    nms_iou_threshold: float = 0.3,
+    max_detections: int = 100,
+    iou_threshold: float = 0.5,
+) -> dict[str, Any]:
+    model.eval()
+
+    predictions_by_class: dict[int, list[dict[str, Any]]] = defaultdict(list)
+    gt_by_class_and_image: dict[int, dict[int, list[torch.Tensor]]] = defaultdict(lambda: defaultdict(list))
+    image_index = 0
+
+    for batch in dataloader:
+        images = batch["images"].to(device)
+        outputs = model(images)
+        detections = decode_detections(
+            outputs,
+            score_threshold=score_threshold,
+            nms_iou_threshold=nms_iou_threshold,
+            max_detections=max_detections,
+        )
+
+        for sample_offset, target in enumerate(batch["targets"]):
+            labels = target["labels"].detach().cpu()
+            boxes = target["boxes"].detach().cpu()
+            for class_id in range(len(class_names)):
+                class_mask = labels == class_id
+                if class_mask.any():
+                    gt_by_class_and_image[class_id][image_index] = [box for box in boxes[class_mask]]
+
+            detection = detections[sample_offset]
+            for box, label, score in zip(detection["boxes"], detection["labels"], detection["scores"]):
+                predictions_by_class[int(label.item())].append(
+                    {
+                        "image_index": image_index,
+                        "box": box,
+                        "score": float(score.item()),
+                    }
+                )
+            image_index += 1
+
+    metrics: dict[str, Any] = {"num_eval_images": image_index}
+    ap_values: list[float] = []
+    precision_values: list[float] = []
+    recall_values: list[float] = []
+
+    for class_id, class_name in enumerate(class_names):
+        class_gt = gt_by_class_and_image[class_id]
+        gt_count = sum(len(items) for items in class_gt.values())
+        if gt_count == 0:
+            continue
+
+        predictions = sorted(predictions_by_class[class_id], key=lambda item: item["score"], reverse=True)
+        matched = {
+            image_id: [False] * len(image_targets)
+            for image_id, image_targets in class_gt.items()
+        }
+        true_positive: list[float] = []
+        false_positive: list[float] = []
+
+        for prediction in predictions:
+            image_id = prediction["image_index"]
+            targets = class_gt.get(image_id, [])
+            best_iou = 0.0
+            best_target = -1
+            for target_index, target_box in enumerate(targets):
+                if matched[image_id][target_index]:
+                    continue
+                iou = rotated_box_iou(prediction["box"], target_box)
+                if iou > best_iou:
+                    best_iou = iou
+                    best_target = target_index
+
+            if best_iou >= iou_threshold and best_target >= 0:
+                matched[image_id][best_target] = True
+                true_positive.append(1.0)
+                false_positive.append(0.0)
+            else:
+                true_positive.append(0.0)
+                false_positive.append(1.0)
+
+        if true_positive:
+            tp_tensor = torch.tensor(true_positive, dtype=torch.float32).cumsum(dim=0)
+            fp_tensor = torch.tensor(false_positive, dtype=torch.float32).cumsum(dim=0)
+            precisions = tp_tensor / torch.clamp(tp_tensor + fp_tensor, min=1.0)
+            recalls = tp_tensor / float(gt_count)
+            ap50 = _average_precision(recalls, precisions)
+            precision = float(precisions[-1].item())
+            recall = float(recalls[-1].item())
+        else:
+            ap50 = 0.0
+            precision = 0.0
+            recall = 0.0
+
+        metrics[f"ap50_{class_name}"] = ap50
+        metrics[f"precision_{class_name}"] = precision
+        metrics[f"recall_{class_name}"] = recall
+        ap_values.append(ap50)
+        precision_values.append(precision)
+        recall_values.append(recall)
+
+    metrics["map50"] = float(sum(ap_values) / max(len(ap_values), 1))
+    metrics["mean_precision"] = float(sum(precision_values) / max(len(precision_values), 1))
+    metrics["mean_recall"] = float(sum(recall_values) / max(len(recall_values), 1))
     return metrics

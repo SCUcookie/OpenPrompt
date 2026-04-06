@@ -1,0 +1,22 @@
+_base_:
+  - ./dota_v2_baseline.yaml
+
+experiment:
+  name: dota_v2_baseline_repro
+  batch_size: 1
+  output_dir: outputs/dota_v2_baseline_repro
+
+model:
+  # 16x16 pooled queries gives 256 slots instead of the default 64.
+  # This is a better fit for dense DOTA tiles during baseline reproduction.
+  grid_size: 16
+
+dataset:
+  tile_size: 1024
+  tile_stride: 1024
+  include_empty_tiles: false
+
+val_dataset:
+  tile_size: 1024
+  tile_stride: 1024
+  include_empty_tiles: true

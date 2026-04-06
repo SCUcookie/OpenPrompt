@@ -4,6 +4,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 .DS_Store
+.codex
 .venv/
 venv/
 dist/
@@ -13,4 +14,10 @@ outputs/
 checkpoints/
 artifacts/generated/
 wandb/
-
+*.pid
+/DOTAv2/
+/images/
+/labels/
+/OpenRSD_official/
+/openrsd-ICCV2025_paper.pdf
+/train.log
