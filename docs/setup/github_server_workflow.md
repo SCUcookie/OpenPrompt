@@ -3,6 +3,12 @@
 Use GitHub as the synchronization layer between the local coding machine and the
 experiment server.
 
+Paper-first rule:
+
+- update `docs/geonexus_short_paper.tex` and `PROJECT_INSTRUCTIONS.md` before
+  changing code when the claim or experiment sequence changes
+- keep code, configs, and experiment notes aligned with the manuscript
+
 ## Local Machine
 
 Responsibilities:
@@ -51,6 +57,10 @@ PYTHONPATH=src python scripts/train.py --config configs/experiments/dota_v2_base
 For long runs, save the command, Git commit, config path, machine, GPU count,
 dataset path, and result summary in `docs/experiments/`.
 
+When the server produces a paper-facing metric, add a short record in
+`docs/experiments/` that states whether the result came from the scaffold,
+synthetic smoke tests, or accepted DOTA-style evaluation.
+
 ## What To Commit From Server
 
 Commit:
@@ -81,4 +91,3 @@ git status
 ```
 
 Then inspect the experiment note and decide the next code change locally.
-

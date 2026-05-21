@@ -1,7 +1,8 @@
 # Prompt And VLM Pipeline
 
 The paper is not only an oriented detection paper. The prompt/VLM path must be
-explicit in the implementation and in the experiment logs.
+explicit in the implementation, the experiment logs, and the canonical
+manuscript.
 
 ## Prompt Assets
 
@@ -96,4 +97,3 @@ Failure analysis:
 - storage tank versus roundabout
 - bridge versus road segment
 - sports-field subclasses
-

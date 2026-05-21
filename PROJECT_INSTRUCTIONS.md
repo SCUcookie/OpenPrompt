@@ -2,6 +2,9 @@
 
 This file is the persistent project memory. Keep it updated when the research
 scope, repository structure, server workflow, or experiment protocol changes.
+Paper-first rule: if the research direction, claim, experiment sequence, or
+submission target changes, update the canonical manuscript and this file before
+changing code, configs, or secondary docs.
 
 ## Research Direction
 
@@ -81,6 +84,27 @@ Required final analyses:
 
 No final submission may contain pending/planned result tables.
 
+## Paper-First Workflow
+
+Canonical manuscript source:
+
+- `docs/geonexus_short_paper.tex`
+
+Supporting drafts and presentation notes may exist, but they must not override
+the canonical manuscript. Keep method wording aligned with the real claim:
+hierarchical prompts, scene/context adaptation, and VLM-assisted pseudo-label
+purification. When code exposes routing or compression hooks, document them as
+optional ablations or future work unless measured results justify making them
+central.
+
+Before any paper-facing claim is added:
+
+- identify which experiment record supports it
+- link the config and command used to produce it
+- record whether embeddings are hash fallback or real VLM embeddings
+- record whether metrics are from scaffold evaluation or accepted DOTA-style
+  evaluation
+
 ## Local And Server Workflow
 
 Use GitHub as the shared code and result-metadata transport between:
@@ -117,6 +141,7 @@ Tracked in Git:
 - `src/`
 - `tests/`
 - root metadata and instruction files
+- canonical paper source only, not duplicate generated PDFs
 
 Ignored or external:
 
@@ -127,7 +152,7 @@ Ignored or external:
 - `checkpoints/`
 - `artifacts/generated/`
 - `wandb/`
-- LaTeX auxiliary files
+- generated PDFs and LaTeX auxiliary files
 
 ## Future-Agent Prompt
 
@@ -136,5 +161,5 @@ When starting a new coding session, give the agent this instruction:
 Read `PROJECT_INSTRUCTIONS.md`, then inspect the current Git status. Preserve
 unrelated user changes. Continue the GeoNexus-RSD baseline-first JSTARS path:
 do not make unsupported performance claims, keep routing/compression secondary,
-and maintain the local/server GitHub workflow.
-
+maintain the local/server GitHub workflow, and update the canonical manuscript
+before code/docs when the research direction changes.

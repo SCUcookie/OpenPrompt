@@ -49,7 +49,7 @@ not yet contain paper-ready benchmark results.
 ## Current Limitations
 
 - The local detector is lightweight and mainly useful for plumbing.
-- The default text embedder is a deterministic hash fallback.
+- The default text embedder is a deterministic hash fallback for smoke tests.
 - Datasets and checkpoints are intentionally not tracked.
 - Official DOTA evaluation still needs to be integrated or documented before
   paper-level claims.
