@@ -1,172 +1,161 @@
 # openprompt
 
-`openprompt` is a rebuilt GitHub-style research repository for **baseline-first open-prompt rotated remote sensing detection** under the working paper direction:
+`openprompt` is a baseline-first research scaffold for:
 
-**GeoNexus-RSD: Hierarchy- and Context-Aware Open-Prompt Rotated Detection for Remote Sensing**
+**GeoNexus-RSD: Hierarchy- and Context-Aware Prompt Learning for Oriented Remote
+Sensing Object Detection**
 
-Repository identity:
+The practical first paper target is JSTARS. TGRS or ISPRS P&RS should only be
+considered if final results are strong across at least two datasets.
 
-- GitHub owner: `SCUcookie`
-- Intended repo URL: `https://github.com/SCUcookie/openprompt`
-- Local path: `/opt/pangu/ldh/openprompt`
+## Active Direction
 
-## What this rebuild is
+Main claim:
 
-The original directory only contained:
+Hierarchy- and context-aware vision-language prompting improves fine-grained
+oriented object detection and semi-supervised pseudo-label quality in remote
+sensing imagery.
 
-- the `OpenRSD` ICCV 2025 paper PDF
-- planning notes for the next paper
-- no runnable OpenRSD source code
+Core modules:
 
-This rebuild turns that handoff folder into a usable research repo with:
+- hierarchical prompt bank
+- scene/context prompt adapter
+- VLM-assisted pseudo-label purification
 
-- a clean Python package under `src/openprompt_rs`
-- config-driven train and evaluation entrypoints
-- a pseudo-label export entrypoint for self-training
-- a lightweight `OpenRSD`-like baseline scaffold
-- the planned `GeoNexus-RSD` innovation modules
-- a modular innovation registry for later ablations
-- sample taxonomy assets and prompt-bank generation
-- preserved handoff notes under `docs/research_handoff`
+Secondary only:
 
-## What is implemented
+- routing is optional after the core modules are stable
+- compression is a later-paper topic
+- segmentation is not the primary task for this paper
 
-- `OpenRSD`-style dual-head prompt detector scaffold:
-  - alignment head
-  - fusion head
-  - class-embedding refinement
-- `GeoNexus-RSD` extensions:
-  - hierarchy-aware prompt bank
-  - scene-context prompt adapter
-  - scale/rotation-aware routing
-  - hierarchy-consistent pseudo-label filtering
-  - scene-conditioned temperature scaling hook
-  - confusing-class margin-loss hook
-- dataset support:
-  - synthetic smoke-test dataset
-  - DOTA-style rotated annotation loader template
-- experiment assets:
-  - YAML configs
-  - prompt taxonomy JSON
-  - scripts for prompt-bank build, training, evaluation, and smoke testing
-- documentation for next-step experiments and publication-facing innovation ideas
+Persistent project context is tracked in [PROJECT_INSTRUCTIONS.md](PROJECT_INSTRUCTIONS.md).
+Future coding agents should also read [AGENTS.md](AGENTS.md).
 
-## What is not claimed
+## What This Repo Is
 
-This repo does **not** claim to be the official `OpenRSD` implementation.
+This repo contains:
 
-The following remain external or incomplete because they were not present locally:
+- Python package under `src/openprompt_rs`
+- config-driven training and evaluation entrypoints
+- DOTA-style dataset loader scaffold
+- synthetic smoke-test dataset
+- prompt taxonomy and prompt-template assets
+- hierarchy/context/pseudo-label modules for ablations
+- setup, reproducibility, and experiment-record documentation
 
-- exact original `OpenRSD` training code
-- official paper hyperparameters
-- dataset copies and paths
-- official DOTA/FAIR1M evaluation wrappers
-- verified reproduction numbers
+This repo does not claim to be the official OpenRSD implementation, and it does
+not yet contain paper-ready benchmark results.
 
-The code is therefore a **research-faithful rebuild and extension scaffold**, not a false claim of official reproduction.
+## Current Limitations
 
-## Quick start
+- The local detector is lightweight and mainly useful for plumbing.
+- The default text embedder is a deterministic hash fallback.
+- Datasets and checkpoints are intentionally not tracked.
+- Official DOTA evaluation still needs to be integrated or documented before
+  paper-level claims.
 
-```bash
-cd /opt/pangu/ldh/openprompt
-python3 -m pip install -e .
-python3 scripts/smoke_test.py --config configs/experiments/geonexus_synthetic.yaml
-python3 scripts/build_prompt_bank.py \
-  --taxonomy assets/hierarchies/remote_sensing_taxonomy.json \
-  --output artifacts/generated/prompt_bank_remote_sensing.pt
-python3 scripts/self_train.py \
-  --config configs/experiments/geonexus_synthetic.yaml \
-  --checkpoint outputs/geonexus_synthetic/last.pt \
-  --output outputs/geonexus_synthetic/pseudo_labels.pt
-```
+Paper-level experiments require a credible oriented detector baseline and real
+CLIP/SkyCLIP/RemoteCLIP-style embeddings.
 
-Local asset setup is documented in [LOCAL_SETUP.md](LOCAL_SETUP.md).
-The current reproduction status and next-step decisions are tracked in
-[RESEARCH_STATUS.md](RESEARCH_STATUS.md).
-
-## Main structure
+## Repository Structure
 
 ```text
 openprompt/
 ├── assets/                  # taxonomy and prompt assets
 ├── configs/                 # model, dataset, experiment configs
-├── docs/                    # method notes, setup guides, preserved handoff docs
+├── docs/
+│   ├── experiments/         # small tracked experiment summaries
+│   ├── logs/                # short curated log excerpts only
+│   ├── method/              # method notes and ablation ideas
+│   ├── reproducibility/     # environment and reproduction notes
+│   └── setup/               # dataset, VLM, and server workflow setup
 ├── scripts/                 # train/eval/prompt-bank entrypoints
 ├── src/openprompt_rs/       # source package
-└── tests/                   # smoke and unit tests
+├── tests/                   # smoke and unit tests
+├── AGENTS.md                # pointer for future coding agents
+└── PROJECT_INSTRUCTIONS.md  # persistent project memory
 ```
 
-## Recommended execution order
+## Setup Pointers
 
-1. Run the synthetic smoke test to verify the environment.
-2. Fill in real dataset paths in `configs/datasets/*.yaml`.
-3. Replace the hash text embedder with CLIP, SkyCLIP, or another stronger text encoder if available.
-4. Run the pure baseline configuration first.
-   For DOTA-style reproduction, prefer `configs/experiments/dota_v2_baseline_repro.yaml`.
-5. Enable `GeoNexus-RSD` modules one by one for ablations.
-6. Try the math-ready config after the structure modules are stable.
-7. Add official rotated mAP evaluation before making any paper-level claims.
+- Dataset setup: [docs/setup/datasets.md](docs/setup/datasets.md)
+- Prompt/VLM pipeline: [docs/setup/prompt_vlm_pipeline.md](docs/setup/prompt_vlm_pipeline.md)
+- GitHub/server workflow: [docs/setup/github_server_workflow.md](docs/setup/github_server_workflow.md)
+- Next steps: [docs/setup/next_steps.md](docs/setup/next_steps.md)
+- Experiment records: [docs/experiments/README.md](docs/experiments/README.md)
 
-The `dota_v2_baseline_repro.yaml` config uses `1024x1024` tiles and a `16x16`
-query grid. That gives the baseline a more realistic query budget for dense
-DOTA tiles than the lighter `8x8` query setup.
+## Quick Start
 
-## Innovation toggles
+Install locally:
 
-You can now switch most research ideas by config instead of rewriting the detector. Example:
-
-```yaml
-model:
-  innovations:
-    scene_adapter:
-      enabled: true
-    router:
-      enabled: true
-      hidden_dim: 128
-    scene_temperature:
-      enabled: true
-      hidden_dim: 128
-      min_tau: 0.70
-      max_tau: 1.40
-
-criterion:
-  hierarchy_weight: 0.10
-  margin_weight: 0.10
-  margin_value: 0.20
+```bash
+python -m pip install -e .
 ```
 
-This lets you test structure innovations and mathematical regularizers as separate ablations.
+Run tests:
 
-## Innovation tracks already prepared
+```bash
+python -m pytest
+```
 
-Low-risk directions:
+If the package is not installed:
 
-- hierarchy-aware prompt smoothing
-- scene-conditioned prompt gating
-- hierarchy-consistent pseudo-label scoring
-- scene-conditioned temperature scaling
+```bash
+PYTHONPATH=src python -m pytest
+```
 
-Medium-risk directions:
+Run a smoke test:
 
-- query routing by uncertainty and geometry
-- confusing-class margin regularization
-- scene-aware hard-negative suppression
+```bash
+PYTHONPATH=src python scripts/smoke_test.py \
+  --config configs/experiments/geonexus_synthetic.yaml
+```
 
-Reviewer-friendly upgrades:
+Build a prompt-bank artifact for inspection:
 
-- fine-grained confusion analysis
-- mixed-prompt robustness evaluation
-- small-object transfer experiments
-- efficiency versus accuracy trade-off table
+```bash
+PYTHONPATH=src python scripts/build_prompt_bank.py \
+  --taxonomy assets/hierarchies/remote_sensing_taxonomy.json \
+  --templates assets/prompts/prompt_templates.json \
+  --output artifacts/generated/prompt_bank_remote_sensing.pt \
+  --embedding-dim 256
+```
 
-Detailed next steps are in [docs/setup/next_steps.md](/opt/pangu/ldh/openprompt/docs/setup/next_steps.md) and [docs/method/innovation_playbook.md](/opt/pangu/ldh/openprompt/docs/method/innovation_playbook.md).
+## Recommended Experiment Order
 
-## Preserved research handoff
+1. Verify dataset loading and tiling.
+2. Establish a credible closed-set oriented detector baseline.
+3. Add flat class-name prompts.
+4. Add hierarchical prompt bank.
+5. Add scene/context prompt adapter.
+6. Add VLM-assisted pseudo-label purification.
+7. Add optional routing only as an ablation.
 
-The original planning package is preserved in [docs/research_handoff/README.md](/opt/pangu/ldh/openprompt/docs/research_handoff/README.md).
+Do not submit a paper with pending/planned result tables.
 
-## Baseline citation
+## Git Policy
 
-Primary source used for this rebuild:
+Track:
 
-- Huang et al., `OpenRSD: Towards Open-prompts for Object Detection in Remote Sensing Images`, ICCV 2025.
+- source code
+- configs
+- prompt assets
+- setup docs
+- small experiment summaries
+- reproducibility notes
+
+Do not track:
+
+- datasets
+- checkpoints
+- generated prompt-bank tensors
+- raw output directories
+- long logs
+- LaTeX auxiliary files
+
+## Citation Anchor
+
+The local scaffold is inspired by the OpenRSD research direction:
+
+- Huang et al., `OpenRSD: Towards Open-prompts for Object Detection in Remote
+  Sensing Images`, ICCV 2025.

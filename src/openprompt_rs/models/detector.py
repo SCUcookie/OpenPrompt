@@ -49,9 +49,11 @@ class ModularPromptDetector(nn.Module):
 
         if "router" in self.innovations:
             route = self.innovations["router"](query_tokens, alignment["logits"], alignment["boxes"])
-            logits = (1.0 - route) * alignment["logits"] + route * fusion["logits"]
-            boxes = (1.0 - route) * alignment["boxes"] + route * fusion["boxes"]
-            query_embeddings = (1.0 - route) * alignment["query_embeddings"] + route * fusion["query_embeddings"]
+            alignment_route = route[..., 0:1]
+            fusion_route = route[..., 1:2]
+            logits = alignment_route * alignment["logits"] + fusion_route * fusion["logits"]
+            boxes = alignment_route * alignment["boxes"] + fusion_route * fusion["boxes"]
+            query_embeddings = alignment_route * alignment["query_embeddings"] + fusion_route * fusion["query_embeddings"]
         else:
             route = None
             merged = self._merge_outputs(alignment, fusion)

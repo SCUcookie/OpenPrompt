@@ -15,6 +15,12 @@ checkpoints/
 artifacts/generated/
 wandb/
 *.pid
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
 /DOTAv2/
 /images/
 /labels/

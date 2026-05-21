@@ -10,14 +10,17 @@ model:
   use_class_offsets: true
   hierarchy_smoothing_lambda: 0.15
   use_scene_adapter: true
-  use_router: true
+  use_router: false
   router_hidden_dim: 128
   innovations:
     scene_adapter:
       enabled: true
     router:
-      enabled: true
+      enabled: false
       hidden_dim: 128
+      mode: soft
+      temperature: 1.0
+      hard: true
     scene_temperature:
       enabled: false
       hidden_dim: 128

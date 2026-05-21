@@ -1,0 +1,284 @@
+\documentclass[10pt]{article}
+
+\usepackage[margin=0.78in]{geometry}
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{placeins}
+
+\setlist{nosep,leftmargin=*}
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{0pt}
+
+\title{\vspace{-1.5em}Vision Language Guided Hierarchical Prompt Learning for Remote Sensing Object Detection}
+\author{
+Dinghao Li\\
+Xi'an Jiaotong University\\
+\texttt{lidinghao@xjtu.stu.cn}
+}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-1.5em}
+
+\begin{abstract}
+Object detection in remote sensing images is a fundamental problem for urban analysis, traffic monitoring, maritime surveillance, and disaster assessment. Modern oriented detectors have made strong progress on benchmarks such as DOTA, but their performance still depends heavily on fixed category definitions and sufficient box annotations. This short paper describes a hierarchical prompt learning framework for oriented remote sensing object detection. The method constructs taxonomy aware class prompts, adapts them with scene context, and filters pseudo labels with vision language evidence before semi supervised training. The proposed study focuses on method design and evaluation protocol rather than completed benchmark results. Code will be released at \url{https://github.com/SCUcookie/openprompt}.
+\end{abstract}
+
+\section{Introduction}
+
+High resolution remote sensing object detection has become an important research topic because aerial and satellite images provide large scale information about transportation systems, ports, airports, urban facilities, and natural hazards. Different from ordinary object detection, remote sensing detection must process very large images, dense object layouts, severe scale variation, and arbitrary object orientation. The DOTA benchmark formalized this setting with oriented bounding boxes and has become a standard test bed for methods that detect airplanes, ships, vehicles, bridges, storage tanks, sports fields, and other categories in aerial scenes \cite{xia2018dota}.
+
+Current oriented object detectors have improved localization accuracy through rotated region representation, feature alignment, and transformer based detection heads. Representative methods such as RoI Transformer, Oriented R-CNN, ReDet, and Oriented RepPoints show that geometric modeling is essential for aerial images \cite{ding2019roit, xie2021orientedrcnn, han2021redet, li2022orientedreppoints}. However, most of these methods still assume a closed category set and learn each class mainly from annotated boxes. This assumption is restrictive in practical remote sensing applications. Class definitions may change across datasets, annotation cost is high, and fine grained categories often share similar appearance. A vehicle, ship, court, or storage facility may require both local object evidence and scene level context for reliable recognition.
+
+Vision language models provide a possible way to introduce semantic knowledge into detection. CLIP shows that image and text representations can be aligned through large scale contrastive learning \cite{radford2021clip}. Open vocabulary detection methods such as GLIP, RegionCLIP, and Detic further demonstrate that language supervision can support recognition beyond a fixed detector vocabulary \cite{li2022glip, zhong2022regionclip, zhou2022detic}. For remote sensing, direct transfer is still difficult. Aerial objects are small, rotated, and often visually ambiguous. Simple class name prompts cannot fully describe taxonomic relations such as vehicle, small vehicle, and large vehicle, or contextual differences such as ship in water and bridge over water.
+
+This paper proposes a hierarchical prompt learning framework for oriented remote sensing object detection. The method is built on three components. First, a taxonomy based prompt bank represents each class with leaf level names, parent categories, aliases, and contrastive descriptions. Second, a scene context prompt adapter adjusts prompt embeddings according to tile level and region level visual context. Third, a vision language model assisted purification module filters pseudo labels before they are used for semi supervised training. Recent remote sensing studies on multimodal prompting and vision language based pseudo label purification support this direction \cite{rsmpod2026, semiearth2026}, but the core evaluation in this paper remains tied to established oriented detection protocols.
+
+The local OpenPrompt repository is used as an implementation scaffold for DOTA loading and prompt construction. It also supports OpenRSD style detection experiments \cite{huang2025openrsd}. The paper does not report completed results. Instead, it defines the method and an evaluation protocol for testing whether hierarchy, context, and label purification can improve fine grained remote sensing detection without relying only on fixed category classifiers.
+
+The main contributions are as follows: 
+1) We propose a taxonomy aware prompt representation for oriented remote sensing detection. Unlike flat class name prompts, the prompt bank includes parent categories, aliases, and contrastive descriptions, which are designed to reduce confusion among fine grained aerial categories. 
+2) We introduce a scene context prompt adapter that modifies class prompts according to global tile context and local region features. This design aims to address small objects whose appearance alone is insufficient for classification. 
+3) We design a pseudo label purification strategy that combines detector confidence, hierarchical consistency, and vision language agreement. The purified labels are used with soft weights so that weak supervision can be introduced conservatively. 
+4) We provide a formal experimental protocol, including comparison settings, ablation stages, prompt robustness analysis, pseudo label quality evaluation, and efficiency analysis.
+
+\section{Related Work}
+
+\textbf{Oriented object detection in remote sensing.}
+Remote sensing object detection has long emphasized oriented bounding boxes because many targets have arbitrary directions in aerial images. DOTA provides a large scale benchmark and evaluation protocol for this setting \cite{xia2018dota}. RoI Transformer converts horizontal proposals into oriented regions and improves alignment between features and rotated objects \cite{ding2019roit}. Oriented R-CNN simplifies two stage oriented detection with oriented region proposal learning \cite{xie2021orientedrcnn}. ReDet introduces rotation equivariant features for aerial object detection \cite{han2021redet}. Oriented RepPoints models rotated objects through adaptive point sets \cite{li2022orientedreppoints}. These studies mainly address geometric representation and localization. Our work keeps DOTA style oriented detection as the main task, but studies how semantic hierarchy and weak supervision can be incorporated into the detector.
+
+\textbf{Open vocabulary vision and prompt learning.}
+CLIP established that large scale image text contrastive learning can transfer visual recognition to novel textual categories \cite{radford2021clip}. In detection, GLIP formulates object detection as phrase grounding and learns from both detection and grounding data \cite{li2022glip}. RegionCLIP improves region level visual language alignment for open vocabulary object detection \cite{zhong2022regionclip}. Detic expands detector vocabulary through image level supervision \cite{zhou2022detic}. These methods show that language can provide useful category supervision, but remote sensing imagery creates special difficulties. A prompt such as ``ship'' may not distinguish ship, harbor structure, and bridge when the object is small and densely surrounded by background structures. The proposed prompt bank therefore uses hierarchy, aliases, and contrastive descriptions rather than only class names.
+
+\textbf{Remote sensing prompt learning.}
+OpenRSD is the closest prior to this project because it studies open prompts for object detection in remote sensing images \cite{huang2025openrsd}. The present paper treats OpenRSD and the local OpenPrompt code as a baseline direction rather than the complete contribution. The proposed method adds a structured taxonomy, scene context adaptation, and pseudo label purification. RS-MPOD is included as recent motivation for multimodal prompting in remote sensing object detection \cite{rsmpod2026}. Since it is currently an arXiv paper, it is not used as the primary foundation of the method.
+
+\textbf{Semi supervised learning and label purification.}
+Semi supervised object detection reduces annotation cost by training with both labeled and unlabeled images. Unbiased Teacher is a representative method that uses teacher student learning and pseudo labels for object detection \cite{liu2021unbiased}. Soft Teacher further improves pseudo label based detector training through soft labels and stronger teacher student learning \cite{xu2021softteacher}. These methods show the importance of pseudo label quality. In remote sensing, noisy pseudo boxes are common because objects are small and densely arranged. SemiEarth provides recent motivation for using vision language models to purify remote sensing pseudo labels \cite{semiearth2026}. We adapt this idea to oriented detection as a filtering and weighting step, while using established semi supervised detection principles as the main methodological reference.
+
+\textbf{Efficient adaptation and routing.}
+Parameter efficient adaptation can reduce the cost of tuning large pretrained modules. LoRA uses low rank updates and is useful when the text encoder or cross modal projection should not be fully fine tuned \cite{hu2021lora}. Gumbel Softmax provides a differentiable approximation for categorical sampling \cite{jang2017gumbel,maddison2017concrete}. In this paper, routing is not the central claim. It is kept as an optional experiment for selecting prompt branches or fusion heads after the main hierarchy and purification modules are validated.
+
+\section{Method}
+
+Given an aerial image tile $I$, an oriented detector predicts a set of rotated boxes $b_i=(x_i,y_i,w_i,h_i,\theta_i)$ and category scores over a class vocabulary $\mathcal{C}$. In our setting, $\mathcal{C}$ is not treated as a set of independent labels. Instead, it is organized by a taxonomy $\mathcal{T}$ that records parent categories, aliases, and confusing categories. The method first builds prompt embeddings from $\mathcal{T}$, then adapts them with visual context, and finally uses the adapted embeddings for prompt conditioned oriented detection. When unlabeled or weakly labeled tiles are available, candidate pseudo boxes are filtered before they contribute to training.
+
+\subsection{Taxonomy Aware Prompt Representation}
+
+For each class $c \in \mathcal{C}$, we construct a prompt set $\mathcal{P}_c = \{p_{c,1}, \ldots, p_{c,K}\}$. The set contains direct class names, parent category descriptions, aliases, and contrastive descriptions. For example, prompts for small vehicle include not only the class name, but also parent information such as road vehicle and contrastive cues against large vehicle or storage tank. A text encoder maps each prompt into an embedding $e_{c,k}$. The base class embedding is computed as
+\begin{equation}
+    \bar{e}_c = \sum_{k=1}^{K} \alpha_{c,k} e_{c,k},
+\end{equation}
+where $\alpha_{c,k}$ is a normalized prompt weight. In the simplest version, all prompts have equal weights. In the learned version, $\alpha_{c,k}$ is optimized with the detector. To preserve taxonomic relations, we add a hierarchy regularizer
+\begin{equation}
+    \mathcal{L}_{hier}=\sum_{(u,v)\in \mathcal{E}_{\mathcal{T}}}
+    \max(0, s_v - s_u + m),
+\end{equation}
+where $u$ is a parent class, $v$ is a child class, $s_u$ and $s_v$ are their prompt matching scores, and $m$ is a margin. This term discourages predictions that assign high confidence to a child class while giving very low support to its parent category.
+
+\subsection{Scene Context Prompt Adapter}
+
+Remote sensing objects are often recognized jointly from local appearance and surrounding context. A compact bright region may correspond to a vehicle, a rooftop structure, or a container depending on the nearby road, port, airport, or industrial layout. We therefore use a scene context adapter to modulate the class embedding before it is matched with region features. Let $F(I)$ be the visual feature map, $g=\operatorname{GAP}(F(I))$ be a global tile descriptor, and $r_i$ be the feature of a candidate region or query. The adapted class embedding is
+\begin{equation}
+    \tilde{e}_{c,i} = \bar{e}_{c} + A([g,r_i,\bar{e}_c]),
+\end{equation}
+where $A(\cdot)$ is a lightweight multilayer adapter. The prompt conditioned classification logit is then computed by normalized similarity,
+\begin{equation}
+    z_{i,c} = \tau^{-1}
+    \frac{\phi(r_i)^\top \psi(\tilde{e}_{c,i})}
+    {\|\phi(r_i)\|_2\|\psi(\tilde{e}_{c,i})\|_2},
+\end{equation}
+where $\phi$ and $\psi$ are visual and textual projection layers, and $\tau$ is a temperature. This formulation keeps the oriented box regression branch unchanged while replacing a fixed classifier with context adaptive class prompts.
+
+\subsection{Pseudo Label Purification and Training Objective}
+
+Pseudo labels can expand training data, but remote sensing pseudo labels are often noisy. Dense scenes create duplicate boxes, small objects are missed, and visually similar classes are confused. Inspired by semi supervised detection methods and recent remote sensing work on vision language based purification \cite{liu2021unbiased, xu2021softteacher, semiearth2026}, we introduce a filtering stage before pseudo boxes are accepted for detector training.
+
+For a candidate pseudo box $\hat{b}_j$ with class $\hat{c}_j$, we compute a purification confidence
+\begin{equation}
+    q_j = \sigma(\beta_1 d_j + \beta_2 h_j + \beta_3 v_j + \beta_4 a_j),
+\end{equation}
+where $d_j$ is detector confidence, $h_j$ is hierarchy consistency, $v_j$ is vision language agreement between the crop and the class description, and $a_j$ is a geometric plausibility score based on scale, aspect ratio, and orientation. The candidate is used only when $q_j$ is above a threshold, and it is still treated as soft supervision.
+
+The full training objective combines supervised detection, hierarchy regularization, and weighted pseudo label learning:
+\begin{equation}
+    \mathcal{L}=\mathcal{L}_{det}^{sup}
+    +\lambda_h\mathcal{L}_{hier}
+    +\lambda_p\sum_j q_j
+    \left(\mathcal{L}_{cls}^{pseudo}(j)+\lambda_b\mathcal{L}_{box}^{pseudo}(j)\right).
+\end{equation}
+The purification module is deliberately conservative. It is designed to remove inconsistent pseudo labels from weak supervision, not to generate unsupported annotations. This is important because external vision language models may still be weak on rare aerial categories.
+
+\subsection{Optional Routing}
+
+The local codebase contains routing hooks, including Gumbel Softmax. In this paper, routing is not presented as the central novelty. It is an optional extension for choosing among prompt branches or fusion heads. Given branch outputs $o_i^{(m)}$, a router predicts weights $\pi_m$ and forms
+\begin{equation}
+    o_i = \sum_{m=1}^{M}\pi_m o_i^{(m)}, \quad
+    \pi=\operatorname{softmax}(R([g,r_i])).
+\end{equation}
+The ablation will compare fixed fusion, learned soft fusion, and Gumbel based routing to determine whether branch selection adds value beyond hierarchy and pseudo label purification.
+
+\section{Experiments}
+
+\subsection{Datasets and Evaluation Metrics}
+
+The primary evaluation will use DOTA style rotated object detection. Images are split into manageable tiles, and annotations are converted to oriented boxes. The method should be evaluated under standard supervised training and under a semi supervised extension where additional unlabeled or weakly labeled tiles are purified before use. If cross dataset testing is available, the same prompt bank can be evaluated on held out vocabularies or prompt variants to measure vocabulary robustness.
+
+The main metrics are rotated mean average precision, class wise AP, and confusion statistics for fine grained categories. Because prompt methods are sensitive to wording, we also plan a prompt robustness evaluation that compares exact class labels, alias prompts, parent level prompts, and mixed prompt sets. Runtime and memory should be reported because prompt banks and purification can introduce nontrivial overhead.
+
+\subsection{Comparison Settings}
+
+The comparison experiments should separate conventional oriented detection, open vocabulary detection, and the proposed prompt based variants. Table~\ref{tab:comparison} gives the planned comparison settings. The exact detector backbone will be fixed within each group so that the effect of prompt learning and pseudo label purification can be examined fairly.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Comparison settings to run before submission. The final manuscript should replace this protocol table with measured rotated mAP and class wise AP.}
+\begin{tabular}{lll}
+\toprule
+Group & Method setting & Purpose \\
+\midrule
+C1 & Supervised oriented detector & Closed set detection baseline \\
+C2 & OpenRSD style prompt detector & Local open prompt baseline \\
+C3 & Flat class name prompts & Prompt learning without hierarchy \\
+C4 & Hierarchical prompts & Effect of taxonomy aware semantics \\
+C5 & Hierarchical prompts with context adapter & Effect of scene context modeling \\
+C6 & Full method with purified pseudo labels & Effect of weak supervision filtering \\
+\bottomrule
+\end{tabular}
+\label{tab:comparison}
+\end{table}
+
+\subsection{Ablation Study}
+
+The first baseline is the local OpenPrompt and OpenRSD style detector without the proposed hierarchy adapter or purification module. The second setting adds only the hierarchical prompt bank. The third adds scene context prompt adaptation. The fourth adds vision language assisted pseudo label purification. Optional routing is evaluated after these components are stable. This order is important because routing should not be used to hide instability in the core prompt and purification pipeline.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Planned experimental stages for the proposed method. The entries describe the evaluation purpose of each stage instead of reporting completed results.}
+\begin{tabular}{lll}
+\toprule
+Stage & Added component & Evaluation focus \\
+\midrule
+S0 & Oriented detector baseline & Rotated mAP and class wise AP \\
+S1 & Hierarchical prompt bank & Prompt robustness and fine grained confusion \\
+S2 & Scene context adapter & Small object AP and context sensitive classes \\
+S3 & Purified pseudo labels & Pseudo label precision and semi supervised gain \\
+S4 & Optional routing & Branch usage and cost accuracy tradeoff \\
+\bottomrule
+\end{tabular}
+\label{tab:ablation}
+\end{table}
+
+\subsection{Required Final Analyses}
+
+The final experiment section should report prompt robustness, pseudo label quality, and efficiency with measured values. Prompt robustness should compare exact class names, alias prompts, parent level prompts, and mixed prompt sets. Pseudo label quality should compare teacher only predictions, hierarchy filtering, vision language filtering, and the full purification score on a held out labeled subset. Efficiency should report parameters, memory, and latency per tile for the baseline, prompt bank, context adapter, and optional routing. These analyses should appear only after the corresponding experiments have been completed.
+
+\subsection{Analysis Plan}
+
+The planned ablations isolate the following questions. First, does hierarchy aware prompting improve fine grained class discrimination compared with flat class name prompts? Second, does scene context adaptation help small or visually ambiguous categories without hurting large, distinctive objects? Third, does vision language assisted purification improve pseudo label quality enough to justify its cost? Fourth, does optional routing add measurable value once prompt hierarchy and purification are already present?
+
+Failure analysis should focus on class pairs that are naturally confusing in aerial imagery. Examples include small vehicle versus large vehicle, ship versus harbor structure, bridge versus road segment, and sports field subclasses. For each pair, the evaluation should compare class wise AP, false positive sources, and prompt sensitivity. Qualitative figures should show accepted and rejected pseudo labels. Rejection examples are important because they explain what the purification stage removes from the training set.
+
+\section{Summary}
+
+We presented a short method paper for vision language guided hierarchical prompt learning in remote sensing object detection. The proposed GeoNexus RSD direction updates an OpenPrompt and OpenRSD based plan into a detection centered study built around taxonomy aware semantics, scene context adaptation, and pseudo label purification. DOTA style rotated detection is the main task, while optional routing remains a lightweight extension rather than the core claim.
+
+This work is still limited by the absence of completed benchmark results. Therefore, the paper should be read as a method and experiment design document rather than an empirical performance report. Another limitation is that vision language based filtering may reject correct but rare aerial objects if the external model lacks remote sensing knowledge. The final version should report measured accuracy, rejected pseudo label examples, and failure cases before making any performance claim.
+
+\begin{thebibliography}{15}
+
+\bibitem{xia2018dota}
+Gui Song Xia et al.
+\newblock DOTA: A Large Scale Dataset for Object Detection in Aerial Images.
+\newblock In \emph{CVPR}, 2018.
+
+\bibitem{ding2019roit}
+Jian Ding, Nan Xue, Yang Long, Gui Song Xia, and Qikai Lu.
+\newblock Learning RoI Transformer for Oriented Object Detection in Aerial Images.
+\newblock In \emph{CVPR}, 2019.
+
+\bibitem{xie2021orientedrcnn}
+Xingxing Xie et al.
+\newblock Oriented R-CNN for Object Detection.
+\newblock In \emph{ICCV}, 2021.
+
+\bibitem{han2021redet}
+Jiaming Han, Jian Ding, Jie Li, and Gui Song Xia.
+\newblock ReDet: A Rotation Equivariant Detector for Aerial Object Detection.
+\newblock In \emph{CVPR}, 2021.
+
+\bibitem{li2022orientedreppoints}
+Wentong Li et al.
+\newblock Oriented RepPoints for Aerial Object Detection.
+\newblock In \emph{CVPR}, 2022.
+
+\bibitem{huang2025openrsd}
+Huang et al.
+\newblock OpenRSD: Towards Open-prompts for Object Detection in Remote Sensing Images.
+\newblock In \emph{ICCV}, 2025.
+
+\bibitem{rsmpod2026}
+RS-MPOD authors.
+\newblock RS-MPOD: Multimodal Prompting for Remote Sensing Object Detection.
+\newblock arXiv:2602.01954, 2026.
+
+\bibitem{semiearth2026}
+SemiEarth authors.
+\newblock SemiEarth: Vision Language Purified Semi Supervised Learning for Remote Sensing Semantic Segmentation.
+\newblock arXiv:2602.00202, 2026.
+
+\bibitem{radford2021clip}
+Alec Radford et al.
+\newblock Learning Transferable Visual Models From Natural Language Supervision.
+\newblock In \emph{ICML}, 2021.
+
+\bibitem{li2022glip}
+Liunian Harold Li et al.
+\newblock Grounded Language Image Pre-training.
+\newblock In \emph{CVPR}, 2022.
+
+\bibitem{zhong2022regionclip}
+Yiwu Zhong et al.
+\newblock RegionCLIP: Region-based Language-Image Pretraining.
+\newblock In \emph{CVPR}, 2022.
+
+\bibitem{zhou2022detic}
+Xingyi Zhou et al.
+\newblock Detecting Twenty-thousand Classes using Image-level Supervision.
+\newblock In \emph{ECCV}, 2022.
+
+\bibitem{liu2021unbiased}
+Yen-Cheng Liu et al.
+\newblock Unbiased Teacher for Semi-Supervised Object Detection.
+\newblock In \emph{ICLR}, 2021.
+
+\bibitem{xu2021softteacher}
+Mengde Xu et al.
+\newblock End-to-End Semi-Supervised Object Detection with Soft Teacher.
+\newblock In \emph{ICCV}, 2021.
+
+\bibitem{hu2021lora}
+Edward J. Hu et al.
+\newblock LoRA: Low-Rank Adaptation of Large Language Models.
+\newblock In \emph{ICLR}, 2022.
+
+\bibitem{jang2017gumbel}
+Eric Jang, Shixiang Gu, and Ben Poole.
+\newblock Categorical Reparameterization with Gumbel-Softmax.
+\newblock In \emph{ICLR}, 2017.
+
+\bibitem{maddison2017concrete}
+Chris J. Maddison, Andriy Mnih, and Yee Whye Teh.
+\newblock The Concrete Distribution: A Continuous Relaxation of Discrete Random Variables.
+\newblock In \emph{ICLR}, 2017.
+
+\end{thebibliography}
+
+\end{document}

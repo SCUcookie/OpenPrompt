@@ -40,6 +40,9 @@ def resolve_innovation_config(model_cfg: dict[str, Any]) -> dict[str, dict[str, 
         "router": {
             "enabled": bool(model_cfg.get("use_router", model_type == "geonexus")),
             "hidden_dim": int(model_cfg.get("router_hidden_dim", embedding_dim)),
+            "mode": "soft",
+            "temperature": 1.0,
+            "hard": True,
         },
         "scene_temperature": {
             "enabled": False,
@@ -73,6 +76,9 @@ def build_innovation_modules(
         modules["router"] = ScaleRotationRouter(
             embedding_dim=embedding_dim,
             hidden_dim=int(innovation_cfg["router"]["hidden_dim"]),
+            mode=str(innovation_cfg["router"]["mode"]),
+            temperature=float(innovation_cfg["router"]["temperature"]),
+            hard=bool(innovation_cfg["router"]["hard"]),
         )
 
     if innovation_cfg["scene_temperature"]["enabled"]:

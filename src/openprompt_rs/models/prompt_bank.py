@@ -71,6 +71,8 @@ class PromptBank(nn.Module):
             meta = hierarchy.metadata[class_name]
             geometry = ", ".join(meta.geometry) if meta.geometry else "none"
             scene_priors = ", ".join(meta.scene_priors) if meta.scene_priors else "none"
+            confusing_classes = ", ".join(meta.confusing_classes) if meta.confusing_classes else "none"
+            negative_cues = ", ".join(meta.negative_cues) if meta.negative_cues else "none"
             text_bank = []
             names = [class_name, *meta.synonyms]
             for name_variant in names:
@@ -78,6 +80,20 @@ class PromptBank(nn.Module):
                     text_bank.append(
                         template.format(name=name_variant, geometry=geometry, scene_priors=scene_priors)
                     )
+                if meta.parent:
+                    text_bank.append(f"{name_variant} is a remote sensing {meta.parent}")
+                text_bank.append(
+                    f"{name_variant} in aerial imagery has geometry cues: {geometry}"
+                )
+                text_bank.append(
+                    f"{name_variant} commonly appears in scene contexts: {scene_priors}"
+                )
+                text_bank.append(
+                    f"{name_variant} should be distinguished from {confusing_classes}"
+                )
+                text_bank.append(
+                    f"{name_variant} is unlikely when cues indicate {negative_cues}"
+                )
             prompt_strings[class_name] = text_bank
         return prompt_strings
 
@@ -95,4 +111,3 @@ class PromptBank(nn.Module):
             "embeddings": self().detach().cpu(),
             "relation_matrix": self.relation_matrix.detach().cpu(),
         }
-

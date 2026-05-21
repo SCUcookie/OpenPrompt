@@ -3,11 +3,14 @@ from __future__ import annotations
 from copy import deepcopy
 from pathlib import Path
 
+import torch
+
 from openprompt_rs.config import load_config
 from openprompt_rs.data import build_dataset
 from openprompt_rs.data.base import collate_detection_batch
 from openprompt_rs.models import PromptBank, build_model
 from openprompt_rs.models.losses import OpenPromptCriterion
+from openprompt_rs.models.routing import ScaleRotationRouter
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -46,3 +49,28 @@ def test_math_innovation_hooks_run() -> None:
 
     assert outputs["scene_temperature"] is not None
     assert "loss_margin" in losses
+
+
+def test_router_modes_return_two_branch_weights() -> None:
+    torch.manual_seed(3)
+    query_tokens = torch.randn(2, 5, 16)
+    alignment_logits = torch.randn(2, 5, 4)
+    alignment_boxes = torch.rand(2, 5, 5)
+
+    for mode in ("soft", "gumbel", "random"):
+        router = ScaleRotationRouter(
+            embedding_dim=16,
+            hidden_dim=8,
+            mode=mode,
+            temperature=0.7,
+            hard=mode != "soft",
+        )
+        router.train()
+        route = router(query_tokens, alignment_logits, alignment_boxes)
+
+        assert route.shape == (2, 5, 2)
+        assert torch.allclose(route.sum(dim=-1), torch.ones(2, 5), atol=1e-6)
+        assert torch.isfinite(route).all()
+
+        if mode in {"gumbel", "random"}:
+            assert torch.equal(route, route.round())

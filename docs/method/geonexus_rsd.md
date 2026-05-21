@@ -2,7 +2,7 @@
 
 This repository implements a practical research scaffold for the planned method:
 
-**GeoNexus-RSD = OpenRSD-like dual-head detection + hierarchy-aware prompt semantics + scene-context prompt adaptation + hierarchy-consistent pseudo-labeling**
+**GeoNexus-RSD = strong oriented detection baseline + hierarchy-aware prompt semantics + scene-context prompt adaptation + conservative pseudo-label purification**
 
 ## Baseline modules mirrored from the paper
 
@@ -53,7 +53,9 @@ The final detector score is a weighted combination:
 
 `z = (1 - r) * z_align + r * z_fuse`
 
-The baseline uses a fixed mixture; `GeoNexus-RSD` can use a learned router `r`.
+The baseline uses a fixed mixture. A learned router `r` is optional and should
+only be evaluated after hierarchy, context, and pseudo-label purification have
+been shown to help on a credible baseline.
 
 ### 4. Hierarchy-consistent pseudo-labeling
 
@@ -63,12 +65,20 @@ Pseudo-label acceptance is not based on confidence only. The scaffold exposes a 
 
 This gives a clean axis for experiments and ablations.
 
-## Why this repo chooses lightweight modules
+## Current credibility requirements
 
-The local planning package explicitly fixed a hard resource ceiling of `4 x 4090`. The rebuild therefore keeps:
+The local scaffold is useful for ablations, but its tiny backbone and hash text
+embeddings are not enough for a serious journal claim. Before submission, the
+main experiments should use:
 
-- prompt encoders replaceable
-- scene modeling lightweight
-- hierarchy reasoning mostly offline
-- routing and filtering cheap enough for ablations
+- a strong oriented detector baseline, such as Oriented R-CNN, RoI Transformer,
+  ReDet, Oriented RepPoints, or an MMRotate-style implementation
+- CLIP, SkyCLIP, RemoteCLIP, or a comparable real text/image encoder instead of
+  hash embeddings
+- verified DOTA tiling, class mapping, rotated IoU/NMS, and official or widely
+  accepted mAP evaluation
+- real ablations for flat prompts, hierarchy, context adaptation, and
+  pseudo-label purification
 
+Routing and compression should remain secondary unless the core detection
+story is already empirically strong.

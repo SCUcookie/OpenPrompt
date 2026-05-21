@@ -18,4 +18,7 @@ def test_prompt_bank_builds_from_taxonomy() -> None:
     assert embeddings.shape[0] == len(prompt_bank.class_names)
     assert embeddings.shape[1] == 64
     assert "ship" in prompt_bank.prompt_strings
-
+    ship_prompts = prompt_bank.prompt_strings["ship"]
+    assert any("vessel" in prompt for prompt in ship_prompts)
+    assert any("distinguished from" in prompt for prompt in ship_prompts)
+    assert any("unlikely when cues indicate" in prompt for prompt in ship_prompts)
