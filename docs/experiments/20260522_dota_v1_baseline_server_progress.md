@@ -56,3 +56,55 @@ Start the first server-side baseline reproduction run on DOTA v1.0 and verify th
 ## Next Action
 
 Run evaluation on the completed DOTA v1.0 checkpoint, record the metrics, and then launch the matched DOTA v1.5 baseline if the v1.0 baseline is acceptable.
+
+## Evaluation Gate
+
+Status: pending server execution.
+
+Evaluation command:
+
+```bash
+source /data1/anaconda3/etc/profile.d/conda.sh && \
+conda activate zwl_oneformer_ViT_P && \
+cd /data5/2025/ldh/OpenPrompt && \
+PYTHONPATH=src python scripts/evaluate.py \
+  --config configs/experiments/dota_v1_baseline_repro.yaml \
+  --checkpoint outputs/dota_v1_baseline_repro/epoch_012.pt \
+  --split val \
+  --metric-set both \
+  --score-threshold 0.05 \
+  --nms-iou-threshold 0.3 \
+  --max-detections 100 \
+  | tee outputs/dota_v1_baseline_repro/eval_epoch_012_val.json
+```
+
+Evaluation artifact path: `outputs/dota_v1_baseline_repro/eval_epoch_012_val.json`
+
+Required fields to verify:
+
+- `split`: must be `val`
+- `detection_metrics.num_eval_images`: must be greater than zero
+- class AP keys such as `ap50_plane`: must be present
+- aggregate `detection_metrics.map50`, `detection_metrics.mean_precision`, and `detection_metrics.mean_recall`: must be present
+
+Record after evaluation:
+
+- `map50`: pending
+- `mean_precision`: pending
+- `mean_recall`: pending
+- notable per-class AP/recall failures: pending
+- nonzero-mAP gate result: pending
+
+Gate decision:
+
+- Proceed to DOTA v1.5 only if DOTA v1.0 validation `map50 > 0` and class-level AP/recall values are interpretable.
+- If `map50 == 0` or nearly all recall is zero, do not launch DOTA v1.5. Diagnose validation tile/object counts, decoded prediction score distribution, predicted box scale/coordinates after tiling, lower score thresholds such as `0.01`, and DOTA v1.0 label/class mapping first.
+
+If the gate passes, launch the matched DOTA v1.5 baseline:
+
+```bash
+bash scripts/run_train_in_screen.sh \
+  openprompt_dota_v15_baseline \
+  configs/experiments/dota_v15_baseline_repro.yaml \
+  outputs/openprompt_dota_v15_baseline
+```
