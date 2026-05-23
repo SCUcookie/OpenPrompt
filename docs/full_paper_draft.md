@@ -109,8 +109,9 @@ experiments do not by themselves prove open-vocabulary detection.
 
 ## 8. Venue Guidance
 
-JSTARS is the practical first journal target if DOTA v2 experiments and
-ablation evidence are complete. TGRS or ISPRS P&RS should be considered only if
-results are strong across at least two datasets with convincing methodological
-depth. If results are modest or incomplete, use GRSL, IGARSS, or a workshop
-target instead.
+JSTARS is the practical first journal target if DOTA v1.0 or DOTA v1.5
+experiments and ablation evidence are complete. Any later DOTA v2 extension
+should remain a separate follow-up track. TGRS or ISPRS P&RS should be
+considered only if results are strong across at least two datasets with
+convincing methodological depth. If results are modest or incomplete, use GRSL,
+IGARSS, or a workshop target instead.

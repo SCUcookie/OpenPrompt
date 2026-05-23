@@ -21,7 +21,8 @@ wandb/
 *.log
 *.out
 *.synctex.gz
-/DOTAv2/
+/DOTAv2
+/DOTA
 /images/
 /labels/
 /OpenRSD_official/

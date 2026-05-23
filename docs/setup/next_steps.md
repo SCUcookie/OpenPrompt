@@ -21,7 +21,7 @@ needed.
 1. Verify dataset loading and tiling.
 2. Run synthetic smoke tests.
 3. Run the local lightweight baseline only as a code sanity check.
-4. Establish a credible strong oriented detector baseline on DOTA v2.
+4. Establish a credible strong oriented detector baseline on DOTA v1.0 or DOTA v1.5.
 5. Run flat class-name prompt classification.
 6. Add hierarchical prompt bank.
 7. Add scene/context prompt adapter.
@@ -40,29 +40,32 @@ PYTHONPATH=src python scripts/build_prompt_bank.py \
   --embedding-dim 256
 ```
 
-Run the local DOTA reproduction-style scaffold:
+Run the local DOTA v1.0/v1.5 reproduction-style scaffold:
 
 ```bash
 PYTHONPATH=src python scripts/train.py \
-  --config configs/experiments/dota_v2_baseline_repro.yaml
+  --config configs/experiments/dota_v1_baseline_repro.yaml
+# Swap to configs/experiments/dota_v15_baseline_repro.yaml if the staged asset is DOTA v1.5.
 ```
 
 Evaluate a checkpoint:
 
 ```bash
 PYTHONPATH=src python scripts/evaluate.py \
-  --config configs/experiments/dota_v2_baseline_repro.yaml \
-  --checkpoint outputs/dota_v2_baseline_repro/epoch_001.pt \
+  --config configs/experiments/dota_v1_baseline_repro.yaml \
+  --checkpoint outputs/dota_v1_baseline_repro/epoch_001.pt \
   --metric-set both
+# Swap to the matching v1.5 config and checkpoint names if needed.
 ```
 
 Export hierarchy-consistent pseudo labels:
 
 ```bash
 PYTHONPATH=src python scripts/self_train.py \
-  --config configs/experiments/dota_v2_geonexus.yaml \
-  --checkpoint outputs/dota_v2_geonexus/epoch_001.pt \
-  --output outputs/dota_v2_geonexus/pseudo_labels.pt
+  --config configs/experiments/dota_v1_geonexus.yaml \
+  --checkpoint outputs/dota_v1_geonexus/epoch_001.pt \
+  --output outputs/dota_v1_geonexus/pseudo_labels.pt
+# Swap to the matching v1.5 config and checkpoint names if needed.
 ```
 
 ## What Must Improve Before Paper Claims
@@ -77,7 +80,7 @@ PYTHONPATH=src python scripts/self_train.py \
 
 ## Acceptance Criteria For JSTARS
 
-- Complete DOTA v2 results.
+- Complete DOTA v1.0/v1.5 results.
 - At least one strong oriented detector baseline.
 - Clear improvement over flat prompts.
 - Clear improvement over confidence-only pseudo-label self-training.

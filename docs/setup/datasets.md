@@ -28,27 +28,30 @@ class_id x1 y1 x2 y2 x3 y3 x4 y4
 The tracked configs expect this repo-local path, normally as a symlink:
 
 ```text
-DOTAv2/
-  images/
-    train/
-    val/
-    test/
-  labels/
-    train/
-    val/
+DOTA/
+  train/
+    images/
+    labelTxt-v1.0/
+    labelTxt-v1.5/
+  val/
+    images/
+    labelTxt-v1.0/
+    labelTxt-v1.5/
+  test/
+    images/
 ```
 
 Use `scripts/link_local_assets.py` to link the actual dataset path:
 
 ```bash
-python scripts/link_local_assets.py --dotav2-root /path/to/DOTAv2
+python scripts/link_local_assets.py --dota-root /path/to/DOTA
 ```
 
 If server outputs should also appear at `outputs/`:
 
 ```bash
 python scripts/link_local_assets.py \
-  --dotav2-root /path/to/DOTAv2 \
+  --dota-root /path/to/DOTA \
   --outputs-dir /path/to/openprompt_outputs
 ```
 
@@ -56,6 +59,7 @@ python scripts/link_local_assets.py \
 
 Do not commit:
 
+- `DOTA/`
 - `DOTAv2/`
 - `images/`
 - `labels/`
@@ -76,7 +80,8 @@ Commit:
 
 Primary dataset:
 
-- DOTA v2 for the main JSTARS path.
+- DOTA v1.0 or DOTA v1.5 for the first server baseline path.
+- DOTA v2 only after the initial baseline is credible and the asset is actually staged.
 
 Optional validation datasets:
 
@@ -84,7 +89,7 @@ Optional validation datasets:
 - DIOR-R
 - HRSC2016 for ship-focused sanity checks
 
-Do not expand to a second dataset until the DOTA baseline is credible.
+Do not expand to a second dataset until the DOTA v1.0/v1.5 baseline is credible.
 
 ## Required Dataset Checks
 

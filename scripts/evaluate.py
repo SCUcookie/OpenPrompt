@@ -11,6 +11,7 @@ from openprompt_rs.data import build_dataset
 from openprompt_rs.engine.evaluator import evaluate_detection_map50, evaluate_model
 from openprompt_rs.engine.trainer import build_criterion, build_dataloader
 from openprompt_rs.models import PromptBank, build_model
+from openprompt_rs.utils.io import seed_everything
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -45,6 +46,8 @@ def main() -> None:
     dataset_cfg = config["val_dataset"] if split == "val" and "val_dataset" in config else config["dataset"]
     model_cfg = config["model"]
     criterion_cfg = config["criterion"]
+
+    seed_everything(experiment_cfg["seed"])
 
     if experiment_cfg["device"].startswith("cuda") and not torch.cuda.is_available():
         experiment_cfg["device"] = "cpu"

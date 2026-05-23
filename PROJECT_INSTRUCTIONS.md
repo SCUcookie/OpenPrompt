@@ -62,7 +62,7 @@ Paper-level claims require:
 
 Run experiments in this order:
 
-1. S0: strong closed-set oriented detector baseline.
+1. S0: strong closed-set oriented detector baseline on DOTA v1.0 or DOTA v1.5, using whichever staged server asset is ready first.
 2. S1: flat class-name prompt classifier.
 3. S2: hierarchical prompt bank.
 4. S3: hierarchy plus scene/context adapter.
@@ -101,6 +101,7 @@ Before any paper-facing claim is added:
 
 - identify which experiment record supports it
 - link the config and command used to produce it
+- record whether the run used DOTA v1.0 or DOTA v1.5, and do not mix those numbers with later DOTA v2 results
 - record whether embeddings are hash fallback or real VLM embeddings
 - record whether metrics are from scaffold evaluation or accepted DOTA-style
   evaluation
@@ -145,6 +146,7 @@ Tracked in Git:
 
 Ignored or external:
 
+- `DOTA/`
 - `DOTAv2/`
 - `images/`
 - `labels/`
@@ -161,5 +163,6 @@ When starting a new coding session, give the agent this instruction:
 Read `PROJECT_INSTRUCTIONS.md`, then inspect the current Git status. Preserve
 unrelated user changes. Continue the GeoNexus-RSD baseline-first JSTARS path:
 do not make unsupported performance claims, keep routing/compression secondary,
-maintain the local/server GitHub workflow, and update the canonical manuscript
+maintain the local/server GitHub workflow, start with DOTA v1.0 or DOTA v1.5
+if those server assets are already staged, and update the canonical manuscript
 before code/docs when the research direction changes.

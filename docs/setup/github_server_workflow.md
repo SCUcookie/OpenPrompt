@@ -45,13 +45,33 @@ Responsibilities:
 - preserve logs and small summaries
 - push reproducibility metadata back to GitHub
 
+Runtime note for this host:
+
+- use the `zwl_oneformer_ViT_P` conda environment for OpenPrompt training
+- avoid `dlp` for training; it currently lacks `torch`
+- the repo disables cuDNN in `seed_everything()` because CUDA convolutions segfault on the host RTX 4090 unless cuDNN is off
+
 Recommended commands:
 
 ```bash
 git pull
-python scripts/link_local_assets.py --dotav2-root /path/to/DOTAv2 --outputs-dir /path/to/outputs
+python scripts/link_local_assets.py --dota-root /path/to/DOTA --outputs-dir /path/to/outputs
 PYTHONPATH=src python scripts/smoke_test.py --config configs/experiments/geonexus_synthetic.yaml
-PYTHONPATH=src python scripts/train.py --config configs/experiments/dota_v2_baseline_repro.yaml
+PYTHONPATH=src python scripts/train.py --config configs/experiments/dota_v1_baseline_repro.yaml
+# Swap to configs/experiments/dota_v15_baseline_repro.yaml if the staged asset is DOTA v1.5.
+```
+
+For long runs, prefer a detached `screen` session so SSH disconnects do not
+stop training:
+
+```bash
+screen -dmS openprompt_dota_v1_baseline bash -lc '
+  source /data1/anaconda3/etc/profile.d/conda.sh &&
+  conda activate zwl_oneformer_ViT_P &&
+  cd /data5/2025/ldh/OpenPrompt &&
+  PYTHONPATH=src python scripts/train.py --config configs/experiments/dota_v1_baseline_repro.yaml |& tee -a outputs/openprompt_dota_v1_baseline/train.log
+'
+screen -r openprompt_dota_v1_baseline
 ```
 
 For long runs, save the command, Git commit, config path, machine, GPU count,
@@ -59,7 +79,8 @@ dataset path, and result summary in `docs/experiments/`.
 
 When the server produces a paper-facing metric, add a short record in
 `docs/experiments/` that states whether the result came from the scaffold,
-synthetic smoke tests, or accepted DOTA-style evaluation.
+synthetic smoke tests, or accepted DOTA-style evaluation, and record whether
+the run used DOTA v1.0 or DOTA v1.5.
 
 ## What To Commit From Server
 

@@ -26,13 +26,14 @@ and reports pseudo-label precision/recall on a held-out labeled subset before
 reporting final mAP gains. Optional routing is evaluated only if S2-S4 already
 show stable improvements.
 
-For a JSTARS-ready submission, the final paper should include complete DOTA v2
+For a JSTARS-ready submission, the final paper should include complete DOTA v1.0 or DOTA v1.5
 results with at least one strong oriented detector baseline, ablations for each
 core module, prompt robustness analysis, pseudo-label quality analysis,
 efficiency reporting, qualitative accepted/rejected pseudo-label examples, and
-limitations. A TGRS/ISPRS submission should only be considered if the method
-also shows strong multi-dataset evidence on FAIR1M, DIOR-R, or another suitable
-rotated detection benchmark.
+limitations. Any later DOTA v2 extension should be reported separately. A
+TGRS/ISPRS submission should only be considered if the method also shows strong
+multi-dataset evidence on FAIR1M, DIOR-R, or another suitable rotated detection
+benchmark.
 
 The current local OpenPrompt scaffold is useful for implementation and ablation
 plumbing, but it is not sufficient for paper-level claims by itself because it

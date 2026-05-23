@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import torch
 from PIL import Image
 from torch.utils.data import Dataset
@@ -21,9 +22,8 @@ class BaseDetectionDataset(Dataset):
 
     def _image_to_tensor(self, image: Image.Image) -> torch.Tensor:
         image = image.resize((self.image_size, self.image_size))
-        buffer = torch.ByteTensor(torch.ByteStorage.from_buffer(image.tobytes()))
-        tensor = buffer.view(image.size[1], image.size[0], 3).permute(2, 0, 1).to(dtype=torch.float32)
-        return tensor.div_(255.0)
+        array = np.asarray(image, dtype=np.float32) / 255.0
+        return torch.from_numpy(array).permute(2, 0, 1)
 
 
 def collate_detection_batch(batch: list[dict[str, Any]]) -> dict[str, Any]:

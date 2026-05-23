@@ -37,5 +37,10 @@ def seed_everything(seed: int) -> None:
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+        # This host's cuDNN convolution path segfaults on the RTX 4090 unless
+        # it is disabled for this project.
+        torch.backends.cudnn.enabled = False
+        torch.backends.cudnn.benchmark = False
 

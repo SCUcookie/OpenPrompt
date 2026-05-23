@@ -10,6 +10,7 @@ from openprompt_rs.data import build_dataset
 from openprompt_rs.engine.trainer import build_dataloader
 from openprompt_rs.models import PromptBank, build_model
 from openprompt_rs.models.pseudo_label import HierarchyConsistentPseudoLabeler, PseudoLabelConfig
+from openprompt_rs.utils.io import seed_everything
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -33,6 +34,8 @@ def main() -> None:
     experiment_cfg = config["experiment"]
     dataset_cfg = config["dataset"]
     model_cfg = config["model"]
+
+    seed_everything(experiment_cfg["seed"])
 
     if experiment_cfg["device"].startswith("cuda") and not torch.cuda.is_available():
         experiment_cfg["device"] = "cpu"

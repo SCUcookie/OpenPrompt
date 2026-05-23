@@ -15,7 +15,7 @@ pseudo-label purification stage combines detector confidence, hierarchy
 consistency, VLM crop-text agreement, and geometry plausibility before using
 unlabeled examples as soft supervision.
 
-The immediate publication target is a complete JSTARS-style study on DOTA v2.
+The immediate publication target is a complete JSTARS-style study on DOTA v1.0 or DOTA v1.5, with any later DOTA v2 extension kept separate.
 The final paper must report real rotated mAP, class-wise AP, prompt robustness,
 pseudo-label precision/recall, efficiency, and qualitative failure analysis. It
 should not include pending result tables or claim open-vocabulary performance

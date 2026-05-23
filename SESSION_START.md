@@ -28,13 +28,17 @@ Read /data5/2025/ldh/OpenPrompt/SESSION_START.md and start working from it.
 
 - `OpenRSD` is locally available and usable as a reference implementation.
 - `OpenPrompt` is the main repo for research and paper-facing experiments.
+- On this server, `zwl_oneformer_ViT_P` is the working training environment;
+  `dlp` is not suitable because it lacks `torch`, and cuDNN must stay disabled
+  in the repo runtime hook to avoid CUDA convolution segfaults on the RTX 4090.
 - The previous full-image baseline was trainable but produced nearly zero useful validation detection quality.
 - The main suspected causes were:
   - too few query slots
   - destructive resizing for dense DOTA scenes
 - A better reproduction baseline already exists:
-  [`configs/experiments/dota_v2_baseline_repro.yaml`](./configs/experiments/dota_v2_baseline_repro.yaml)
-- That baseline uses:
+  [`configs/experiments/dota_v1_baseline_repro.yaml`](./configs/experiments/dota_v1_baseline_repro.yaml)
+  and [`configs/experiments/dota_v15_baseline_repro.yaml`](./configs/experiments/dota_v15_baseline_repro.yaml)
+- Those baselines use:
   - `1024x1024` tiles
   - `16x16` query grid
   - a more realistic setup for dense DOTA tiles
@@ -80,9 +84,10 @@ If time becomes tight, skip routing in the first paper version.
 
 ### Priority 1: Make the baseline credible
 
-Use:
+Use the version that matches the staged server asset:
 
-- [`configs/experiments/dota_v2_baseline_repro.yaml`](./configs/experiments/dota_v2_baseline_repro.yaml)
+- [`configs/experiments/dota_v1_baseline_repro.yaml`](./configs/experiments/dota_v1_baseline_repro.yaml)
+- [`configs/experiments/dota_v15_baseline_repro.yaml`](./configs/experiments/dota_v15_baseline_repro.yaml)
 
 Before adding novelty, confirm:
 
@@ -281,7 +286,7 @@ When continuing this project:
 
 Use this order unless there is a clear reason not to:
 
-1. `dota_v2_baseline_repro`
+1. `dota_v1_baseline_repro` or `dota_v15_baseline_repro` depending on the staged server asset
 2. `+ hierarchy`
 3. `+ scene adapter`
 4. `+ pseudo-label consistency`
