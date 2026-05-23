@@ -25,6 +25,14 @@ The current `PromptBank` builds prompt strings from these fields. This is useful
 for testing, but the current embedding backend is still only a deterministic
 hash fallback.
 
+## Current Baseline Evidence
+
+- The reduced DOTA v1.0 validation run has completed on 4055 images.
+- Validation metrics are `map50=3.326794065590851e-06`, `mean_precision=0.00015695091957847277`, and `mean_recall=0.00037193994697493814`.
+- These numbers confirm the pipeline works, but they are far too weak for paper-level detector claims.
+- The matched DOTA v1.5 baseline is already running in a detached screen session and should be compared against the same prompt/VLM path.
+- The current result is consistent with the hash-fallback / lightweight scaffold, so the real VLM embedder upgrade is still required before semantic claims.
+
 ## Required Upgrade
 
 Before paper-level semantic claims, replace the hash embedder with one of:

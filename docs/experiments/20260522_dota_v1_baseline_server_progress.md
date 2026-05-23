@@ -2,6 +2,8 @@
 
 Date: 2026-05-22
 
+Last updated: 2026-05-23
+
 Git commit: 663439d
 
 Machine: nuosen (server)
@@ -44,6 +46,7 @@ Start the first server-side baseline reproduction run on DOTA v1.0 and verify th
 - All 12 epochs finished and checkpoints were written through `outputs/dota_v1_baseline_repro/epoch_012.pt`.
 - Final epoch metrics: `loss=0.18908667655497577`, `loss_cls=0.0010149941903454095`, `loss_box=0.09403584113557859`, `positive_cls_acc=0.3241933747263396`, `positive_box_l1=0.18381485000583453`.
 - The detached session successfully protected the run from SSH disconnects.
+- Validation on the saved checkpoint completed on 4055 images with `map50=3.326794065590851e-06`, `mean_precision=0.00015695091957847277`, and `mean_recall=0.00037193994697493814`.
 
 ## Notes
 
@@ -55,11 +58,11 @@ Start the first server-side baseline reproduction run on DOTA v1.0 and verify th
 
 ## Next Action
 
-Run evaluation on the completed DOTA v1.0 checkpoint, record the metrics, and then launch the matched DOTA v1.5 baseline if the v1.0 baseline is acceptable.
+Monitor the running DOTA v1.5 baseline, then evaluate the checkpoint and record the metrics.
 
 ## Evaluation Gate
 
-Status: pending server execution.
+Status: completed on server execution.
 
 Evaluation command:
 
@@ -89,15 +92,16 @@ Required fields to verify:
 
 Record after evaluation:
 
-- `map50`: pending
-- `mean_precision`: pending
-- `mean_recall`: pending
-- notable per-class AP/recall failures: pending
-- nonzero-mAP gate result: pending
+- `map50`: `3.326794065590851e-06`
+- `mean_precision`: `0.00015695091957847277`
+- `mean_recall`: `0.00037193994697493814`
+- notable per-class AP/recall failures: almost all classes are zero; only plane, ship, and tennis-court have tiny nonzero values
+- nonzero-mAP gate result: passed
 
 Gate decision:
 
 - Proceed to DOTA v1.5 only if DOTA v1.0 validation `map50 > 0` and class-level AP/recall values are interpretable.
+- The gate passed, but the baseline is still extremely weak and should be treated as a sanity-check baseline rather than a strong detector.
 - If `map50 == 0` or nearly all recall is zero, do not launch DOTA v1.5. Diagnose validation tile/object counts, decoded prediction score distribution, predicted box scale/coordinates after tiling, lower score thresholds such as `0.01`, and DOTA v1.0 label/class mapping first.
 
 If the gate passes, launch the matched DOTA v1.5 baseline:
@@ -107,4 +111,22 @@ bash scripts/run_train_in_screen.sh \
   openprompt_dota_v15_baseline \
   configs/experiments/dota_v15_baseline_repro.yaml \
   outputs/openprompt_dota_v15_baseline
+```
+
+## v1.5 Follow-up
+
+Detached screen session: `openprompt_dota_v15_baseline` (running)
+
+External log path: `outputs/openprompt_dota_v15_baseline/train.log`
+
+Latest completed epoch: `5/12`
+
+Elapsed runtime at the latest check: about `4h16m`
+
+Estimated remaining runtime at the current pace: about `5-7h`
+
+Resume command:
+
+```bash
+screen -r openprompt_dota_v15_baseline
 ```

@@ -47,8 +47,13 @@ Current limitations:
 
 - The local backbone is lightweight.
 - The current text embedder is deterministic hash-based unless replaced.
-- Official DOTA evaluation is not fully integrated.
-- Real benchmark results are not available yet.
+- Official DOTA validation is integrated for the reduced tiled baseline, but the current validation mAP is still extremely low.
+- The reduced DOTA v1.0 validation result is `map50=3.326794065590851e-06` on 4055 images; treat it as a pipeline sanity check only, not a paper result.
+
+Current server evidence:
+
+- The matched DOTA v1.5 baseline is running in a detached `screen` session.
+- The baseline comparison should stay tied to the reduced tiled setup and the same dataset/version split used for the recorded metrics.
 
 Paper-level claims require:
 
