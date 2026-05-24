@@ -115,18 +115,37 @@ bash scripts/run_train_in_screen.sh \
 
 ## v1.5 Follow-up
 
-Detached screen session: `openprompt_dota_v15_baseline` (running)
+Detached screen session: `openprompt_dota_v15_baseline` (completed)
 
 External log path: `outputs/openprompt_dota_v15_baseline/train.log`
 
-Latest completed epoch: `5/12`
+Latest completed epoch: `12/12`
 
-Elapsed runtime at the latest check: about `4h16m`
+Training status: completed successfully.
 
-Estimated remaining runtime at the current pace: about `5-7h`
+Validation evaluation completed on `2026-05-24 11:26` for `outputs/dota_v15_baseline_repro/epoch_012.pt`.
+
+Evaluation artifact path: `outputs/dota_v15_baseline_repro/eval_epoch_012_val.json`
+
+Validation metrics: `map50=1.0926445202230628e-05`, `mean_precision=0.0006667361585641629`, `mean_recall=0.0011823561703749874`
+
+Notable nonzero class values: harbor, plane, ship, small-vehicle, and tennis-court; all remain very weak.
+
+Overall assessment: the v1.5 run is a valid sanity-check baseline, but it is still far below paper-quality detector performance.
 
 Resume command:
 
 ```bash
 screen -r openprompt_dota_v15_baseline
 ```
+
+## Wrap-up
+
+Current baseline flows are complete:
+
+1. DOTA v1.0 baseline training completed.
+2. DOTA v1.0 validation evaluation completed.
+3. DOTA v1.5 baseline training completed.
+4. DOTA v1.5 validation evaluation completed.
+
+The next research step is not another baseline rerun; it is to decide the first defensible ablation or methodology improvement on top of this verified scaffold.

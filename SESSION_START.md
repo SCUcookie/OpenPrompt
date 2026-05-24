@@ -43,7 +43,7 @@ Read /data5/2025/ldh/OpenPrompt/SESSION_START.md and start working from it.
   - `16x16` query grid
   - a more realistic setup for dense DOTA tiles
 - The reduced tiled DOTA v1.0 validation has now completed with `map50=3.326794065590851e-06` on 4055 images; the pipeline is verified end-to-end, but the detector is still a weak sanity-check baseline.
-- The matched DOTA v1.5 baseline is running in detached screen session `openprompt_dota_v15_baseline`; the latest checked epoch is `5/12`, so the remaining runtime is roughly `5-7h` at the current pace.
+- The matched DOTA v1.5 baseline training and validation evaluation have completed; the result is `map50=1.0926445202230628e-05` on 4055 images, which is still only a sanity-check baseline.
 
 ## Main Decision
 

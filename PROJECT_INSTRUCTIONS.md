@@ -52,7 +52,8 @@ Current limitations:
 
 Current server evidence:
 
-- The matched DOTA v1.5 baseline is running in a detached `screen` session.
+- The matched DOTA v1.5 baseline training and validation evaluation have completed.
+- The v1.5 validation result is `map50=1.0926445202230628e-05` on 4055 images; it is still only a sanity-check baseline.
 - The baseline comparison should stay tied to the reduced tiled setup and the same dataset/version split used for the recorded metrics.
 
 Paper-level claims require:
