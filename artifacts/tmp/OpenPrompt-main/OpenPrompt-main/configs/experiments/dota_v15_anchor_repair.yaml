@@ -1,0 +1,13 @@
+_base_:
+  - ./dota_v15_baseline_repro.yaml
+
+experiment:
+  name: dota_v15_anchor_repair
+  batch_size: 1
+  epochs: 1
+  output_dir: outputs/dota_v15_anchor_repair
+
+model:
+  # Short smoke test: inject query centers into box regression and check whether
+  # center bias / best-IoU metrics improve on the first checkpoint.
+  use_query_centers_in_box_head: true

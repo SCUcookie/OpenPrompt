@@ -1,0 +1,10 @@
+{
+  "templates": [
+    "a remote sensing image of a {name}",
+    "an aerial object category: {name}",
+    "{name} seen from above in satellite imagery",
+    "{name} with geometry {geometry}",
+    "{name} usually appears in {scene_priors}"
+  ]
+}
+

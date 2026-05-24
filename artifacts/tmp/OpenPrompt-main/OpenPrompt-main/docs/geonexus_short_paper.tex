@@ -186,12 +186,6 @@ The planned ablations isolate the following questions. First, does hierarchy awa
 
 Failure analysis should focus on class pairs that are naturally confusing in aerial imagery. Examples include small vehicle versus large vehicle, ship versus harbor structure, bridge versus road segment, and sports field subclasses. For each pair, the evaluation should compare class wise AP, false positive sources, and prompt sensitivity. Qualitative figures should show accepted and rejected pseudo labels. Rejection examples are important because they explain what the purification stage removes from the training set.
 
-\subsection{Current Implementation Status}
-
-The current repository implements the data loading, prompt bank, lightweight detector scaffold, DOTA style validation path, and an anchored box decoding repair path. The reduced tiled DOTA v1.0 and DOTA v1.5 scaffold runs have completed only as pipeline sanity checks, with near zero AP50 values. These results must not be presented as evidence for the proposed method. The diagnostic evidence indicates that the weak scaffold is not mainly a score thresholding problem; predictions concentrate on a small subset of classes and decoded boxes show poor localization. Therefore, the immediate experimental priority is to repair the localization path or to introduce a stronger oriented detector baseline before running the hierarchy, context, and pseudo label ablations.
-
-The active repair branch anchors predicted box centers to the query grid centers produced by the query generator. This change is intended to test whether explicit spatial anchoring reduces center biased predictions. A short DOTA v1.5 smoke run should be used only to decide whether the lightweight scaffold is worth further investment. In parallel, a standard oriented detector such as Oriented R-CNN or RoI Transformer should be prepared as the credible S0 baseline for the final paper.
-
 \section{Summary}
 
 We presented a short method paper for vision language guided hierarchical prompt learning in remote sensing object detection. The proposed GeoNexus RSD direction updates an OpenPrompt and OpenRSD based plan into a detection centered study built around taxonomy aware semantics, scene context adaptation, and pseudo label purification. DOTA style rotated detection is the main task, while optional routing remains a lightweight extension rather than the core claim. The first experimental stage may use DOTA v1.0 or DOTA v1.5 as the server baseline, but any final claim must identify the exact dataset version and evaluation protocol.

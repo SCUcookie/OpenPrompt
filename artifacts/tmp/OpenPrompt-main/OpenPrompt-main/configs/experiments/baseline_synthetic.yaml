@@ -1,0 +1,16 @@
+_base_:
+  - ../models/openrsd_baseline.yaml
+  - ../datasets/synthetic.yaml
+
+experiment:
+  name: baseline_synthetic
+  seed: 7
+  epochs: 2
+  batch_size: 4
+  learning_rate: 0.0005
+  weight_decay: 0.0001
+  device: cpu
+  taxonomy_path: assets/hierarchies/remote_sensing_taxonomy.json
+  prompt_template_path: assets/prompts/prompt_templates.json
+  output_dir: outputs/baseline_synthetic
+

@@ -1,0 +1,148 @@
+{
+  "classes": [
+    {
+      "name": "plane",
+      "parent": "aircraft",
+      "synonyms": ["airplane", "jet", "aircraft"],
+      "confusing_classes": ["helicopter", "bridge"],
+      "scene_priors": ["airport", "runway", "airfield"],
+      "geometry": ["high-aspect-ratio", "symmetric", "arbitrary-orientation"],
+      "negative_cues": ["harbor", "residential-area"]
+    },
+    {
+      "name": "ship",
+      "parent": "vessel",
+      "synonyms": ["boat", "cargo ship", "tanker"],
+      "confusing_classes": ["storage-tank", "large-vehicle"],
+      "scene_priors": ["harbor", "coastline", "dock", "river"],
+      "geometry": ["elongated", "arbitrary-orientation", "medium-scale"],
+      "negative_cues": ["parking-lot", "residential-roof"]
+    },
+    {
+      "name": "storage-tank",
+      "parent": "industrial-facility",
+      "synonyms": ["tank", "oil tank", "cylindrical storage"],
+      "confusing_classes": ["ship", "roundabout", "swimming-pool"],
+      "scene_priors": ["industrial-area", "refinery", "port"],
+      "geometry": ["round-shape", "compact", "medium-scale"],
+      "negative_cues": ["runway", "bridge"]
+    },
+    {
+      "name": "baseball-diamond",
+      "parent": "sports-field",
+      "synonyms": ["baseball field", "diamond"],
+      "confusing_classes": ["tennis-court", "ground-track-field"],
+      "scene_priors": ["school", "sports-complex", "urban-area"],
+      "geometry": ["geometric-layout", "medium-scale", "low-rotation-variance"],
+      "negative_cues": ["harbor", "industrial-area"]
+    },
+    {
+      "name": "tennis-court",
+      "parent": "sports-field",
+      "synonyms": ["tennis field", "court"],
+      "confusing_classes": ["basketball-court", "baseball-diamond", "soccer-ball-field"],
+      "scene_priors": ["school", "sports-complex", "urban-area"],
+      "geometry": ["rectangular", "regular-layout", "medium-scale"],
+      "negative_cues": ["harbor", "industrial-area"]
+    },
+    {
+      "name": "basketball-court",
+      "parent": "sports-field",
+      "synonyms": ["basketball field", "court"],
+      "confusing_classes": ["tennis-court", "roundabout", "soccer-ball-field"],
+      "scene_priors": ["school", "sports-complex", "urban-area"],
+      "geometry": ["rectangular", "regular-layout", "medium-scale"],
+      "negative_cues": ["harbor", "industrial-area"]
+    },
+    {
+      "name": "ground-track-field",
+      "parent": "sports-field",
+      "synonyms": ["track field", "running track"],
+      "confusing_classes": ["soccer-ball-field", "baseball-diamond"],
+      "scene_priors": ["school", "sports-complex", "urban-area"],
+      "geometry": ["oval-layout", "large-extent", "regular-shape"],
+      "negative_cues": ["harbor", "industrial-area"]
+    },
+    {
+      "name": "harbor",
+      "parent": "infrastructure",
+      "synonyms": ["port", "dockyard"],
+      "confusing_classes": ["bridge", "storage-tank", "container-crane"],
+      "scene_priors": ["coastline", "waterfront", "industrial-area"],
+      "geometry": ["large-extent", "complex-layout"],
+      "negative_cues": ["runway", "forest"]
+    },
+    {
+      "name": "bridge",
+      "parent": "infrastructure",
+      "synonyms": ["overpass", "viaduct"],
+      "confusing_classes": ["plane", "ship", "container-crane"],
+      "scene_priors": ["river", "road", "urban-area"],
+      "geometry": ["long-thin", "high-aspect-ratio", "crossing-structure"],
+      "negative_cues": ["airport", "open-sea"]
+    },
+    {
+      "name": "large-vehicle",
+      "parent": "vehicle",
+      "synonyms": ["truck", "bus", "trailer"],
+      "confusing_classes": ["ship", "storage-tank", "small-vehicle"],
+      "scene_priors": ["road", "yard", "industrial-area"],
+      "geometry": ["elongated", "medium-scale", "arbitrary-orientation"],
+      "negative_cues": ["runway", "water"]
+    },
+    {
+      "name": "small-vehicle",
+      "parent": "vehicle",
+      "synonyms": ["car", "van", "pickup"],
+      "confusing_classes": ["container", "roof-structure", "large-vehicle"],
+      "scene_priors": ["road", "parking-lot", "industrial-area"],
+      "geometry": ["tiny-footprint", "dense-cluster", "weak-texture"],
+      "negative_cues": ["harbor", "runway"]
+    },
+    {
+      "name": "helicopter",
+      "parent": "aircraft",
+      "synonyms": ["chopper", "rotorcraft"],
+      "confusing_classes": ["plane", "small-vehicle"],
+      "scene_priors": ["airport", "helipad", "urban-area"],
+      "geometry": ["compact", "rotor-shape", "arbitrary-orientation"],
+      "negative_cues": ["harbor", "bridge"]
+    },
+    {
+      "name": "roundabout",
+      "parent": "infrastructure",
+      "synonyms": ["traffic circle"],
+      "confusing_classes": ["storage-tank", "basketball-court"],
+      "scene_priors": ["road", "urban-area", "traffic-junction"],
+      "geometry": ["circular", "medium-scale", "road-connected"],
+      "negative_cues": ["harbor", "runway"]
+    },
+    {
+      "name": "soccer-ball-field",
+      "parent": "sports-field",
+      "synonyms": ["soccer field", "football field"],
+      "confusing_classes": ["ground-track-field", "tennis-court"],
+      "scene_priors": ["school", "sports-complex", "urban-area"],
+      "geometry": ["rectangular", "large-scale", "line-marked"],
+      "negative_cues": ["harbor", "industrial-area"]
+    },
+    {
+      "name": "swimming-pool",
+      "parent": "sports-field",
+      "synonyms": ["pool"],
+      "confusing_classes": ["storage-tank", "tennis-court"],
+      "scene_priors": ["residential-area", "resort", "school"],
+      "geometry": ["rectangular", "compact", "blue-surface"],
+      "negative_cues": ["runway", "harbor"]
+    },
+    {
+      "name": "container-crane",
+      "parent": "industrial-facility",
+      "synonyms": ["port crane", "gantry crane"],
+      "confusing_classes": ["harbor", "bridge", "large-vehicle"],
+      "scene_priors": ["port", "harbor", "industrial-area"],
+      "geometry": ["tall-structure", "elongated", "arbitrary-orientation"],
+      "negative_cues": ["runway", "forest"]
+    }
+  ]
+}

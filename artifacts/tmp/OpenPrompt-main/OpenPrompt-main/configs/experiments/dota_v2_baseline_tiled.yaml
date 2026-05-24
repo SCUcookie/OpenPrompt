@@ -1,0 +1,16 @@
+_base_:
+  - ./dota_v2_baseline.yaml
+
+experiment:
+  name: dota_v2_baseline_tiled
+  output_dir: outputs/dota_v2_baseline_tiled
+
+dataset:
+  tile_size: 2048
+  tile_stride: 2048
+  include_empty_tiles: false
+
+val_dataset:
+  tile_size: 2048
+  tile_stride: 2048
+  include_empty_tiles: true

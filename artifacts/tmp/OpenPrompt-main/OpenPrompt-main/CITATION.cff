@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+title: openprompt
+message: If you use this repository, please cite the project and the OpenRSD paper.
+type: software
+authors:
+  - family-names: SCUcookie
+    given-names: Research Group
+repository-code: https://github.com/SCUcookie/openprompt
+license: MIT
+

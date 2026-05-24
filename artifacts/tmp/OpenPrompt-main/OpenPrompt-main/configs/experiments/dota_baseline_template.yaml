@@ -1,0 +1,16 @@
+_base_:
+  - ../models/openrsd_baseline.yaml
+  - ../datasets/dota_template.yaml
+
+experiment:
+  name: dota_baseline_template
+  seed: 7
+  epochs: 12
+  batch_size: 2
+  learning_rate: 0.0002
+  weight_decay: 0.0001
+  device: cuda
+  taxonomy_path: assets/hierarchies/remote_sensing_taxonomy.json
+  prompt_template_path: assets/prompts/prompt_templates.json
+  output_dir: outputs/dota_baseline
+

@@ -1,0 +1,853 @@
+% !TEX program = xelatex
+\documentclass[11pt,a4paper]{ctexart}
+
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+
+\setlist{nosep,leftmargin=2em}
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{2em}
+
+\tikzset{
+  block/.style={draw, rounded corners, align=center, minimum height=8mm, minimum width=25mm, fill=blue!5},
+  smallblock/.style={draw, rounded corners, align=center, minimum height=7mm, minimum width=18mm, fill=green!5},
+  warnblock/.style={draw, rounded corners, align=center, minimum height=8mm, minimum width=25mm, fill=orange!10},
+  arrow/.style={-{Latex[length=2.2mm]}, thick}
+}
+
+\title{\textbf{GeoNexus-RSD 方法路线说明}\\
+\large 层次与上下文感知的遥感旋转目标检测研究路线}
+\author{Dinghao Li}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{文档目的}
+
+本文用中文系统说明 GeoNexus-RSD 到目前为止已经完成和正在推进的方法路线。重点不是夸大结果，而是把当前研究从代码、实验、数学形式和后续选择四个层面整理清楚。本文可以作为后续论文写作、组会汇报和服务器实验记录的技术底稿。
+
+当前结论必须保持保守：本仓库已经打通 DOTA 风格数据加载、提示词构建、轻量检测器、验证流程和定位修复实验配置，但现有轻量 scaffold 的 DOTA v1.0/v1.5 验证 AP50 仍接近零，只能说明流程跑通，不能作为方法有效性的论文证据。因此，下一步应优先修复检测器定位路径或引入强的旋转检测器基线，然后再运行层次提示、场景上下文和伪标签净化消融。
+
+\section{总体研究目标}
+
+给定遥感图像切片 $I$，目标是预测一组旋转目标框和类别：
+\[
+\mathcal{Y}=\{(b_i,c_i,s_i)\}_{i=1}^{N},
+\quad
+b_i=(x_i,y_i,w_i,h_i,\theta_i).
+\]
+
+各符号含义如下：
+\begin{itemize}
+  \item $I$：输入遥感图像切片，例如 $1024\times1024$ 的 DOTA tile。
+  \item $N$：模型最终保留的目标数量。
+  \item $b_i$：第 $i$ 个目标的旋转框。
+  \item $x_i,y_i$：旋转框中心坐标，通常归一化到 $[0,1]$。
+  \item $w_i,h_i$：旋转框宽高，通常归一化到 $[0,1]$。
+  \item $\theta_i$：旋转角度，当前实现中限制在 $[-\pi/2,\pi/2]$。
+  \item $c_i$：类别，例如 plane、ship、small-vehicle。
+  \item $s_i$：检测置信度。
+\end{itemize}
+
+GeoNexus-RSD 的核心问题是：遥感目标小、密集、旋转角度任意，且细粒度类别容易混淆。单纯依靠固定类别分类器很难充分利用``车辆属于交通设施''、``船通常出现在水域或港口''这类语义和场景知识。因此，本路线尝试把视觉语言提示词、类别层次结构和场景上下文引入旋转检测。
+
+\section{整体结构图}
+
+GeoNexus-RSD 可以理解为在旋转目标检测器外部增加一条``语义提示路线''，再把视觉特征和文本语义在 query/head 阶段融合。整体结构如下。
+
+\begin{center}
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[node distance=7mm and 7mm, font=\small]
+  \node[block] (img) {输入遥感 tile\\$I\in\mathbb{R}^{3\times1024\times1024}$};
+  \node[block, right=of img] (backbone) {Backbone\\提取视觉特征};
+  \node[block, right=of backbone] (query) {Query Generator\\网格 query 与中心点};
+  \node[block, right=of query] (head) {Prompt-conditioned\\检测头};
+  \node[block, right=of head] (nms) {后处理\\阈值 + Rotated NMS};
+  \node[block, right=of nms] (out) {输出\\旋转框、类别、置信度};
+
+  \node[smallblock, below=13mm of backbone] (tax) {类别层次树\\$\mathcal{T}$};
+  \node[smallblock, right=of tax] (prompt) {Prompt Bank\\$\mathcal{P}_c$};
+  \node[smallblock, right=of prompt] (text) {文本编码器\\$\bar{\bm e}_c$};
+  \node[smallblock, right=of text] (adapter) {场景上下文适配\\$\tilde{\bm e}_{c,i}$};
+
+  \draw[arrow] (img) -- (backbone);
+  \draw[arrow] (backbone) -- (query);
+  \draw[arrow] (query) -- (head);
+  \draw[arrow] (head) -- (nms);
+  \draw[arrow] (nms) -- (out);
+  \draw[arrow] (tax) -- (prompt);
+  \draw[arrow] (prompt) -- (text);
+  \draw[arrow] (text) -- (adapter);
+  \draw[arrow] (backbone) |- (adapter);
+  \draw[arrow] (adapter) -- (head);
+\end{tikzpicture}%
+}
+\end{center}
+
+这张图中有两条主线：
+\begin{itemize}
+  \item 视觉主线：输入图像 $\rightarrow$ backbone $\rightarrow$ query $\rightarrow$ 检测头 $\rightarrow$ NMS $\rightarrow$ 输出检测结果。
+  \item 语义主线：类别层次树 $\rightarrow$ prompt bank $\rightarrow$ 文本嵌入 $\rightarrow$ 场景适配 $\rightarrow$ 检测头分类。
+\end{itemize}
+
+如果使用伪标签净化，还会增加一条 teacher/student 或离线过滤路线：
+
+\begin{center}
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[node distance=8mm and 8mm, font=\small]
+  \node[block] (unlabel) {无标注 tile};
+  \node[block, right=of unlabel] (teacher) {Teacher / 当前检测器\\生成候选框};
+  \node[block, right=of teacher] (purify) {净化打分\\$q_j=\sigma(\beta_1d_j+\beta_2h_j+\beta_3v_j+\beta_4a_j)$};
+  \node[block, right=of purify] (pseudo) {保留高质量伪标签\\软权重 $q_j$};
+  \node[block, right=of pseudo] (student) {Student 训练\\监督损失 + 伪标签损失};
+
+  \node[smallblock, below=12mm of purify] (vlm) {VLM crop-text\\一致性 $v_j$};
+  \node[smallblock, left=of vlm] (hier) {层次一致性\\$h_j$};
+  \node[smallblock, right=of vlm] (geo) {几何合理性\\$a_j$};
+
+  \draw[arrow] (unlabel) -- (teacher);
+  \draw[arrow] (teacher) -- (purify);
+  \draw[arrow] (purify) -- (pseudo);
+  \draw[arrow] (pseudo) -- (student);
+  \draw[arrow] (hier) -- (purify);
+  \draw[arrow] (vlm) -- (purify);
+  \draw[arrow] (geo) -- (purify);
+\end{tikzpicture}%
+}
+\end{center}
+
+\section{当前已经完成的工作}
+
+\subsection{数据与实验流程}
+
+当前仓库已经具备以下基础能力：
+\begin{itemize}
+  \item DOTA 风格数据配置和加载，包括 DOTA v1.0、v1.5 和 v2 模板。
+  \item reduced tiled baseline 的训练与验证流程。
+  \item DOTA 风格 AP50 验证接口，用于流程 sanity check。
+  \item 实验配置文件、诊断脚本和服务器运行记录。
+\end{itemize}
+
+已经记录的服务器证据包括：
+\begin{itemize}
+  \item DOTA v1.0 reduced tiled baseline：在 4055 张验证 tile 上 $AP50=3.326794065590851\times10^{-6}$。
+  \item DOTA v1.5 matched baseline：在 4055 张验证 tile 上 $AP50=1.0926445202230628\times10^{-5}$。
+\end{itemize}
+
+这两个数值极低，只能说明训练和评估流程能够运行。它们不能支持任何性能提升或论文 claim。
+
+\subsection{提示词与层次结构}
+
+当前实现包含 prompt bank，即每个类别不只对应一个类别名，而是对应一组提示词：
+\[
+\mathcal{P}_c=\{p_{c,1},p_{c,2},\ldots,p_{c,K}\}.
+\]
+
+符号含义：
+\begin{itemize}
+  \item $c$：类别索引，例如 small-vehicle。
+  \item $\mathcal{P}_c$：类别 $c$ 的提示词集合。
+  \item $p_{c,k}$：类别 $c$ 的第 $k$ 条提示词。
+  \item $K$：该类别提示词数量。
+\end{itemize}
+
+提示词可以包括类别名、父类、别名、场景描述和对比描述。例如 small-vehicle 可以写成：
+\begin{itemize}
+  \item ``a small vehicle in an aerial image''
+  \item ``a road vehicle smaller than a truck''
+  \item ``not a storage tank or ship''
+\end{itemize}
+
+文本编码器把提示词变成向量：
+\[
+\bm e_{c,k}=T(p_{c,k}),
+\]
+其中 $T(\cdot)$ 是文本编码器，$\bm e_{c,k}\in\mathbb{R}^{d}$ 是 $d$ 维文本向量。
+
+类别基础嵌入为：
+\[
+\bar{\bm e}_c=\sum_{k=1}^{K}\alpha_{c,k}\bm e_{c,k},
+\quad
+\sum_{k=1}^{K}\alpha_{c,k}=1.
+\]
+
+符号含义：
+\begin{itemize}
+  \item $\bar{\bm e}_c$：类别 $c$ 的综合提示词嵌入。
+  \item $\alpha_{c,k}$：第 $k$ 条提示词的权重。
+  \item 当没有学习权重时，可令 $\alpha_{c,k}=1/K$。
+\end{itemize}
+
+数值例子：若某类有 $K=3$ 条提示词，权重分别为 $0.5,0.3,0.2$，三个文本向量的一维简化值为 $2.0,1.0,3.0$，则综合嵌入的一维值为：
+\[
+\bar e_c=0.5\times2.0+0.3\times1.0+0.2\times3.0=1.9.
+\]
+
+\subsection{场景上下文提示适配}
+
+遥感目标往往需要上下文。例如同样是细长结构，在水域附近可能是船，在陆地道路附近可能是桥或车辆。因此引入场景上下文适配器：
+\[
+\tilde{\bm e}_{c,i}=\bar{\bm e}_c+A([\bm g,\bm r_i,\bar{\bm e}_c]).
+\]
+
+符号含义：
+\begin{itemize}
+  \item $\tilde{\bm e}_{c,i}$：针对第 $i$ 个 query 或候选区域的上下文适配后类别嵌入。
+  \item $\bm g$：整张 tile 的全局场景特征。
+  \item $\bm r_i$：第 $i$ 个 query 或候选区域的局部视觉特征。
+  \item $[\cdot]$：向量拼接。
+  \item $A(\cdot)$：轻量适配器，通常是 MLP。
+\end{itemize}
+
+分类 logit 使用归一化相似度：
+\[
+z_{i,c}=\tau^{-1}
+\frac{\phi(\bm r_i)^\top \psi(\tilde{\bm e}_{c,i})}
+{\|\phi(\bm r_i)\|_2\|\psi(\tilde{\bm e}_{c,i})\|_2}.
+\]
+
+符号含义：
+\begin{itemize}
+  \item $z_{i,c}$：第 $i$ 个 query 属于类别 $c$ 的分类 logit。
+  \item $\phi(\cdot)$：视觉投影层。
+  \item $\psi(\cdot)$：文本投影层。
+  \item $\tau$：温度系数，越小则 logit 放大越明显。
+  \item $\|\cdot\|_2$：二范数。
+\end{itemize}
+
+数值例子：若归一化后的视觉向量和文本向量余弦相似度为 $0.72$，温度 $\tau=0.1$，则：
+\[
+z_{i,c}=0.72/0.1=7.2.
+\]
+若另一个类别相似度为 $0.41$，logit 为 $4.1$，softmax 后前者概率会明显更高。
+
+\subsection{伪标签净化}
+
+伪标签用于半监督训练，但遥感伪标签噪声很大。当前方法路线把一个候选伪标签的综合质量写成：
+\[
+q_j=\sigma(\beta_1d_j+\beta_2h_j+\beta_3v_j+\beta_4a_j).
+\]
+
+符号含义：
+\begin{itemize}
+  \item $q_j$：第 $j$ 个候选伪标签的净化质量分数。
+  \item $\sigma(\cdot)$：sigmoid 函数，把实数映射到 $[0,1]$。
+  \item $d_j$：检测器置信度。
+  \item $h_j$：层次一致性分数。
+  \item $v_j$：视觉语言一致性分数，例如 crop 与文本描述的 CLIP 相似度。
+  \item $a_j$：几何合理性分数，例如宽高比、面积、角度是否符合该类常识。
+  \item $\beta_1,\beta_2,\beta_3,\beta_4$：四个分量的权重。
+\end{itemize}
+
+数值例子：设
+\[
+d_j=0.80,\quad h_j=0.60,\quad v_j=0.70,\quad a_j=0.50,
+\]
+且四个权重均为 $0.5$，则线性分数为：
+\[
+u=0.5(0.80+0.60+0.70+0.50)=1.30.
+\]
+因此：
+\[
+q_j=\sigma(1.30)=\frac{1}{1+e^{-1.30}}\approx0.786.
+\]
+若阈值为 $0.75$，该伪标签可被接收；若阈值为 $0.85$，则被拒绝。
+
+总训练损失为：
+\[
+\mathcal{L}
+=\mathcal{L}^{sup}_{det}
++\lambda_h\mathcal{L}_{hier}
++\lambda_p\sum_j q_j
+\left(\mathcal{L}^{pseudo}_{cls}(j)
++\lambda_b\mathcal{L}^{pseudo}_{box}(j)\right).
+\]
+
+符号含义：
+\begin{itemize}
+  \item $\mathcal{L}$：总损失。
+  \item $\mathcal{L}^{sup}_{det}$：有标注数据上的监督检测损失。
+  \item $\mathcal{L}_{hier}$：层次一致性损失。
+  \item $\mathcal{L}^{pseudo}_{cls}(j)$：第 $j$ 个伪标签的分类损失。
+  \item $\mathcal{L}^{pseudo}_{box}(j)$：第 $j$ 个伪标签的框回归损失。
+  \item $q_j$：伪标签权重，越可靠影响越大。
+  \item $\lambda_h,\lambda_p,\lambda_b$：不同损失项的权重。
+\end{itemize}
+
+\section{当前定位失败诊断与 anchor repair}
+
+\subsection{问题现象}
+
+目前轻量 scaffold 的主要问题不是阈值太高，而是定位和类别分布异常：
+\begin{itemize}
+  \item 降低阈值后，decoded scores 仍然存在，但 mAP 没有实质改善。
+  \item 预测类别集中到 small-vehicle、harbor、plane、ship 等少数类。
+  \item 抽样 tile 中预测框有明显中心偏置，同类 IoU 很低。
+  \item QueryGenerator 已经计算 query centers，但原 box head 未利用它们。
+\end{itemize}
+
+\subsection{原始绝对解码}
+
+原始 box 解码近似为：
+\[
+(x_i,y_i)=\sigma(\bm t_i^{xy}),
+\quad
+(w_i,h_i)=\sigma(\bm t_i^{wh}),
+\quad
+\theta_i=\frac{\pi}{2}\tanh(t_i^\theta).
+\]
+
+符号含义：
+\begin{itemize}
+  \item $\bm t_i$：box head 输出的原始回归量。
+  \item $\sigma(\cdot)$：sigmoid 函数。
+  \item $\tanh(\cdot)$：双曲正切函数。
+\end{itemize}
+
+这个设计的问题是：每个 query 都可以自由预测整张图中任意中心点。如果训练早期缺少稳定空间约束，多个 query 可能塌缩到相似位置或中心区域。
+
+\subsection{锚定中心解码}
+
+anchor repair 的核心是把中心点绑定到 query center 附近：
+\[
+(x_i,y_i)=
+\operatorname{clip}\left(
+\bm a_i+\frac{s}{G}\tanh(\bm t_i^{xy}),0,1
+\right).
+\]
+
+符号含义：
+\begin{itemize}
+  \item $\bm a_i=(a_i^x,a_i^y)$：第 $i$ 个 query 的网格中心。
+  \item $G$：query grid size，例如 $G=16$。
+  \item $s$：center offset scale，例如 $s=1.0$。
+  \item $\operatorname{clip}(\cdot,0,1)$：把坐标限制在 $[0,1]$。
+\end{itemize}
+
+数值例子：若 $G=16$，$s=1.0$，query center 为
+\[
+\bm a_i=(0.53125,0.46875),
+\]
+且 box head 输出 $\bm t_i^{xy}=(0.4,-0.2)$，则
+\[
+\tanh(0.4)\approx0.380,\quad \tanh(-0.2)\approx-0.197.
+\]
+中心偏移为：
+\[
+\Delta x=0.380/16\approx0.0238,\quad
+\Delta y=-0.197/16\approx-0.0123.
+\]
+最终中心为：
+\[
+(x_i,y_i)\approx(0.5551,0.4564).
+\]
+这样每个 query 只能在自身网格附近搜索，降低无锚点全局回归的不稳定性。
+
+\section{从输入到输出的完整数值例子}
+
+本节假设一个具体例子，帮助理解整个系统如何从原始遥感图像走到最终检测结果。为了便于计算，数字经过简化，但流程与真实实验一致。
+
+\subsection{步骤 1：原始大图切片}
+
+假设原始遥感图像大小为：
+\[
+6000\times6000.
+\]
+训练时不能直接把整张大图送入检测器，因此先切成 tile。设：
+\[
+tile=1024,\quad stride=768.
+\]
+
+单方向 tile 数量近似为：
+\[
+n=\left\lfloor\frac{6000-1024}{768}\right\rfloor+1
+=\lfloor6.48\rfloor+1=7.
+\]
+
+因此一张大图大约得到：
+\[
+7\times7=49
+\]
+个 tile。若有 100 张原图，则大约得到 $4900$ 个 tile。真实数量会受边界补齐、空 tile 过滤和 overlap 策略影响。
+
+现在取其中一个 tile：
+\[
+I\in\mathbb{R}^{3\times1024\times1024}.
+\]
+假设这个 tile 中有一辆 small-vehicle，其真实旋转框为：
+\[
+b^{gt}=(x,y,w,h,\theta)=(0.55,0.46,0.045,0.020,0.10).
+\]
+这里坐标和宽高已经除以 $1024$ 做归一化。换回像素坐标约为：
+\[
+x=0.55\times1024=563.2,\quad
+y=0.46\times1024=471.0.
+\]
+
+\subsection{步骤 2：Backbone 提取特征}
+
+输入 tile 经过 backbone 后得到特征图。为了简化，假设 backbone 输出：
+\[
+F\in\mathbb{R}^{256\times64\times64}.
+\]
+符号含义：
+\begin{itemize}
+  \item $256$：通道数。
+  \item $64\times64$：空间分辨率。
+  \item 每个特征点大致对应原图 $1024/64=16$ 像素。
+\end{itemize}
+
+如果使用 FPN，还会得到多个尺度，例如：
+\[
+P_3\in\mathbb{R}^{256\times128\times128},\quad
+P_4\in\mathbb{R}^{256\times64\times64},\quad
+P_5\in\mathbb{R}^{256\times32\times32}.
+\]
+当前轻量 scaffold 更简单，但强基线通常会使用多尺度特征，因为 DOTA 中 small-vehicle 和 ship 等目标尺度差异很大。
+
+\subsection{步骤 3：Query 网格生成}
+
+设 query grid size 为：
+\[
+G=16.
+\]
+则共有：
+\[
+Q=G^2=256
+\]
+个 query。每个 query 有一个归一化中心：
+\[
+\bm a_{u,v}=\left(\frac{u+0.5}{G},\frac{v+0.5}{G}\right),
+\quad u,v\in\{0,\ldots,15\}.
+\]
+
+假设 small-vehicle 附近的 query 是 $u=8,v=7$，则：
+\[
+\bm a_{8,7}=\left(\frac{8.5}{16},\frac{7.5}{16}\right)
+=(0.53125,0.46875).
+\]
+这个中心离真实中心 $(0.55,0.46)$ 很近，适合负责该目标。
+
+\subsection{步骤 4：Anchored box 解码}
+
+检测头对这个 query 输出原始回归量：
+\[
+\bm t_i=(t_x,t_y,t_w,t_h,t_\theta)
+=(0.40,-0.20,-3.00,-3.90,0.064).
+\]
+
+中心用 anchored decode：
+\[
+(x_i,y_i)=\bm a_i+\frac{1}{16}\tanh(t_x,t_y).
+\]
+因为：
+\[
+\tanh(0.40)=0.380,\quad \tanh(-0.20)=-0.197,
+\]
+所以：
+\[
+x_i=0.53125+0.380/16=0.5550,
+\quad
+y_i=0.46875-0.197/16=0.4564.
+\]
+
+宽高用 sigmoid 解码：
+\[
+w_i=\sigma(-3.00)=0.0474,\quad h_i=\sigma(-3.90)=0.0198.
+\]
+角度为：
+\[
+\theta_i=\frac{\pi}{2}\tanh(0.064)\approx1.5708\times0.0639=0.100.
+\]
+
+最终预测框为：
+\[
+b_i=(0.5550,0.4564,0.0474,0.0198,0.100).
+\]
+它与真实框
+\[
+b^{gt}=(0.55,0.46,0.045,0.020,0.10)
+\]
+非常接近，因此有机会取得较高 rotated IoU。
+
+\subsection{步骤 5：Prompt bank 分类}
+
+假设类别集合只看四类：
+\[
+\mathcal{C}=\{\text{small-vehicle},\text{large-vehicle},\text{ship},\text{harbor}\}.
+\]
+
+对于 small-vehicle，构造三条 prompt：
+\[
+\begin{aligned}
+p_1&=\text{``a small vehicle in an aerial image''},\\
+p_2&=\text{``a road vehicle smaller than a truck''},\\
+p_3&=\text{``a tiny car-like object on road''}.
+\end{aligned}
+\]
+
+假设文本编码和加权后得到类别嵌入 $\bar{\bm e}_{sv}$。视觉 query 特征投影后为 $\phi(\bm r_i)$。为简化，只看余弦相似度：
+\[
+\cos(\bm r_i,\bar{\bm e}_{sv})=0.78,
+\quad
+\cos(\bm r_i,\bar{\bm e}_{lv})=0.55,
+\]
+\[
+\cos(\bm r_i,\bar{\bm e}_{ship})=0.30,
+\quad
+\cos(\bm r_i,\bar{\bm e}_{harbor})=0.22.
+\]
+设温度 $\tau=0.1$，则 logits 为：
+\[
+z=[7.8,5.5,3.0,2.2].
+\]
+softmax 后 small-vehicle 概率约为：
+\[
+p_{sv}=\frac{e^{7.8}}{e^{7.8}+e^{5.5}+e^{3.0}+e^{2.2}}
+\approx0.90.
+\]
+因此该 query 的类别预测为 small-vehicle，置信度约为 $0.90$。
+
+\subsection{步骤 6：层次一致性检查}
+
+假设类别树中：
+\[
+\text{vehicle}\rightarrow\text{small-vehicle}.
+\]
+如果模型认为 small-vehicle 分数很高，但 vehicle 父类语义分数很低，就不合理。可定义：
+\[
+h_i=\min(s_{\text{child}},s_{\text{parent}}).
+\]
+例如：
+\[
+s_{\text{small-vehicle}}=0.90,\quad s_{\text{vehicle}}=0.82,
+\]
+则：
+\[
+h_i=0.82.
+\]
+若另一个预测是 harbor，但 crop 更像 vehicle，层次一致性可能低，从而在伪标签净化中被削弱。
+
+\subsection{步骤 7：伪标签净化打分}
+
+若这个 tile 是无标注数据，当前检测结果只是候选伪标签。设：
+\[
+d_j=0.90,\quad h_j=0.82,\quad v_j=0.76,\quad a_j=0.88.
+\]
+其中：
+\begin{itemize}
+  \item $d_j=0.90$：检测器分类置信度。
+  \item $h_j=0.82$：child-parent 层次一致性。
+  \item $v_j=0.76$：crop 与 ``small vehicle'' 文本的 VLM 相似度。
+  \item $a_j=0.88$：几何形状符合 small-vehicle，宽高比较合理。
+\end{itemize}
+
+设权重为：
+\[
+\beta_1=\beta_2=\beta_3=\beta_4=0.5.
+\]
+线性分数：
+\[
+u=0.5(0.90+0.82+0.76+0.88)=1.68.
+\]
+净化分数：
+\[
+q_j=\sigma(1.68)\approx0.843.
+\]
+若阈值 $\tau_q=0.80$，该伪标签被接受，并在训练中以权重 $0.843$ 进入 loss。
+
+\subsection{步骤 8：Rotated NMS}
+
+假设同一辆车有两个候选框：
+\[
+b_1:\ s_1=0.90,\quad b_2:\ s_2=0.83,
+\]
+且 rotated IoU 为：
+\[
+\operatorname{rIoU}(b_1,b_2)=0.72.
+\]
+若 NMS 阈值为 $T_{nms}=0.5$，则保留分数更高的 $b_1$，删除 $b_2$。最终输出为：
+\[
+(\text{small-vehicle},\ 0.90,\ (0.5550,0.4564,0.0474,0.0198,0.100)).
+\]
+
+\subsection{完整流程小结图}
+
+\begin{center}
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[node distance=6mm and 4mm, font=\scriptsize]
+  \node[block] (a) {6000x6000 原图};
+  \node[block, right=of a] (b) {切片\\1024, stride 768};
+  \node[block, right=of b] (c) {tile\\$3\times1024\times1024$};
+  \node[block, below=of c] (d) {Backbone\\$256\times64\times64$};
+  \node[block, left=of d] (e) {16x16 queries\\256 个中心};
+  \node[block, left=of e] (f) {anchored decode\\预测旋转框};
+  \node[block, below=of f] (g) {prompt 相似度\\类别概率};
+  \node[block, right=of g] (h) {伪标签净化\\$q_j$};
+  \node[block, right=of h] (i) {Rotated NMS};
+  \node[block, above=of i] (j) {最终输出\\类别+框+分数};
+
+  \draw[arrow] (a) -- (b);
+  \draw[arrow] (b) -- (c);
+  \draw[arrow] (c) -- (d);
+  \draw[arrow] (d) -- (e);
+  \draw[arrow] (e) -- (f);
+  \draw[arrow] (f) -- (g);
+  \draw[arrow] (g) -- (h);
+  \draw[arrow] (h) -- (i);
+  \draw[arrow] (i) -- (j);
+\end{tikzpicture}%
+}
+\end{center}
+
+\section{后续可转向的方向}
+
+\subsection{几条路线之间的关系}
+
+当前不是只有一条路。更准确地说，有一条主线和几条备选线：
+
+\begin{center}
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[node distance=8mm and 6mm, font=\small]
+  \node[warnblock] (s0) {S0\\可信旋转检测基线};
+  \node[block, right=of s0] (s1) {S1\\层次 Prompt Bank};
+  \node[block, right=of s1] (s2) {S2\\场景上下文 Adapter};
+  \node[block, right=of s2] (s3) {S3\\VLM 伪标签净化};
+  \node[smallblock, below=12mm of s0] (scaf) {轻量 scaffold\\快速验证};
+  \node[smallblock, below=12mm of s1] (strong) {MMRotate / Oriented R-CNN\\论文级强基线};
+  \node[smallblock, below=12mm of s2] (robust) {Prompt robustness\\词表鲁棒性分析};
+  \node[smallblock, below=12mm of s3] (route) {Routing\\可选消融};
+
+  \draw[arrow] (s0) -- (s1);
+  \draw[arrow] (s1) -- (s2);
+  \draw[arrow] (s2) -- (s3);
+  \draw[arrow] (scaf) -- (s0);
+  \draw[arrow] (strong) -- (s0);
+  \draw[arrow] (robust) -- (s2);
+  \draw[arrow] (route) -- (s3);
+\end{tikzpicture}%
+}
+\end{center}
+
+关键判断是：如果 S0 基线不可信，S1--S3 的提升就没有论文价值。因此强基线不是``额外工作''，而是论文能否成立的地基。
+
+\subsection{方向 A：继续修复轻量 scaffold}
+
+优点是工程成本低、和现有代码衔接最好；缺点是即使修复后也未必达到论文级检测性能。适合做快速 sanity check。
+
+建议动作：
+\begin{itemize}
+  \item 用 \texttt{dota\_v15\_anchor\_repair.yaml} 跑 1--3 epoch。
+  \item 诊断 best IoU、center bias、类别分布和 AP50。
+  \item 如果 AP50 仍接近零，则停止在 scaffold 上堆叠创新模块。
+\end{itemize}
+
+\textbf{scaffold 适合回答的问题：}
+\begin{itemize}
+  \item query center 是否能缓解中心偏置？
+  \item 数据加载、坐标变换、rotated IoU、NMS 是否基本正确？
+  \item prompt bank、context adapter、pseudo-label purification 的代码路径是否能跑通？
+\end{itemize}
+
+\textbf{scaffold 不适合承担的问题：}
+\begin{itemize}
+  \item 不能用它证明方法达到 SOTA。
+  \item 不能用 near-zero baseline 的轻微改善作为强论文证据。
+  \item 不能把 hash text embedding 伪装成真实 VLM 能力。
+\end{itemize}
+
+\subsection{方向 B：引入强旋转检测器作为 S0}
+
+这是最符合论文要求的方向。建议使用 MMRotate 或等价实现中的 Oriented R-CNN、RoI Transformer、ReDet。
+
+优点：
+\begin{itemize}
+  \item 更容易获得可信基线。
+  \item 后续层次 prompt、context adapter、pseudo-label purification 的增益更有说服力。
+  \item 审稿人更容易接受。
+\end{itemize}
+
+风险：
+\begin{itemize}
+  \item 环境安装和 DOTA 格式适配成本更高。
+  \item 需要明确区分 strong detector baseline 与本仓库 scaffold 的结果。
+\end{itemize}
+
+\subsubsection*{MMRotate 是什么}
+
+MMRotate 是 OpenMMLab 体系中的旋转目标检测工具箱，通常包含 DOTA 数据集处理、旋转框表示、旋转 IoU、旋转 NMS、主流检测器配置和训练评估脚本。它的价值在于减少我们手写检测器基础设施的风险。对本项目来说，MMRotate 可以提供一个可信 S0：
+\[
+\text{DOTA tile}\rightarrow\text{standard OBB detector}\rightarrow\text{可信 mAP}.
+\]
+
+如果 S0 使用 MMRotate，GeoNexus-RSD 的创新可以转移到：
+\begin{itemize}
+  \item 用层次 prompt 替换或辅助分类头；
+  \item 用场景上下文调节类别语义；
+  \item 用 VLM 净化半监督伪标签；
+  \item 在强基线上做消融，而不是在弱 scaffold 上证明效果。
+\end{itemize}
+
+\subsubsection*{Oriented R-CNN}
+
+Oriented R-CNN 是两阶段旋转检测器。简化流程为：
+\[
+I\rightarrow F\rightarrow \text{RPN proposals}\rightarrow
+\text{oriented RoI features}\rightarrow
+(c,b).
+\]
+其中第一阶段生成候选区域，第二阶段对候选区域分类和回归旋转框。它适合作为基线，因为结构清楚、DOTA 上常用、结果通常比轻量 scaffold 可靠。
+
+若把 GeoNexus-RSD 接到 Oriented R-CNN 上，可能的接法是：
+\begin{itemize}
+  \item RPN 和 box regression 保持原始实现；
+  \item RoI classification head 由固定线性分类器改为 prompt similarity；
+  \item 对 RoI crop 计算 VLM agreement，用于伪标签过滤；
+  \item 只在分类语义侧做轻量改造，避免破坏几何定位能力。
+\end{itemize}
+
+\subsubsection*{RoI Transformer}
+
+RoI Transformer 的核心思想是把水平候选框转换成旋转候选框，让特征和目标方向更对齐。简化流程为：
+\[
+\text{horizontal RoI}\rightarrow
+\text{learned rotated RoI}\rightarrow
+\text{rotated detection}.
+\]
+它适合遥感场景，因为飞机、船、桥、车辆都有任意方向。若使用它作为 S0，GeoNexus-RSD 仍然可以主要改分类语义和伪标签过滤，而不是重新设计几何模块。
+
+\subsubsection*{ReDet}
+
+ReDet 强调旋转等变特征。直观理解：如果图像旋转，特征也应以可预测方式旋转，而不是完全改变。它适合旋转目标密集的航空图像，但实现和环境成本可能比 Oriented R-CNN 更高。
+
+\subsubsection*{选择建议}
+
+如果目标是尽快得到可信论文结果，优先级建议为：
+\[
+\text{Oriented R-CNN} \;>\; \text{RoI Transformer} \;>\; \text{ReDet} \;>\; \text{继续手写完整检测器}.
+\]
+原因是 Oriented R-CNN 结构清楚，和 prompt classification head 的结合最直接。
+
+\subsection{方向 C：把当前工作定位成方法路线和失败分析}
+
+如果时间非常紧，可以把短论文先写成方法设计、流程复现和失败分析文档。优点是风险低；缺点是缺少强实验结果，不适合作为最终 JSTARS 投稿。
+
+\subsection{方向 D：缩小论文目标}
+
+若检测器基线长期不稳定，可以暂时缩小为：
+\begin{itemize}
+  \item prompt robustness study；
+  \item hierarchy-aware pseudo-label filtering study；
+  \item reduced DOTA setup 上的 pipeline paper；
+  \item workshop 或技术报告。
+\end{itemize}
+
+\subsection{方向 E：只做层次提示和 prompt robustness}
+
+如果强检测器接入时间不足，可以先做一个较窄的实验：固定 detector，只改变类别文本描述，测试类别名、别名、父类描述、对比描述对结果的影响。这个方向的优点是实现简单，能够直接解释 ``prompt 是否有用''。缺点是如果 detector 本身很弱，prompt 的效果会被定位错误掩盖。
+
+可设计四组 prompt：
+\[
+\begin{aligned}
+P_1 &: \text{仅类别名},\\
+P_2 &: \text{类别名 + 别名},\\
+P_3 &: \text{类别名 + 父类层次},\\
+P_4 &: \text{类别名 + 父类 + 对比描述}.
+\end{aligned}
+\]
+比较指标包括 mAP、class-wise AP、small/large vehicle confusion、ship/harbor confusion。
+
+\subsection{方向 F：只做伪标签净化}
+
+如果检测器基线已经可用，但 prompt head 改造风险较高，可以先把 VLM 和层次结构用于伪标签过滤，而不改 detector 主体。流程为：
+\[
+\text{teacher detections}\rightarrow
+\text{hierarchy + VLM + geometry filtering}\rightarrow
+\text{student training}.
+\]
+优点是对检测器侵入小；缺点是需要额外 crop-text 模型，且 VLM 对遥感小目标可能不稳定。
+
+\subsection{方向 G：Routing 作为后续可选模块}
+
+Routing 的意思是让模型根据样本难度或场景选择不同分支。例如：
+\[
+\bm o_i=\sum_{m=1}^{M}\pi_{i,m}\bm o_i^{(m)},
+\quad
+\bm \pi_i=\operatorname{softmax}(R([\bm g,\bm r_i])).
+\]
+符号含义：
+\begin{itemize}
+  \item $M$：分支数量，例如 flat prompt、hierarchy prompt、context prompt 三个分支。
+  \item $\bm o_i^{(m)}$：第 $m$ 个分支对第 $i$ 个 query 的输出。
+  \item $\pi_{i,m}$：第 $i$ 个 query 使用第 $m$ 个分支的权重。
+  \item $R(\cdot)$：router 网络。
+\end{itemize}
+
+数值例子：假设三个分支输出类别 logit 分别为：
+\[
+o^{(1)}=5.0,\quad o^{(2)}=6.2,\quad o^{(3)}=5.7,
+\]
+router 给出权重：
+\[
+\pi=[0.2,0.5,0.3].
+\]
+融合后：
+\[
+o=0.2\times5.0+0.5\times6.2+0.3\times5.7=5.81.
+\]
+
+Routing 的风险是它会增加复杂度，而且在 S1--S3 没有稳定收益前，很难解释它到底解决了什么问题。因此当前只建议作为 S5 optional ablation。
+
+\section{当前主要问题与解决方案}
+
+\noindent\begin{tabularx}{\linewidth}{p{0.22\linewidth}XX}
+\toprule
+问题 & 具体表现 & 可能解决方案 \\
+\midrule
+基线 AP 接近零 & DOTA v1/v1.5 AP50 极低 & 优先修复定位路径；同时准备 MMRotate 强基线 \\
+定位中心偏置 & 预测框集中、同类 IoU 低 & 使用 query center anchored decode；检查坐标归一化和 tile 映射 \\
+类别塌缩 & 少数类别得分占优 & 检查类别权重、prompt embedding、loss 平衡和数据分布 \\
+伪标签噪声 & 小目标密集场景误检多 & 引入层次一致性、VLM agreement 和几何合理性过滤 \\
+论文 claim 风险 & 目前没有有效性能结果 & 只写流程和方法，不写未验证提升；所有数值标明 dataset/version \\
+\bottomrule
+\end{tabularx}
+
+\section{推荐执行顺序}
+
+推荐顺序如下：
+\begin{enumerate}
+  \item 确认当前 GitHub 最新代码已经覆盖本地文件。
+  \item 构建本文档 PDF 和 canonical paper PDF，作为当前路线记录。
+  \item 在服务器上跑 \texttt{dota\_v15\_anchor\_repair} 1--3 epoch。
+  \item 运行诊断脚本，比较 baseline 与 anchor repair 的定位质量。
+  \item 并行准备强旋转检测器 S0 baseline。
+  \item 只有当 S0 可信后，再运行 S1 层次提示、S2 上下文适配、S3 伪标签净化。
+\end{enumerate}
+
+\section{最终论文中应避免的表述}
+
+在没有真实结果前，应避免：
+\begin{itemize}
+  \item 声称 ``显著提升 mAP''。
+  \item 声称 ``open-vocabulary detection''，除非使用真实 VLM embedding 并做开放词表评估。
+  \item 把 DOTA v1.0、v1.5、v2 的数值混在一个表里。
+  \item 把 hash-based text embedding 写成 CLIP 或 RemoteCLIP。
+  \item 把 near-zero scaffold baseline 当作论文基线。
+\end{itemize}
+
+\section{一句话总结}
+
+GeoNexus-RSD 当前最合理的路线是：先用强旋转检测器或定位修复得到可信 S0，再在此基础上验证层次提示、场景上下文适配和 VLM 辅助伪标签净化；routing 和 compression 只能作为后续可选消融，不能成为当前主线。
+
+\end{document}
