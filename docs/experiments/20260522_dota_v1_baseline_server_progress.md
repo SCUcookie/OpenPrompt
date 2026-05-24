@@ -58,7 +58,9 @@ Start the first server-side baseline reproduction run on DOTA v1.0 and verify th
 
 ## Next Action
 
-Monitor the running DOTA v1.5 baseline, then evaluate the checkpoint and record the metrics.
+Monitor the running DOTA v1.5 baseline, then evaluate the checkpoint and record
+the metrics in
+`docs/experiments/20260523_dota_v15_baseline_server_followup.md`.
 
 ## Evaluation Gate
 
@@ -114,6 +116,9 @@ bash scripts/run_train_in_screen.sh \
 ```
 
 ## v1.5 Follow-up
+
+Detailed follow-up record:
+`docs/experiments/20260523_dota_v15_baseline_server_followup.md`
 
 Detached screen session: `openprompt_dota_v15_baseline` (completed)
 

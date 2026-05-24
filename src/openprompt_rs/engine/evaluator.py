@@ -159,6 +159,169 @@ def decode_detections(
     return detections
 
 
+def _tensor_summary(values: torch.Tensor) -> dict[str, float]:
+    if values.numel() == 0:
+        return {
+            "min": 0.0,
+            "p05": 0.0,
+            "p50": 0.0,
+            "p95": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+        }
+    values = values.float().flatten()
+    return {
+        "min": float(values.min().item()),
+        "p05": float(torch.quantile(values, 0.05).item()),
+        "p50": float(torch.quantile(values, 0.50).item()),
+        "p95": float(torch.quantile(values, 0.95).item()),
+        "max": float(values.max().item()),
+        "mean": float(values.mean().item()),
+    }
+
+
+def _best_iou_for_detection(
+    box: torch.Tensor,
+    label: torch.Tensor,
+    target: dict[str, torch.Tensor],
+    same_class_only: bool,
+) -> float:
+    target_boxes = target["boxes"].detach().cpu()
+    if target_boxes.numel() == 0:
+        return 0.0
+    target_labels = target["labels"].detach().cpu()
+    if same_class_only:
+        target_boxes = target_boxes[target_labels == int(label.item())]
+    if target_boxes.numel() == 0:
+        return 0.0
+    return max(rotated_box_iou(box, target_box) for target_box in target_boxes)
+
+
+@torch.no_grad()
+def collect_detection_diagnostics(
+    model: torch.nn.Module,
+    dataloader: torch.utils.data.DataLoader,
+    device: str,
+    class_names: list[str],
+    score_thresholds: list[float] | None = None,
+    nms_iou_threshold: float = 0.3,
+    max_detections: int = 100,
+    max_batches: int | None = None,
+) -> dict[str, Any]:
+    model.eval()
+    thresholds = score_thresholds or [0.05, 0.01, 0.001]
+    raw_scores: list[torch.Tensor] = []
+    raw_labels: list[torch.Tensor] = []
+    raw_boxes: list[torch.Tensor] = []
+    gt_class_counts = torch.zeros(len(class_names), dtype=torch.long)
+    raw_predicted_class_counts = torch.zeros(len(class_names), dtype=torch.long)
+    detections_by_threshold = {
+        threshold: {
+            "count": 0,
+            "per_image": [],
+            "scores": [],
+            "best_iou_any_class": [],
+            "best_iou_same_class": [],
+            "class_counts": torch.zeros(len(class_names), dtype=torch.long),
+        }
+        for threshold in thresholds
+    }
+    num_images = 0
+
+    for batch_index, batch in enumerate(dataloader):
+        if max_batches is not None and batch_index >= max_batches:
+            break
+
+        images = batch["images"].to(device)
+        outputs = model(images)
+        probabilities = torch.sigmoid(outputs["logits"].detach().cpu())
+        scores, labels = probabilities.max(dim=-1)
+        boxes = outputs["boxes"].detach().cpu()
+        raw_scores.append(scores.flatten())
+        raw_labels.append(labels.flatten())
+        raw_boxes.append(boxes.reshape(-1, boxes.size(-1)))
+        raw_predicted_class_counts += torch.bincount(labels.flatten(), minlength=len(class_names))[: len(class_names)]
+
+        for target in batch["targets"]:
+            target_labels = target["labels"].detach().cpu()
+            if target_labels.numel() > 0:
+                gt_class_counts += torch.bincount(target_labels, minlength=len(class_names))[: len(class_names)]
+
+        for threshold in thresholds:
+            decoded = decode_detections(
+                outputs,
+                score_threshold=threshold,
+                nms_iou_threshold=nms_iou_threshold,
+                max_detections=max_detections,
+            )
+            threshold_stats = detections_by_threshold[threshold]
+            for sample_offset, detection in enumerate(decoded):
+                det_count = int(detection["scores"].numel())
+                threshold_stats["count"] += det_count
+                threshold_stats["per_image"].append(det_count)
+                if det_count == 0:
+                    continue
+                threshold_stats["scores"].extend(float(score.item()) for score in detection["scores"])
+                threshold_stats["class_counts"] += torch.bincount(
+                    detection["labels"],
+                    minlength=len(class_names),
+                )[: len(class_names)]
+                target = batch["targets"][sample_offset]
+                for box, label in zip(detection["boxes"], detection["labels"]):
+                    threshold_stats["best_iou_any_class"].append(
+                        _best_iou_for_detection(box, label, target, same_class_only=False)
+                    )
+                    threshold_stats["best_iou_same_class"].append(
+                        _best_iou_for_detection(box, label, target, same_class_only=True)
+                    )
+        num_images += int(images.size(0))
+
+    all_scores = torch.cat(raw_scores) if raw_scores else torch.zeros((0,), dtype=torch.float32)
+    all_labels = torch.cat(raw_labels) if raw_labels else torch.zeros((0,), dtype=torch.long)
+    all_boxes = torch.cat(raw_boxes) if raw_boxes else torch.zeros((0, 5), dtype=torch.float32)
+
+    threshold_payload: dict[str, Any] = {}
+    for threshold, stats in detections_by_threshold.items():
+        per_image = torch.tensor(stats["per_image"], dtype=torch.float32)
+        score_values = torch.tensor(stats["scores"], dtype=torch.float32)
+        any_iou = torch.tensor(stats["best_iou_any_class"], dtype=torch.float32)
+        same_class_iou = torch.tensor(stats["best_iou_same_class"], dtype=torch.float32)
+        threshold_payload[str(threshold)] = {
+            "num_detections": int(stats["count"]),
+            "detections_per_image": _tensor_summary(per_image),
+            "score_summary": _tensor_summary(score_values),
+            "best_iou_any_class_summary": _tensor_summary(any_iou),
+            "best_iou_same_class_summary": _tensor_summary(same_class_iou),
+            "class_counts": {
+                class_name: int(stats["class_counts"][class_id].item())
+                for class_id, class_name in enumerate(class_names)
+            },
+        }
+
+    return {
+        "num_eval_images": num_images,
+        "num_raw_queries": int(all_scores.numel()),
+        "raw_score_summary": _tensor_summary(all_scores),
+        "raw_box_summary": {
+            "cx": _tensor_summary(all_boxes[:, 0]) if all_boxes.numel() else _tensor_summary(torch.zeros((0,))),
+            "cy": _tensor_summary(all_boxes[:, 1]) if all_boxes.numel() else _tensor_summary(torch.zeros((0,))),
+            "width": _tensor_summary(all_boxes[:, 2]) if all_boxes.numel() else _tensor_summary(torch.zeros((0,))),
+            "height": _tensor_summary(all_boxes[:, 3]) if all_boxes.numel() else _tensor_summary(torch.zeros((0,))),
+            "theta": _tensor_summary(all_boxes[:, 4]) if all_boxes.numel() else _tensor_summary(torch.zeros((0,))),
+        },
+        "raw_predicted_class_counts": {
+            class_name: int(raw_predicted_class_counts[class_id].item())
+            for class_id, class_name in enumerate(class_names)
+        },
+        "gt_class_counts": {
+            class_name: int(gt_class_counts[class_id].item())
+            for class_id, class_name in enumerate(class_names)
+        },
+        "thresholds": threshold_payload,
+        "raw_predicted_unique_classes": int(all_labels.unique().numel()) if all_labels.numel() else 0,
+    }
+
+
 def _average_precision(recalls: torch.Tensor, precisions: torch.Tensor) -> float:
     if recalls.numel() == 0:
         return 0.0

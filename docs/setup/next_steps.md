@@ -18,10 +18,14 @@ needed.
 
 ## Baseline-First Experiment Order
 
-1. Verify dataset loading and tiling.
-2. Run synthetic smoke tests.
-3. Run the local lightweight baseline only as a code sanity check.
-4. Establish a credible strong oriented detector baseline on DOTA v1.0 or DOTA v1.5.
+1. Diagnose the completed DOTA v1.5 scaffold baseline from
+   `docs/experiments/20260523_dota_v15_baseline_server_followup.md`.
+2. Because DOTA v1.5 is also near zero, diagnose the baseline scaffold before any
+   hierarchy/context/pseudo-label novelty work.
+3. Establish a credible strong oriented detector baseline on DOTA v1.0 or
+   DOTA v1.5.
+4. Replace hash text embeddings with a documented real VLM encoder such as
+   CLIP, SkyCLIP, or RemoteCLIP before making vision-language claims.
 5. Run flat class-name prompt classification.
 6. Add hierarchical prompt bank.
 7. Add scene/context prompt adapter.
@@ -77,6 +81,28 @@ PYTHONPATH=src python scripts/self_train.py \
 - Verify DOTA tiling, class mapping, rotated IoU/NMS, and mAP.
 - Record complete experiments in `docs/experiments/`.
 - Report prompt robustness and pseudo-label quality, not only final mAP.
+
+## Current Baseline Gate
+
+The DOTA v1.0 reduced tiled scaffold run completed on 2026-05-23 with
+`map50=3.326794065590851e-06`, `mean_precision=0.00015695091957847277`, and
+`mean_recall=0.00037193994697493814` on 4055 validation images. This passed the
+nonzero sanity gate but is far too weak for paper claims.
+
+The DOTA v1.5 matched scaffold run completed on 2026-05-24 with
+`map50=1.0926445202230628e-05`, `mean_precision=0.0006667361585641629`, and
+`mean_recall=0.0011823561703749874` on 4055 validation images. This is also
+near zero, so pause S1-S5 prompt experiments and diagnose:
+
+1. train/val image count, tile count, label count, and class distribution
+2. decoded prediction score distribution before thresholding
+3. threshold sweeps at `0.05`, `0.01`, and `0.001`
+4. predicted box coordinates after tiling and normalization reversal
+5. DOTA v1.0/v1.5 class mapping and ignored/difficulty label handling
+6. prediction visualizations on a small validation-tile subset
+
+The first three checks are now covered by `scripts/diagnose_baseline.py`; run it
+with the matched config and checkpoint before changing the model.
 
 ## Acceptance Criteria For JSTARS
 

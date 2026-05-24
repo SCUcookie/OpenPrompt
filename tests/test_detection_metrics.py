@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import torch
 
-from openprompt_rs.engine.evaluator import decode_detections, evaluate_detection_map50, rotated_box_iou
+from openprompt_rs.engine.evaluator import (
+    collect_detection_diagnostics,
+    decode_detections,
+    evaluate_detection_map50,
+    rotated_box_iou,
+)
 
 
 class FixedModel(torch.nn.Module):
@@ -59,3 +64,43 @@ def test_evaluate_detection_map50_perfect_prediction() -> None:
     )
     assert abs(metrics["ap50_plane"] - 1.0) < 1e-6
     assert abs(metrics["map50"] - 1.0) < 1e-6
+
+
+def test_collect_detection_diagnostics_reports_scores_and_iou() -> None:
+    model = FixedModel(
+        outputs={
+            "logits": torch.tensor([[[10.0, -10.0], [-10.0, 6.0]]], dtype=torch.float32),
+            "boxes": torch.tensor(
+                [[[0.5, 0.5, 0.2, 0.1, 0.0], [0.2, 0.2, 0.1, 0.1, 0.0]]],
+                dtype=torch.float32,
+            ),
+        }
+    )
+    dataloader = [
+        {
+            "images": torch.zeros((1, 3, 32, 32), dtype=torch.float32),
+            "targets": [
+                {
+                    "boxes": torch.tensor([[0.5, 0.5, 0.2, 0.1, 0.0]], dtype=torch.float32),
+                    "labels": torch.tensor([0], dtype=torch.long),
+                }
+            ],
+        }
+    ]
+
+    diagnostics = collect_detection_diagnostics(
+        model=model,
+        dataloader=dataloader,
+        device="cpu",
+        class_names=["plane", "ship"],
+        score_thresholds=[0.5],
+        nms_iou_threshold=0.3,
+        max_detections=10,
+    )
+
+    assert diagnostics["num_eval_images"] == 1
+    assert diagnostics["num_raw_queries"] == 2
+    assert diagnostics["raw_predicted_class_counts"]["plane"] == 1
+    assert diagnostics["raw_predicted_class_counts"]["ship"] == 1
+    assert diagnostics["thresholds"]["0.5"]["num_detections"] == 2
+    assert abs(diagnostics["thresholds"]["0.5"]["best_iou_same_class_summary"]["max"] - 1.0) < 1e-5
