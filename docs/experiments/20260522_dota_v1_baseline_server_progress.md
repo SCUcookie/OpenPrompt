@@ -58,9 +58,9 @@ Start the first server-side baseline reproduction run on DOTA v1.0 and verify th
 
 ## Next Action
 
-Monitor the running DOTA v1.5 baseline, then evaluate the checkpoint and record
-the metrics in
-`docs/experiments/20260523_dota_v15_baseline_server_followup.md`.
+Inspect the scaffold localization path and decide whether the next repair should
+feed `query_centers` into box regression or move to a stronger baseline before
+any prompt/context ablations.
 
 ## Evaluation Gate
 
@@ -153,4 +153,6 @@ Current baseline flows are complete:
 3. DOTA v1.5 baseline training completed.
 4. DOTA v1.5 validation evaluation completed.
 
-The next research step is not another baseline rerun; it is to decide the first defensible ablation or methodology improvement on top of this verified scaffold.
+The next research step is not another baseline rerun; it is to repair the
+localization scaffold first, then decide the first defensible ablation or
+methodology improvement on top of the verified detector path.

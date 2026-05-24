@@ -32,6 +32,21 @@ needed.
 8. Add VLM-assisted pseudo-label purification.
 9. Add optional routing only if the core modules already help.
 
+## Current Diagnosis
+
+The first diagnosis pass is already in hand:
+
+- threshold sweeps do not explain the failure; decoded scores are above the tested thresholds
+- the predictions collapse toward a few classes, especially `small-vehicle` and `harbor`
+- the inspected validation tile shows boxes clustered near the center instead of aligned with GT objects
+- `QueryGenerator` emits `query_centers`, but the current box heads do not use them
+
+So the next step is not S1-S5 prompt work. The next step is to inspect the
+localization scaffold in `src/openprompt_rs/models/backbone.py`,
+`src/openprompt_rs/models/heads.py`, and `src/openprompt_rs/models/detector.py`,
+then decide whether to add an explicit spatial anchor or swap to a stronger
+baseline path.
+
 ## Current Local Scaffold Commands
 
 Build a prompt-bank artifact for inspection:
@@ -82,6 +97,9 @@ PYTHONPATH=src python scripts/self_train.py \
 - Record complete experiments in `docs/experiments/`.
 - Report prompt robustness and pseudo-label quality, not only final mAP.
 
+The current state does not justify prompt ablations yet; restore a credible
+localizer first.
+
 ## Current Baseline Gate
 
 The DOTA v1.0 reduced tiled scaffold run completed on 2026-05-23 with
@@ -103,6 +121,19 @@ near zero, so pause S1-S5 prompt experiments and diagnose:
 
 The first three checks are now covered by `scripts/diagnose_baseline.py`; run it
 with the matched config and checkpoint before changing the model.
+
+Preliminary quick diagnostics on the staged v1.5 checkpoint show that the issue
+is not thresholding: raw scores stay above the tested thresholds, predicted
+classes collapse toward `small-vehicle` / `harbor`, and the inspected sample is
+center-biased with very low same-class IoU. Treat the next step as scaffold
+inspection of decoding / assignment / baseline capacity before any S1-S5 prompt
+work.
+
+One concrete code hypothesis to test next: `QueryGenerator` computes
+`query_centers`, but the current box heads do not consume them, so the detector
+is regressing boxes without an explicit spatial anchor. If that hypothesis
+holds, the next fix should touch the box head or a stronger baseline rather
+than prompt modules.
 
 ## Acceptance Criteria For JSTARS
 

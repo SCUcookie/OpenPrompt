@@ -123,5 +123,34 @@ Nonzero class values appeared for harbor, plane, ship, small-vehicle, and
 tennis-court, but all values remain extremely weak.
 
 This is a completed scaffold sanity check, not a paper-quality detector result.
-Because v1.5 is also near zero, the next action is baseline diagnosis before
+Because v1.5 is also near zero, the next action is scaffold repair before any
 hierarchy, scene-context, or pseudo-label novelty experiments.
+
+## Preliminary Diagnosis
+
+Quick diagnostic run with `--max-batches 50` showed:
+
+- validation tiles are highly imbalanced, with `small-vehicle` dominating the GT class counts
+- raw detection scores are already above the tested thresholds, so `0.05`, `0.01`, and `0.001` do not change the decoded count
+- predictions are heavily class-collapsed toward `small-vehicle`, `harbor`, `plane`, and `ship`
+- predicted boxes are center-biased on the inspected tile, with mean centers near the tile midpoint and very low same-class IoU against GT
+
+Spot-checking one validation tile confirmed the failure mode:
+
+- GT objects are spread across the tile
+- top predictions cluster near the center
+- top predicted classes are mostly `small-vehicle` with a few `plane` and `ship` boxes
+
+This points to a weak scaffold localizer rather than a thresholding issue.
+
+Implementation note: `QueryGenerator` returns `query_centers`, but the current
+`AlignmentHead` and `FusionHead` regress boxes only from pooled query tokens.
+That means the scaffold has no explicit spatial anchor in the box head, which
+may contribute to the center bias seen in the sample spot check.
+
+## Next Step
+
+Inspect the box-regression path in `src/openprompt_rs/models/heads.py` and
+`src/openprompt_rs/models/detector.py`, then decide whether the quickest repair
+is to feed `query_centers` into box regression or to move to a stronger baseline
+implementation before any prompt/context ablations.
