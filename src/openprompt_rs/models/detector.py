@@ -15,11 +15,18 @@ class ModularPromptDetector(nn.Module):
     def __init__(self, prompt_bank: PromptBank, model_cfg: dict[str, Any]) -> None:
         super().__init__()
         embedding_dim = model_cfg["embedding_dim"]
+        use_query_centers_in_box_head = bool(model_cfg.get("use_query_centers_in_box_head", False))
         self.prompt_bank = prompt_bank
         self.backbone = TinyBackbone(output_dim=model_cfg["backbone_dim"])
         self.query_generator = QueryGenerator(feature_dim=model_cfg["backbone_dim"], grid_size=model_cfg["grid_size"])
-        self.alignment_head = AlignmentHead(embedding_dim=embedding_dim)
-        self.fusion_head = FusionHead(embedding_dim=embedding_dim)
+        self.alignment_head = AlignmentHead(
+            embedding_dim=embedding_dim,
+            use_query_centers=use_query_centers_in_box_head,
+        )
+        self.fusion_head = FusionHead(
+            embedding_dim=embedding_dim,
+            use_query_centers=use_query_centers_in_box_head,
+        )
         self.alignment_weight = float(model_cfg["alignment_weight"])
         self.fusion_weight = float(model_cfg["fusion_weight"])
         self.innovation_cfg, self.innovations = build_innovation_modules(
@@ -44,8 +51,8 @@ class ModularPromptDetector(nn.Module):
         if "scene_adapter" in self.innovations:
             prompt_embeddings, scene_scores = self.innovations["scene_adapter"](prompt_embeddings, scene_feature)
 
-        alignment = self.alignment_head(query_tokens, prompt_embeddings)
-        fusion = self.fusion_head(query_tokens, prompt_embeddings)
+        alignment = self.alignment_head(query_tokens, prompt_embeddings, query_centers=query_centers)
+        fusion = self.fusion_head(query_tokens, prompt_embeddings, query_centers=query_centers)
 
         if "router" in self.innovations:
             route = self.innovations["router"](query_tokens, alignment["logits"], alignment["boxes"])

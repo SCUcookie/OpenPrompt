@@ -46,6 +46,9 @@ Read /data5/2025/ldh/OpenPrompt/SESSION_START.md and start working from it.
 - The matched DOTA v1.5 baseline training and validation evaluation have completed; the result is `map50=1.0926445202230628e-05` on 4055 images, which is still only a sanity-check baseline.
 - Quick diagnostics show the weak v1.5 result is not a thresholding artifact: decoded scores stay above `0.05`, `0.01`, and `0.001`, predictions collapse toward `small-vehicle`/`harbor`/`plane`/`ship`, and a sample tile shows center-biased boxes with very low same-class IoU.
 - `QueryGenerator` currently produces `query_centers`, but the box heads ignore them. The next step is to inspect and repair the scaffold localization path before starting S1-S5 prompt ablations.
+- Anchor-repair quick test completed and produced `outputs/dota_v15_anchor_repair/epoch_001.pt`; the final training metrics were `loss=0.07363908355801901`, `loss_cls=0.001671954903589549`, `loss_box=0.035983564312892485`, `positive_cls_acc=0.5529336195676059`, and `positive_box_l1=0.10294117139314753`.
+- Strong-baseline preparation should proceed in parallel using `docs/setup/strong_baseline_checklist.md`.
+- The anchor-repair run is archived in `docs/experiments/20260524_dota_v15_anchor_repair_quick_test.md`.
 
 ## Main Decision
 

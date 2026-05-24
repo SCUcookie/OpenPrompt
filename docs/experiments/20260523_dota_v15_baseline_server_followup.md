@@ -154,3 +154,15 @@ Inspect the box-regression path in `src/openprompt_rs/models/heads.py` and
 `src/openprompt_rs/models/detector.py`, then decide whether the quickest repair
 is to feed `query_centers` into box regression or to move to a stronger baseline
 implementation before any prompt/context ablations.
+
+If the anchor-repair smoke test fails to reduce center bias or improve
+best-IoU/recall meaningfully, shift effort to the stronger detector path
+instead of extending the scaffold further.
+
+Update 2026-05-24:
+The anchor-repair smoke test completed and is archived in
+`docs/experiments/20260524_dota_v15_anchor_repair_quick_test.md`. The 1-epoch
+run wrote `outputs/dota_v15_anchor_repair/epoch_001.pt` and finished with
+training-only metrics `loss=0.07363908355801901`, `loss_cls=0.001671954903589549`,
+`loss_box=0.035983564312892485`, `positive_cls_acc=0.5529336195676059`, and
+`positive_box_l1=0.10294117139314753`.

@@ -18,19 +18,24 @@ needed.
 
 ## Baseline-First Experiment Order
 
-1. Diagnose the completed DOTA v1.5 scaffold baseline from
-   `docs/experiments/20260523_dota_v15_baseline_server_followup.md`.
-2. Because DOTA v1.5 is also near zero, diagnose the baseline scaffold before any
-   hierarchy/context/pseudo-label novelty work.
-3. Establish a credible strong oriented detector baseline on DOTA v1.0 or
-   DOTA v1.5.
-4. Replace hash text embeddings with a documented real VLM encoder such as
-   CLIP, SkyCLIP, or RemoteCLIP before making vision-language claims.
-5. Run flat class-name prompt classification.
-6. Add hierarchical prompt bank.
-7. Add scene/context prompt adapter.
-8. Add VLM-assisted pseudo-label purification.
-9. Add optional routing only if the core modules already help.
+1. Review the completed anchor-repair smoke test in
+  `docs/experiments/20260524_dota_v15_anchor_repair_quick_test.md` and keep
+  the produced checkpoint and training metrics as the archived record for the
+  lightweight scaffold.
+2. Treat the anchor-repair result as checkpoint-only evidence until a later
+  session explicitly resumes validation and diagnosis with the same settings
+  used for `dota_v15_baseline_repro`.
+3. In parallel, prepare the standard oriented-detector path in
+  `docs/setup/strong_baseline_checklist.md`.
+4. Establish a credible strong oriented detector baseline on DOTA v1.0 or
+  DOTA v1.5.
+5. Replace hash text embeddings with a documented real VLM encoder such as
+  CLIP, SkyCLIP, or RemoteCLIP before making vision-language claims.
+6. Run flat class-name prompt classification.
+7. Add hierarchical prompt bank.
+8. Add scene/context prompt adapter.
+9. Add VLM-assisted pseudo-label purification.
+10. Add optional routing only if the core modules already help.
 
 ## Current Diagnosis
 
@@ -41,11 +46,9 @@ The first diagnosis pass is already in hand:
 - the inspected validation tile shows boxes clustered near the center instead of aligned with GT objects
 - `QueryGenerator` emits `query_centers`, but the current box heads do not use them
 
-So the next step is not S1-S5 prompt work. The next step is to inspect the
-localization scaffold in `src/openprompt_rs/models/backbone.py`,
-`src/openprompt_rs/models/heads.py`, and `src/openprompt_rs/models/detector.py`,
-then decide whether to add an explicit spatial anchor or swap to a stronger
-baseline path.
+So the anchor-repair smoke test is now archived. Prompt work stays paused until
+either a later validation shows the scaffold becoming less center-biased or a
+stronger oriented detector is in place.
 
 ## Current Local Scaffold Commands
 
@@ -98,7 +101,7 @@ PYTHONPATH=src python scripts/self_train.py \
 - Report prompt robustness and pseudo-label quality, not only final mAP.
 
 The current state does not justify prompt ablations yet; restore a credible
-localizer first.
+localizer first and record the detector-baseline decision cleanly.
 
 ## Current Baseline Gate
 

@@ -61,7 +61,9 @@ Current diagnosis:
 - Quick baseline diagnostics show the issue is not thresholding; decoded scores stay above the tested thresholds.
 - Predictions collapse toward `small-vehicle`, `harbor`, `plane`, and `ship`, and a spot-checked validation tile shows center-biased boxes with very low same-class IoU.
 - `QueryGenerator` computes `query_centers`, but the current box heads do not consume them, so the scaffold currently regresses boxes without an explicit spatial anchor.
-- The next step is scaffold repair or a stronger detector baseline before any S1-S5 prompt experiments.
+- The anchor-repair quick test completed and wrote `outputs/dota_v15_anchor_repair/epoch_001.pt`; final training metrics were `loss=0.07363908355801901`, `loss_cls=0.001671954903589549`, `loss_box=0.035983564312892485`, `positive_cls_acc=0.5529336195676059`, and `positive_box_l1=0.10294117139314753`.
+- The next step is to archive the completed anchor-repair run and continue the parallel strong-baseline checklist before any S1-S5 prompt experiments.
+- Use `docs/experiments/20260524_dota_v15_anchor_repair_quick_test.md` and `docs/setup/strong_baseline_checklist.md` as the active planning anchors.
 
 Paper-level claims require:
 
@@ -85,7 +87,7 @@ Run experiments in this order:
 Do not add S5 to the main story unless S2-S4 already show stable gains.
 
 If the scaffold baseline is still near zero after diagnosis, pause S1-S5 and
-fix the detector-localization path first.
+fix the detector-localization path first or pivot to the stronger detector path.
 
 Required final analyses:
 

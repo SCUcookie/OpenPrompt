@@ -21,8 +21,9 @@ def decode_box(raw_boxes: torch.Tensor) -> torch.Tensor:
 
 
 class AlignmentHead(nn.Module):
-    def __init__(self, embedding_dim: int) -> None:
+    def __init__(self, embedding_dim: int, use_query_centers: bool = False) -> None:
         super().__init__()
+        self.anchor_proj = nn.Linear(2, embedding_dim) if use_query_centers else None
         self.query_proj = nn.Linear(embedding_dim, embedding_dim)
         self.box_head = nn.Sequential(
             nn.Linear(embedding_dim, embedding_dim),
@@ -31,18 +32,27 @@ class AlignmentHead(nn.Module):
         )
         self.logit_scale = nn.Parameter(torch.tensor(math.log(10.0), dtype=torch.float32))
 
-    def forward(self, query_tokens: torch.Tensor, prompt_embeddings: torch.Tensor) -> dict[str, torch.Tensor]:
+    def forward(
+        self,
+        query_tokens: torch.Tensor,
+        prompt_embeddings: torch.Tensor,
+        query_centers: torch.Tensor | None = None,
+    ) -> dict[str, torch.Tensor]:
         prompt_embeddings = _ensure_prompt_batch(prompt_embeddings, query_tokens.size(0))
         projected_queries = F.normalize(self.query_proj(query_tokens), dim=-1)
         normalized_prompts = F.normalize(prompt_embeddings, dim=-1)
         logits = torch.einsum("bqd,bcd->bqc", projected_queries, normalized_prompts) * self.logit_scale.exp()
-        boxes = decode_box(self.box_head(query_tokens))
+        box_tokens = query_tokens
+        if self.anchor_proj is not None and query_centers is not None:
+            box_tokens = box_tokens + self.anchor_proj(query_centers)
+        boxes = decode_box(self.box_head(box_tokens))
         return {"logits": logits, "boxes": boxes, "query_embeddings": projected_queries}
 
 
 class FusionHead(nn.Module):
-    def __init__(self, embedding_dim: int) -> None:
+    def __init__(self, embedding_dim: int, use_query_centers: bool = False) -> None:
         super().__init__()
+        self.anchor_proj = nn.Linear(2, embedding_dim) if use_query_centers else None
         self.query_proj = nn.Linear(embedding_dim, embedding_dim)
         self.prompt_proj = nn.Linear(embedding_dim, embedding_dim)
         self.value_proj = nn.Linear(embedding_dim, embedding_dim)
@@ -60,7 +70,12 @@ class FusionHead(nn.Module):
         )
         self.logit_scale = nn.Parameter(torch.tensor(math.log(12.0), dtype=torch.float32))
 
-    def forward(self, query_tokens: torch.Tensor, prompt_embeddings: torch.Tensor) -> dict[str, torch.Tensor]:
+    def forward(
+        self,
+        query_tokens: torch.Tensor,
+        prompt_embeddings: torch.Tensor,
+        query_centers: torch.Tensor | None = None,
+    ) -> dict[str, torch.Tensor]:
         batch_size = query_tokens.size(0)
         prompt_embeddings = _ensure_prompt_batch(prompt_embeddings, batch_size)
         normalized_queries = F.normalize(self.query_proj(query_tokens), dim=-1)
@@ -74,6 +89,9 @@ class FusionHead(nn.Module):
         fused_queries = F.normalize(self.out_proj(fused), dim=-1)
         logits = torch.einsum("bqd,bcd->bqc", fused_queries, F.normalize(prompt_embeddings, dim=-1))
         logits = logits * self.logit_scale.exp()
-        boxes = decode_box(self.box_head(fused))
+        box_tokens = fused
+        if self.anchor_proj is not None and query_centers is not None:
+            box_tokens = box_tokens + self.anchor_proj(query_centers)
+        boxes = decode_box(self.box_head(box_tokens))
         return {"logits": logits, "boxes": boxes, "query_embeddings": fused_queries, "attention": attention}
 
