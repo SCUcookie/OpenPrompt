@@ -26,16 +26,20 @@ needed.
   session explicitly resumes validation and diagnosis with the same settings
   used for `dota_v15_baseline_repro`.
 3. In parallel, prepare the standard oriented-detector path in
-  `docs/setup/strong_baseline_checklist.md`.
-4. Establish a credible strong oriented detector baseline on DOTA v1.0 or
+  `docs/setup/strong_baseline_checklist.md`, using the sweep order Oriented
+  R-CNN -> RoI Transformer -> ReDet.
+4. Use the 7 visible GPUs to launch the first wave in parallel where possible:
+  Oriented R-CNN and RoI Transformer as single-GPU jobs, and ReDet as a
+  2-GPU distributed job once the detector environment is ready.
+5. Establish a credible strong oriented detector baseline on DOTA v1.0 or
   DOTA v1.5.
-5. Replace hash text embeddings with a documented real VLM encoder such as
+6. Replace hash text embeddings with a documented real VLM encoder such as
   CLIP, SkyCLIP, or RemoteCLIP before making vision-language claims.
-6. Run flat class-name prompt classification.
-7. Add hierarchical prompt bank.
-8. Add scene/context prompt adapter.
-9. Add VLM-assisted pseudo-label purification.
-10. Add optional routing only if the core modules already help.
+7. Run flat class-name prompt classification.
+8. Add hierarchical prompt bank.
+9. Add scene/context prompt adapter.
+10. Add VLM-assisted pseudo-label purification.
+11. Add optional routing only if the core modules already help.
 
 ## Current Diagnosis
 

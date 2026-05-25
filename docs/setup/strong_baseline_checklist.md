@@ -11,20 +11,30 @@ beyond the current scaffold.
 2. Confirm DOTA v1.5 train/val paths, tiling format, class names, ignored
    labels, and the normalized/absolute OBB conversion expected by the selected
    framework.
-3. Select one standard oriented detector baseline first, preferably Oriented
-   R-CNN or RoI Transformer.
-4. Record the exact detector config, dataset split, pretrained checkpoint,
+3. Select the detector sweep order first: Oriented R-CNN, RoI Transformer,
+   then ReDet.
+4. Match concurrency to the available GPUs. With 7 visible RTX 4090s, start
+   the first wave in parallel when the detector environment is ready, but keep
+   the total assigned GPU count within the host limit.
+5. Record the exact detector config, dataset split, pretrained checkpoint,
    training command, validation command, and output checkpoint path.
-5. Keep large checkpoints and raw logs outside Git; commit only configs,
+6. Keep large checkpoints and raw logs outside Git; commit only configs,
    environment notes, and small metric summaries.
 
-## Selected Baseline
+## Detector Sweep Order
 
-- First candidate: Oriented R-CNN (LE90, ResNet-50-FPN, 1x-style schedule).
-- Adaptation target: swap the DOTA v1.0 dataset base for
+- First wave candidate: Oriented R-CNN (LE90, ResNet-50-FPN, 1x-style
+  schedule).
+- Second wave candidate: RoI Transformer (LE90, ResNet-50-FPN, 1x-style
+  schedule).
+- Third wave candidate: ReDet (LE90, ReResNet-50-FPN, 1x-style schedule);
+  use distributed training per the upstream MMRotate note.
+- Practical launch split on this host: Oriented R-CNN on one GPU, RoI
+  Transformer on one GPU, and ReDet on two GPUs, leaving the remaining GPUs
+  available for validation, retries, or a second seed.
+- Adaptation target for all three: swap the DOTA v1.0 dataset base for
   `OpenRSD/mmrotate_configs/_base_/datasets/dotav15.py` and keep the same
   1024x1024-style train/val pipelines used by the reference tree.
-- Backup candidate: RoI Transformer (LE90, ResNet-50-FPN, 1x-style schedule).
 
 ## Working Notes
 
@@ -34,12 +44,13 @@ beyond the current scaffold.
 - Candidate starting configs in the OpenRSD reference tree:
   - Oriented R-CNN: `OpenRSD/mmrotate_configs/oriented_rcnn/oriented-rcnn-le90_r50_fpn_1x_dota.py`
   - RoI Transformer: `OpenRSD/mmrotate_configs/roi_trans/roi-trans-le90_r50_fpn_1x_dota.py`
+  - ReDet: `OpenRSD/mmrotate_configs/redet/redet-le90_re50_refpn_1x_dota.py`
 - DOTA v1.5 dataset base in the reference tree:
   - `OpenRSD/mmrotate_configs/_base_/datasets/dotav15.py`
 - Current reference-tree finding: there is no direct `oriented_rcnn` or
-  `roi_trans` DOTA v1.5 config, so the strong baseline will need to adapt the
-  DOTA v1.0 config to the `dotav15.py` dataset base or start from another
-compatible MMRotate config and swap the dataset base carefully.
+  `roi_trans` or `redet` DOTA v1.5 config, so the strong baseline will need to
+  adapt the DOTA v1.0 config to the `dotav15.py` dataset base or start from
+  another compatible MMRotate config and swap the dataset base carefully.
 - The DOTA v1.0 configs are 15-class setups; a DOTA v1.5 baseline must be
   switched to 16 classes and the v1.5 label mapping before training.
 - DOTA v1.5 class order in the reference tree is:

@@ -63,6 +63,7 @@ Current diagnosis:
 - `QueryGenerator` computes `query_centers`, but the current box heads do not consume them, so the scaffold currently regresses boxes without an explicit spatial anchor.
 - The anchor-repair quick test completed and wrote `outputs/dota_v15_anchor_repair/epoch_001.pt`; final training metrics were `loss=0.07363908355801901`, `loss_cls=0.001671954903589549`, `loss_box=0.035983564312892485`, `positive_cls_acc=0.5529336195676059`, and `positive_box_l1=0.10294117139314753`.
 - The next step is to archive the completed anchor-repair run and continue the parallel strong-baseline checklist before any S1-S5 prompt experiments.
+- The strong detector sweep order is Oriented R-CNN -> RoI Transformer -> ReDet; with 7 visible RTX 4090s, the first wave can be launched in parallel as separate jobs once the detector environment is ready, with ReDet using distributed training.
 - Use `docs/experiments/20260524_dota_v15_anchor_repair_quick_test.md` and `docs/setup/strong_baseline_checklist.md` as the active planning anchors.
 
 Paper-level claims require:
@@ -77,7 +78,7 @@ Paper-level claims require:
 
 Run experiments in this order:
 
-1. S0: strong closed-set oriented detector baseline on DOTA v1.0 or DOTA v1.5, using whichever staged server asset is ready first.
+1. S0: strong closed-set oriented detector sweep on DOTA v1.0 or DOTA v1.5, ordered Oriented R-CNN -> RoI Transformer -> ReDet.
 2. S1: flat class-name prompt classifier.
 3. S2: hierarchical prompt bank.
 4. S3: hierarchy plus scene/context adapter.
