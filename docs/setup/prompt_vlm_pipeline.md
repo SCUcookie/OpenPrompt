@@ -36,7 +36,8 @@ hash fallback.
 
 ## Required Upgrade
 
-Before paper-level semantic claims, replace the hash embedder with one of:
+Before paper-level semantic claims, first pass the S0 strong-detector gate and
+then replace the hash embedder with one of:
 
 - CLIP
 - SkyCLIP
@@ -50,6 +51,16 @@ Implementation target:
 - cache text embeddings to a generated artifact
 - record encoder name, checkpoint, preprocessing, embedding dimension, and
   prompt templates in the experiment summary
+
+Config fields reserved for the real embedder path:
+
+- `embedding_backend`: `hash`, `clip`, `skyclip`, `remoteclip`, or another
+  documented backend
+- `embedding_checkpoint`: local checkpoint path or model id
+- `embedding_cache_path`: generated artifact path outside Git
+
+Every prompt/VLM experiment record must state whether it used the deterministic
+hash fallback or a real VLM encoder.
 
 ## Experiment Stages
 

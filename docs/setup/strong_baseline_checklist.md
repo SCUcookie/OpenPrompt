@@ -4,6 +4,13 @@ Use this path in parallel with the anchor-repair smoke test. The goal is to
 secure a standard oriented detector baseline before any prompt/VLM claim grows
 beyond the current scaffold.
 
+Current active record:
+
+- `docs/experiments/20260525_strong_detector_sweep.md`
+
+Treat that file as the source of truth for exact launched configs, commands,
+checkpoints, logs, validation results, and class-wise AP summaries.
+
 ## Decision Points
 
 1. Confirm whether MMRotate can be installed cleanly in `zwl_oneformer_ViT_P`.
@@ -86,4 +93,20 @@ beyond the current scaffold.
 - validation command
 - checkpoint path
 - mAP / recall summary
+- per-class AP for all 16 DOTA v1.5 classes, including `container-crane`
+- metric implementation and whether the value comes from MMRotate/DOTA-style
+  validation or the local scaffold evaluator
 - any deviations from the scaffold baseline settings
+
+## S0 Exit Gate
+
+Do not proceed to S1-S5 prompt/VLM ablations until at least one detector has:
+
+- completed training without NaN/divergence
+- produced a retained checkpoint outside Git
+- validated on the controlled DOTA v1.5 split
+- reported nontrivial, interpretable mAP and class-wise AP
+
+The `dota_v15_anchor_repair` checkpoint remains archived smoke-test evidence
+unless extra compute is explicitly allocated for center-bias, best-IoU,
+recall, and mAP validation against the near-zero scaffold baseline.
