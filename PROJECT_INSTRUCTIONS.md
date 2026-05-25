@@ -67,6 +67,11 @@ Current diagnosis:
 - The corrected Oriented R-CNN DOTA v1.5 strong baseline completed 12 epochs with MMRotate DOTAMetric `map=0.2561` and `AP50=0.2560`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn/epoch_12.pth`; metric summary `docs/experiments/20260525_oriented_rcnn_dota15_epoch12_metrics.json`.
 - The key strong-baseline fix was validation/test pipeline ordering: resize the image before `LoadAnnotations`, then convert qbox to rbox and pack explicit meta keys. Loading annotations before resize produced near-zero AP by evaluating against mis-scaled GT boxes.
 - RoI Transformer still needs a stable rerun after the previous NaN run; ReDet needs rerun/revalidation with the corrected validation pipeline and should be treated cautiously while initialized from scratch.
+- On 2026-05-25 at 20:07 server time, RoI Transformer was relaunched on GPU 2 with LR `0.001` in screen session `geonexus_roi_trans_lr001`, work dir `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_rerun/`. Its DOTA v1.5 wrapper now sets both cascade bbox heads to 16 classes.
+- On 2026-05-25 at 20:07 server time, ReDet was relaunched as a single-GPU scratch run on GPU 4 in screen session `geonexus_redet_scratch`, work dir `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_scratch_rerun/`. It completed 12 epochs with final `dota/mAP=0.1221` and `dota/AP50=0.1220`; compare cautiously because the startup log showed an initial `grad_norm: nan` at iter 50 and the run was initialized from scratch.
+- RoI Transformer low-LR rerun is usable through epoch 11 and had best observed validation at epoch 10: `dota/mAP=0.2485`, `dota/AP50=0.2480`. At the latest check, epoch 12 had reached iter 1280/1410 in the log but had not written `epoch_12.pth`; treat the screen session as possibly stalled until verified.
+- Mid-run detector curves, class-wise snapshots, and figure/table TODOs are recorded in `docs/experiments/20260525_strong_detector_midrun_records.md`.
+- The complete paper-indicator experiment matrix and current download/staging list are recorded in `docs/setup/complete_experiment_plan.md`.
 - Use `docs/experiments/20260524_dota_v15_anchor_repair_quick_test.md` and `docs/setup/strong_baseline_checklist.md` as the active planning anchors.
 
 Paper-level claims require:

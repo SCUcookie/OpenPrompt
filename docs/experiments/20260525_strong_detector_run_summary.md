@@ -9,8 +9,10 @@ This file is the compact handoff companion to
 
 ## Bottom Line
 
-A normal S0 closed-set detector result was obtained with Oriented R-CNN after
-fixing the MMRotate DOTA v1.5 validation pipeline.
+Normal S0 closed-set detector results were obtained after fixing the MMRotate
+DOTA v1.5 validation pipeline. Oriented R-CNN is the primary usable baseline;
+RoI Transformer is a close secondary baseline through epoch 11; ReDet completed
+as a scratch diagnostic baseline.
 
 Final usable result:
 
@@ -21,6 +23,11 @@ Final usable result:
 - Log: `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn/20260525_163043/20260525_163043.log`.
 - Final validation: `dota/mAP=0.2561`, `dota/AP50=0.2560`.
 - Small metric JSON: `docs/experiments/20260525_oriented_rcnn_dota15_epoch12_metrics.json`.
+
+Additional tracked summaries:
+
+- RoI Transformer low-LR rerun: `docs/experiments/20260525_roi_transformer_dota15_metrics.json`.
+- ReDet scratch rerun: `docs/experiments/20260525_redet_scratch_dota15_metrics.json`.
 
 The near-zero early numbers were not detector evidence. They came from a
 validation pipeline bug: val/test loaded annotations before resize, causing GT
@@ -64,7 +71,7 @@ Common changes in all three wrappers:
 Detector-specific OpenRSD changes:
 
 - Oriented R-CNN wrapper sets `roi_head.bbox_head.num_classes=16`.
-- RoI Transformer wrapper lowers SGD LR to `0.001` after the earlier `0.005` run diverged to NaN. It still needs a rerun.
+- RoI Transformer wrapper lowers SGD LR to `0.001` after the earlier `0.005` run diverged to NaN and now explicitly overrides both cascade bbox heads to `num_classes=16`.
 - ReDet wrapper clears `model.backbone.init_cfg` because the expected ReResNet pretrained checkpoint was missing, and keeps LR `0.001`. Treat ReDet as scratch unless the pretrained checkpoint is restored.
 
 ### Test script compatibility
@@ -183,7 +190,8 @@ Interpretation:
 
 ### RoI Transformer
 
-Status: failed preliminary run; pending stable rerun.
+Status: stable low-LR rerun usable through epoch 11; epoch 12 not written at
+latest check.
 
 Current config:
 `/data5/2025/ldh/OpenRSD/mmrotate_configs/strong_baseline_dota15/roi-trans-le90_r50_fpn_amp-1x_dota15.py`
@@ -197,16 +205,34 @@ Observed preliminary result:
 Current OpenRSD state for next attempt:
 
 - Wrapper LR is lowered to `0.001`.
+- Both cascade bbox heads are set to 16 DOTA v1.5 classes.
 - Val/test pipeline has the corrected order and metadata keys.
 
-Next action:
+Low-LR rerun:
 
-- Rerun RoI Transformer from scratch or from a clean checkpoint with LR `0.001`.
-- If NaNs persist, disable AMP or add stronger gradient clipping/lower LR before counting any checkpoint.
+- Screen session: `geonexus_roi_trans_lr001`.
+- Command:
+
+```bash
+CUDA_VISIBLE_DEVICES=2 /data1/anaconda3/envs/zwl_mmrotate/bin/python \
+  tools/bootstrap_run.py tools/train.py \
+  mmrotate_configs/strong_baseline_dota15/roi-trans-le90_r50_fpn_amp-1x_dota15.py \
+  --work-dir work_dirs/strong_baseline_dota15/roi_trans_lr001_rerun
+```
+
+- Stable through epoch 11 with no visible NaN evidence.
+- Best observed validation was epoch 10: `dota/mAP=0.2485`,
+  `dota/AP50=0.2480`.
+- Epoch 11 validation was `dota/mAP=0.2436`, `dota/AP50=0.2440`.
+- Latest visible log reached epoch 12 iter 1280/1410, but `epoch_12.pth` had
+  not been written and the screen hardcopy was blank. Treat epoch 12 as
+  pending/stalled until verified.
+- If epoch 12 remains stalled, either use epoch 10 as the best RoI Transformer
+  row or relaunch from epoch 11.
 
 ### ReDet
 
-Status: preliminary scratch checkpoint only; pending rerun/revalidation.
+Status: active scratch-rerun attempt.
 
 Current config:
 `/data5/2025/ldh/OpenRSD/mmrotate_configs/strong_baseline_dota15/redet-le90_re50_refpn_amp-1x_dota15.py`
@@ -217,6 +243,21 @@ Observed preliminary result:
 - Training losses stayed finite in that short run.
 - Corrected-metadata-only validation before the pipeline-order fix gave `dota/mAP=0.0001`, `dota/AP50=0.0000`.
 - That number is invalid/diagnostic because val/test still loaded annotations before resize.
+
+Active rerun:
+
+- Screen session: `geonexus_redet_scratch`.
+- Command:
+
+```bash
+CUDA_VISIBLE_DEVICES=4 /data1/anaconda3/envs/zwl_mmrotate/bin/python \
+  tools/bootstrap_run.py tools/train.py \
+  mmrotate_configs/strong_baseline_dota15/redet-le90_re50_refpn_amp-1x_dota15.py \
+  --work-dir work_dirs/strong_baseline_dota15/redet_scratch_rerun
+```
+
+- Startup status: epoch 1 reached iter 300 with finite losses after an initial
+  `grad_norm: nan` at iter 50; monitor before counting any checkpoint.
 
 Current OpenRSD state for next attempt:
 

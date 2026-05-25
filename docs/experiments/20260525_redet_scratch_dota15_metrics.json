@@ -1,0 +1,32 @@
+{
+  "date": "2026-05-25",
+  "detector": "ReDet",
+  "dataset": "DOTA v1.5",
+  "metric": "MMRotate DOTAMetric, IoU=0.5",
+  "config": "/data5/2025/ldh/OpenRSD/mmrotate_configs/strong_baseline_dota15/redet-le90_re50_refpn_amp-1x_dota15.py",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_scratch_rerun/epoch_12.pth",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_scratch_rerun",
+  "status": "completed scratch rerun; compare cautiously",
+  "best_epoch_observed": 12,
+  "best_map": 0.1221,
+  "best_ap50": 0.1220,
+  "epoch_metrics": [
+    {"epoch": 1, "map": 0.0133, "ap50": 0.0130},
+    {"epoch": 2, "map": 0.0244, "ap50": 0.0240},
+    {"epoch": 3, "map": 0.0509, "ap50": 0.0510},
+    {"epoch": 4, "map": 0.0745, "ap50": 0.0750},
+    {"epoch": 5, "map": 0.0852, "ap50": 0.0850},
+    {"epoch": 6, "map": 0.0931, "ap50": 0.0930},
+    {"epoch": 7, "map": 0.1063, "ap50": 0.1060},
+    {"epoch": 8, "map": 0.1110, "ap50": 0.1110},
+    {"epoch": 9, "map": 0.1169, "ap50": 0.1170},
+    {"epoch": 10, "map": 0.1199, "ap50": 0.1200},
+    {"epoch": 11, "map": 0.1198, "ap50": 0.1200},
+    {"epoch": 12, "map": 0.1221, "ap50": 0.1220}
+  ],
+  "notes": [
+    "Backbone init_cfg was cleared because the expected ReResNet pretrained checkpoint was missing.",
+    "Startup log showed an initial grad_norm nan at iter 50, but later training metrics stayed finite.",
+    "Rerun should be repeated with ReResNet pretraining before using ReDet as a fair strong baseline."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "date": "2026-05-25",
+  "detector": "RoI Transformer",
+  "dataset": "DOTA v1.5",
+  "metric": "MMRotate DOTAMetric, IoU=0.5",
+  "config": "/data5/2025/ldh/OpenRSD/mmrotate_configs/strong_baseline_dota15/roi-trans-le90_r50_fpn_amp-1x_dota15.py",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_rerun",
+  "status": "stable through epoch 11; epoch 12 not written at latest check",
+  "best_epoch_observed": 10,
+  "best_map": 0.2485,
+  "best_ap50": 0.2480,
+  "epoch_metrics": [
+    {"epoch": 1, "map": 0.0901, "ap50": 0.0900},
+    {"epoch": 2, "map": 0.1362, "ap50": 0.1360},
+    {"epoch": 3, "map": 0.1709, "ap50": 0.1710},
+    {"epoch": 4, "map": 0.1899, "ap50": 0.1900},
+    {"epoch": 5, "map": 0.2075, "ap50": 0.2070},
+    {"epoch": 6, "map": 0.2088, "ap50": 0.2090},
+    {"epoch": 7, "map": 0.2240, "ap50": 0.2240},
+    {"epoch": 8, "map": 0.2402, "ap50": 0.2400},
+    {"epoch": 9, "map": 0.2391, "ap50": 0.2390},
+    {"epoch": 10, "map": 0.2485, "ap50": 0.2480},
+    {"epoch": 11, "map": 0.2436, "ap50": 0.2440}
+  ],
+  "notes": [
+    "Rerun used lr=0.001 after the earlier lr=0.005 run diverged.",
+    "Both cascade bbox heads were set to 16 DOTA v1.5 classes.",
+    "Latest visible log reached epoch 12 iter 1280/1410, but epoch_12.pth was absent."
+  ]
+}

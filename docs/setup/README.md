@@ -9,6 +9,8 @@ Use these files:
   untracked data policy.
 - `strong_baseline_checklist.md`: MMRotate / oriented-detector baseline
   preparation checklist.
+- `complete_experiment_plan.md`: paper-facing experiment matrix, run order, and
+  download/staging list.
 - `next_steps.md`: paper-fit experiment sequence and acceptance criteria.
 - `prompt_vlm_pipeline.md`: prompt-bank, VLM embedding, and pseudo-label
   purification workflow.
@@ -17,4 +19,3 @@ Use these files:
 
 The root `PROJECT_INSTRUCTIONS.md` is the canonical persistent project memory.
 Update it whenever the global research direction or workflow changes.
-
