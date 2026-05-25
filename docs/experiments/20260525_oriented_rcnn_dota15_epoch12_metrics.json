@@ -1,0 +1,60 @@
+{
+  "experiment": "strong_detector_sweep",
+  "detector": "Oriented R-CNN",
+  "dataset": "DOTA v1.5",
+  "split": "val",
+  "metric_implementation": "MMRotate DOTAMetric mAP, IoU 0.5",
+  "config": "OpenRSD/mmrotate_configs/strong_baseline_dota15/oriented-rcnn-le90_r50_fpn_amp-1x_dota15.py",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn/epoch_12.pth",
+  "log": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn/20260525_163043/20260525_163043.log",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn",
+  "image_scale": [
+    640,
+    640
+  ],
+  "epochs": 12,
+  "map": 0.2561,
+  "ap50": 0.256,
+  "class_ap": {
+    "plane": 0.353,
+    "baseball-diamond": 0.337,
+    "bridge": 0.091,
+    "ground-track-field": 0.361,
+    "small-vehicle": 0.091,
+    "large-vehicle": 0.421,
+    "ship": 0.091,
+    "tennis-court": 0.727,
+    "basketball-court": 0.31,
+    "storage-tank": 0.091,
+    "soccer-ball-field": 0.363,
+    "roundabout": 0.107,
+    "harbor": 0.422,
+    "swimming-pool": 0.16,
+    "helicopter": 0.176,
+    "container-crane": 0.0
+  },
+  "class_recall": {
+    "plane": 0.331,
+    "baseball-diamond": 0.376,
+    "bridge": 0.077,
+    "ground-track-field": 0.483,
+    "small-vehicle": 0.032,
+    "large-vehicle": 0.432,
+    "ship": 0.098,
+    "tennis-court": 0.789,
+    "basketball-court": 0.322,
+    "storage-tank": 0.024,
+    "soccer-ball-field": 0.443,
+    "roundabout": 0.103,
+    "harbor": 0.461,
+    "swimming-pool": 0.153,
+    "helicopter": 0.205,
+    "container-crane": 0.0
+  },
+  "validation_fix": "Validation/test pipeline must resize image before LoadAnnotations so GT boxes remain in evaluator coordinates; PackDetInputs uses explicit meta_keys excluding flip.",
+  "notes": [
+    "Initial near-zero validation was caused by validation pipeline order, not detector collapse.",
+    "RoI Transformer previous run diverged to NaN at lr=0.005; wrapper lr lowered to 0.001 but not rerun yet.",
+    "ReDet epoch-1 scratch result before pipeline-order fix is not paper evidence; rerun/validate after config fix if needed."
+  ]
+}

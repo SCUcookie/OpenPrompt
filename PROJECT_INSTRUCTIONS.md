@@ -64,6 +64,9 @@ Current diagnosis:
 - The anchor-repair quick test completed and wrote `outputs/dota_v15_anchor_repair/epoch_001.pt`; final training metrics were `loss=0.07363908355801901`, `loss_cls=0.001671954903589549`, `loss_box=0.035983564312892485`, `positive_cls_acc=0.5529336195676059`, and `positive_box_l1=0.10294117139314753`.
 - The next step is to archive the completed anchor-repair run and continue the parallel strong-baseline checklist before any S1-S5 prompt experiments.
 - The strong detector sweep order is Oriented R-CNN -> RoI Transformer -> ReDet; with 7 visible RTX 4090s, the first wave can be launched in parallel as separate jobs once the detector environment is ready, with ReDet using distributed training.
+- The corrected Oriented R-CNN DOTA v1.5 strong baseline completed 12 epochs with MMRotate DOTAMetric `map=0.2561` and `AP50=0.2560`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn/epoch_12.pth`; metric summary `docs/experiments/20260525_oriented_rcnn_dota15_epoch12_metrics.json`.
+- The key strong-baseline fix was validation/test pipeline ordering: resize the image before `LoadAnnotations`, then convert qbox to rbox and pack explicit meta keys. Loading annotations before resize produced near-zero AP by evaluating against mis-scaled GT boxes.
+- RoI Transformer still needs a stable rerun after the previous NaN run; ReDet needs rerun/revalidation with the corrected validation pipeline and should be treated cautiously while initialized from scratch.
 - Use `docs/experiments/20260524_dota_v15_anchor_repair_quick_test.md` and `docs/setup/strong_baseline_checklist.md` as the active planning anchors.
 
 Paper-level claims require:
