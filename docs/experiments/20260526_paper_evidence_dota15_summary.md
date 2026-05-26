@@ -6,9 +6,9 @@ This record separates closed-set strong-detector evidence from the GeoNexus Remo
 
 | Detector | Checkpoint | Best epoch | mAP / AP50 | Prediction dump | Confusion matrix | Qualitative examples | Benchmark |
 |---|---:|---:|---:|---|---|---|---|
-| RoI Transformer | `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_3x/epoch_34.pth` | 34 | 0.2644 / 0.264 | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/roi_trans_epoch34/preds.pkl` | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/roi_trans_epoch34/confusion/confusion_matrix.png` | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/roi_trans_epoch34/qualitative/` | Failed: legacy `pretrained` config key |
-| Oriented R-CNN | `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn_3x_loadfrom/epoch_33.pth` | 33 | 0.2620 / 0.262 | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/oriented_rcnn_epoch33/preds.pkl` | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/oriented_rcnn_epoch33/confusion/confusion_matrix.png` | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/oriented_rcnn_epoch33/qualitative/` | Failed: legacy `pretrained` config key |
-| ReDet pretrained | `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun/epoch_12.pth` | 12 | 0.2382 / 0.238 | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/redet_pretrained_epoch12/preds.pkl` | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/redet_pretrained_epoch12/confusion/confusion_matrix.png` | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/redet_pretrained_epoch12/qualitative/` | Failed: legacy `pretrained` config key |
+| RoI Transformer | `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_3x/epoch_34.pth` | 34 | 0.2644 / 0.264 | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/roi_trans_epoch34/preds.pkl` | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/roi_trans_epoch34/confusion/confusion_matrix.png` | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/roi_trans_epoch34/qualitative/` | 11.0 FPS / 90.9 ms |
+| Oriented R-CNN | `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn_3x_loadfrom/epoch_33.pth` | 33 | 0.2620 / 0.262 | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/oriented_rcnn_epoch33/preds.pkl` | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/oriented_rcnn_epoch33/confusion/confusion_matrix.png` | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/oriented_rcnn_epoch33/qualitative/` | 12.9 FPS / 77.5 ms |
+| ReDet pretrained | `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun/epoch_12.pth` | 12 | 0.2382 / 0.238 | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/redet_pretrained_epoch12/preds.pkl` | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/redet_pretrained_epoch12/confusion/confusion_matrix.png` | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/redet_pretrained_epoch12/qualitative/` | 9.3 FPS / 107.5 ms |
 
 Raw MMRotate test output JSONs:
 
@@ -67,8 +67,23 @@ Each detector has 5 `good` and 5 `bad` rendered examples. Per-image ranking used
 
 ## Efficiency Notes
 
-The planned `tools/analysis_tools/benchmark.py` runs failed for all three detectors with `TypeError: __init__() got an unexpected keyword argument 'pretrained'`. This is an OpenMMLab API compatibility issue in the benchmark path, not a failure of the detector checkpoints or prediction dumps. The MMRotate test logs still record per-iteration wall time in the raw JSON table above, but those are not a replacement for controlled benchmark numbers.
+Controlled benchmark runs now use sanitized standalone configs under `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/benchmark_configs/`. The local benchmark path removes legacy `pretrained` fields and uses `test_step` for MMEngine-style detectors. Logs:
+
+- RoI Transformer: `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/roi_trans_epoch34/benchmark.log`
+- Oriented R-CNN: `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/oriented_rcnn_epoch33/benchmark.log`
+- ReDet pretrained: `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/redet_pretrained_epoch12/benchmark.log`
+
+## GeoNexus S1 Status
+
+Paper-facing S1 is implemented in the MMRotate RoI Transformer path, not the scaffold trainer:
+
+- Prompt head: `/data5/2025/ldh/OpenRSD/geonexus_mmrotate/prompt_bbox_head.py`
+- Source config: `/data5/2025/ldh/OpenRSD/mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s1_dota15.py`
+- Sanitized runtime config: `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1/roi_trans_remoteclip_s1_sanitized.py`
+- RemoteCLIP prompt cache: `/data5/2025/ldh/New/artifacts/generated/remoteclip_vit_b32_dota15_prompt_embeddings.pt`
+
+One-batch GPU loss smoke test passed on GPU 0 with finite losses: `s0.loss_cls=2.8070`, `s0.loss_bbox=0.0270`, `s1.loss_cls=2.7331`, `s1.loss_bbox=0.0725`. No S1 mAP claim is recorded yet.
 
 ## GeoNexus Scaffold Separation
 
-The active `dota_v15_geonexus_remoteclip` screen is a separate scaffold diagnostic run on GPU 2. It should not be reported as paper-facing S1 evidence until RemoteCLIP prompt logic is integrated into the selected MMRotate detector.
+The `dota_v15_geonexus_remoteclip` scaffold run is diagnostic-only. It was preserved at `/data5/2025/ldh/New/outputs/preserved_20260526_dota_v15_geonexus_remoteclip/`; metrics and tracebacks are recorded in `/data5/2025/ldh/New/docs/experiments/20260526_dota15_geonexus_remoteclip_scaffold_metrics.json`. Completed epoch metrics show unstable `positive_cls_acc`, with all completed epochs after epoch 1 below the epoch-1 value, so it should not be used as final paper evidence.

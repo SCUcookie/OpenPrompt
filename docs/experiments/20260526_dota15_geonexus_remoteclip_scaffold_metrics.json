@@ -1,32 +1,93 @@
 {
-  "date": "2026-05-26",
-  "experiment": "dota_v15_geonexus_remoteclip",
-  "status": "running",
-  "screen": "dota_v15_geonexus_remoteclip",
-  "gpu": 2,
-  "config": "/data5/2025/ldh/New/configs/experiments/dota_v15_geonexus.yaml",
-  "environment": "/home/zwl/.conda/envs/geonexus_vlm",
-  "output_dir": "/data5/2025/ldh/New/outputs/dota_v15_geonexus",
-  "train_log": "/data5/2025/ldh/New/outputs/dota_v15_geonexus/train_remoteclip.log",
-  "completed_epochs": [
+  "status": "diagnostic_only",
+  "reason": "positive_cls_acc is unstable and all completed epochs after epoch 1 are below epoch-1 value; log also contains earlier/recent tracebacks",
+  "preserved_output_dir": "/data5/2025/ldh/New/outputs/preserved_20260526_dota_v15_geonexus_remoteclip",
+  "source_output_dir": "/data5/2025/ldh/New/outputs/dota_v15_geonexus",
+  "completed_metric_epochs": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "epoch_1_positive_cls_acc": 0.5590189151270305,
+  "latest_positive_cls_acc": 0.2753765276627394,
+  "metrics": [
     {
-      "epoch": 1,
-      "checkpoint": "/data5/2025/ldh/New/outputs/dota_v15_geonexus/epoch_001.pt",
-      "metrics": "/data5/2025/ldh/New/outputs/dota_v15_geonexus/metrics_epoch_001.json",
       "loss": 0.08780368215574876,
       "loss_cls": 0.0017802888014902944,
       "loss_box": 0.04291353176144651,
       "loss_hier": 0.001963298497150242,
       "loss_margin": 0.0,
       "positive_cls_acc": 0.5590189151270305,
-      "positive_box_l1": 0.15612202842528075
+      "positive_box_l1": 0.15612202842528075,
+      "epoch": 1
+    },
+    {
+      "loss": 0.08952704027818775,
+      "loss_cls": 0.002333963183900217,
+      "loss_box": 0.04355236494760965,
+      "loss_hier": 0.000883473816454286,
+      "loss_margin": 0.0,
+      "positive_cls_acc": 0.33164860798864076,
+      "positive_box_l1": 0.14468319946498082,
+      "epoch": 2
+    },
+    {
+      "loss": 0.08924966172229717,
+      "loss_cls": 0.002174132302829403,
+      "loss_box": 0.04346148090143648,
+      "loss_hier": 0.001525676886245474,
+      "loss_margin": 0.0,
+      "positive_cls_acc": 0.15703443263070707,
+      "positive_box_l1": 0.1467726193258192,
+      "epoch": 3
+    },
+    {
+      "loss": 0.08722124099906167,
+      "loss_cls": 0.002011756271956144,
+      "loss_box": 0.04251037982244242,
+      "loss_hier": 0.001887251674245702,
+      "loss_margin": 0.0,
+      "positive_cls_acc": 0.3465237749116787,
+      "positive_box_l1": 0.1434042106050672,
+      "epoch": 4
+    },
+    {
+      "loss": 0.0883988745767141,
+      "loss_cls": 0.0022162062588460423,
+      "loss_box": 0.04305363076350866,
+      "loss_hier": 0.0007540676282226704,
+      "loss_margin": 0.0,
+      "positive_cls_acc": 0.20483780996974255,
+      "positive_box_l1": 0.14270009854774,
+      "epoch": 5
+    },
+    {
+      "loss": 0.08821299538261082,
+      "loss_cls": 0.002331786014612509,
+      "loss_box": 0.0427821032251329,
+      "loss_hier": 0.003170029343265439,
+      "loss_margin": 0.0,
+      "positive_cls_acc": 0.25446677597660544,
+      "positive_box_l1": 0.14243131719814422,
+      "epoch": 6
+    },
+    {
+      "loss": 0.08814204414829492,
+      "loss_cls": 0.0021005645310205406,
+      "loss_box": 0.04293038184724693,
+      "loss_hier": 0.0018071587370809175,
+      "loss_margin": 0.0,
+      "positive_cls_acc": 0.2753765276627394,
+      "positive_box_l1": 0.14417747127951,
+      "epoch": 7
     }
   ],
-  "known_log_events": [
-    "Earlier startup failed because cv2 was missing.",
-    "Earlier startup failed because scene_adapter expected 512-d scene features but received 256-d features.",
-    "The current run recovered and produced epoch_001.pt plus metrics_epoch_001.json."
-  ],
-  "paper_use_note": "Scaffold diagnostic only. This is not final MMRotate S1 evidence and should not be used for final paper claims until integrated with the selected strong detector.",
-  "artifact_note": "Large checkpoints stay outside Git under outputs; this JSON records compact metadata only."
+  "tracebacks": [
+    "Traceback (most recent call last):\n\n  File \"/data5/2025/ldh/New/scripts/train.py\", line 10, in <module>\n    from openprompt_rs.engine.trainer import train_experiment\n  File \"/data5/2025/ldh/New/src/openprompt_rs/engine/trainer.py\", line 11, in <module>\n    from openprompt_rs.engine.evaluator import evaluate_model\n  File \"/data5/2025/ldh/New/src/openprompt_rs/engine/evaluator.py\", line 7, in <module>\n    import cv2\nModuleNotFoundError: No module named 'cv2'\n/data5/2025/ldh/New/src/openprompt_rs/models/prompt_bank.py:89: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.\n  cache = torch.load(cache_path, map_location=\"cpu\")\n\nepoch 1/12:   0%|          | 0/7068 [00:00<?, ?it/s]\n                                                    ",
+    "Traceback (most recent call last):\n\n  File \"/data5/2025/ldh/New/scripts/train.py\", line 101, in <module>\n    main()\n  File \"/data5/2025/ldh/New/scripts/train.py\", line 85, in main\n    metrics = train_experiment(\n  File \"/data5/2025/ldh/New/src/openprompt_rs/engine/trainer.py\", line 75, in train_experiment\n    outputs = model(images)\n  File \"/home/zwl/.conda/envs/geonexus_vlm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/home/zwl/.conda/envs/geonexus_vlm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/data5/2025/ldh/New/src/openprompt_rs/models/detector.py\", line 52, in forward\n    prompt_embeddings, scene_scores = self.innovations[\"scene_adapter\"](prompt_embeddings, scene_feature)\n  File \"/home/zwl/.conda/envs/geonexus_vlm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/home/zwl/.conda/envs/geonexus_vlm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/data5/2025/ldh/New/src/openprompt_rs/models/context_adapter.py\", line 24, in forward\n    feature_gate = torch.sigmoid(self.feature_gate(scene_feature)).unsqueeze(1)\n  File \"/home/zwl/.conda/envs/geonexus_vlm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/home/zwl/.conda/envs/geonexus_vlm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/zwl/.conda/envs/geonexus_vlm/lib/python3.10/site-packages/torch/nn/modules/container.py\", line 250, in forward\n    input = module(input)\n  File \"/home/zwl/.conda/envs/geonexus_vlm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/home/zwl/.conda/envs/geonexus_vlm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/zwl/.conda/envs/geonexus_vlm/lib/python3.10/site-packages/torch/nn/modules/linear.py\", line 125, in forward"
+  ]
 }
