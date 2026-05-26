@@ -1,0 +1,87 @@
+{
+  "date": "2026-05-26",
+  "experiment": "s0_strong_detector_dota15",
+  "detector": "ReDet",
+  "dataset": "DOTA v1.5",
+  "split": "val",
+  "metric_implementation": "MMRotate DOTAMetric mAP, IoU 0.5",
+  "config": "/data5/2025/ldh/OpenRSD/mmrotate_configs/strong_baseline_dota15/redet-le90_re50_refpn_amp-1x_dota15_pretrained.py",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun/epoch_12.pth",
+  "initialization": "/data5/2025/temp/Supplements/re_resnet50_c8_batch256-25b16846.pth",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun",
+  "log": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun/train.log",
+  "epochs": 12,
+  "best_epoch": 12,
+  "best_map": 0.2382,
+  "best_ap50": 0.238,
+  "final_epoch": 12,
+  "final_map": 0.2382,
+  "final_ap50": 0.238,
+  "epoch_metrics": [
+    {
+      "epoch": 1,
+      "map": 0.1008,
+      "ap50": 0.101
+    },
+    {
+      "epoch": 2,
+      "map": 0.1447,
+      "ap50": 0.145
+    },
+    {
+      "epoch": 3,
+      "map": 0.1764,
+      "ap50": 0.176
+    },
+    {
+      "epoch": 4,
+      "map": 0.1908,
+      "ap50": 0.191
+    },
+    {
+      "epoch": 5,
+      "map": 0.2012,
+      "ap50": 0.201
+    },
+    {
+      "epoch": 6,
+      "map": 0.2128,
+      "ap50": 0.213
+    },
+    {
+      "epoch": 7,
+      "map": 0.2253,
+      "ap50": 0.225
+    },
+    {
+      "epoch": 8,
+      "map": 0.2234,
+      "ap50": 0.223
+    },
+    {
+      "epoch": 9,
+      "map": 0.2301,
+      "ap50": 0.23
+    },
+    {
+      "epoch": 10,
+      "map": 0.2299,
+      "ap50": 0.23
+    },
+    {
+      "epoch": 11,
+      "map": 0.236,
+      "ap50": 0.236
+    },
+    {
+      "epoch": 12,
+      "map": 0.2382,
+      "ap50": 0.238
+    }
+  ],
+  "notes": [
+    "Large checkpoints and raw logs remain outside Git.",
+    "S0 closed-set detector baseline; no prompt/VLM embeddings used.",
+    "Validation uses the corrected resize-before-LoadAnnotations DOTA v1.5 pipeline."
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "date": "2026-05-26",
+  "purpose": "Expand DOTA v1.5 S0 baselines with longer 3x detector runs without sharing busy GPUs.",
+  "configs_added": [
+    "/data5/2025/ldh/OpenRSD/mmrotate_configs/strong_baseline_dota15/oriented-rcnn-le90_r50_fpn_amp-3x_dota15.py",
+    "/data5/2025/ldh/OpenRSD/mmrotate_configs/strong_baseline_dota15/roi-trans-le90_r50_fpn_amp-3x_dota15.py"
+  ],
+  "schedule": {
+    "max_epochs": 36,
+    "milestones": [
+      24,
+      33
+    ],
+    "val_interval": 1
+  },
+  "oriented_rcnn_3x": {
+    "status": "completed",
+    "screen": "oriented_rcnn_3x_dota15",
+    "gpu": 4,
+    "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn_3x_loadfrom",
+    "train_log": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn_3x_loadfrom/train.log",
+    "checkpoint_loaded": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn/epoch_12.pth",
+    "launch_command": "CUDA_VISIBLE_DEVICES=4 ./run_bootstrap.sh tools/train.py mmrotate_configs/strong_baseline_dota15/oriented-rcnn-le90_r50_fpn_amp-3x_dota15.py --work-dir work_dirs/strong_baseline_dota15/oriented_rcnn_3x_loadfrom --cfg-options load_from=work_dirs/strong_baseline_dota15/oriented_rcnn/epoch_12.pth",
+    "health_check": "Reached epoch 1 validation with finite training losses through iteration 1400. LR warmed from about 0.0020 to the intended 0.0050. One isolated grad_norm inf appeared at iteration 550, followed by finite grad norms.",
+    "note": "An earlier --resume launch in oriented_rcnn_3x was stopped after about 450 iterations because it restored the old 12e scheduler state and used lr 5e-05 at epoch 13.",
+    "best_epoch": 33,
+    "best_map": 0.262,
+    "best_ap50": 0.262,
+    "final_epoch": 36,
+    "final_map": 0.2607,
+    "final_ap50": 0.261,
+    "metric_summary": "docs/experiments/20260526_oriented_rcnn_3x_dota15_metrics.json"
+  },
+  "roi_transformer_3x": {
+    "status": "completed",
+    "screen": "roi_trans_3x_wait_gpu2",
+    "gpu": 2,
+    "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_3x",
+    "queue_log": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_3x/queue.log",
+    "train_log": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_3x/train.log",
+    "checkpoint_to_load": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_rerun/epoch_12.pth",
+    "launch_condition": "Start only after nvidia-smi reports GPU 2 memory.used below 1000 MiB.",
+    "launch_command": "CUDA_VISIBLE_DEVICES=2 ./run_bootstrap.sh tools/train.py mmrotate_configs/strong_baseline_dota15/roi-trans-le90_r50_fpn_amp-3x_dota15.py --work-dir work_dirs/strong_baseline_dota15/roi_trans_lr001_3x --cfg-options load_from=work_dirs/strong_baseline_dota15/roi_trans_lr001_rerun/epoch_12.pth",
+    "best_epoch": 34,
+    "best_map": 0.2644,
+    "best_ap50": 0.264,
+    "final_epoch": 36,
+    "final_map": 0.2612,
+    "final_ap50": 0.261,
+    "best_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_3x/epoch_34.pth",
+    "metric_summary": "docs/experiments/20260526_roi_transformer_3x_dota15_metrics.json"
+  },
+  "redet_pretrained": {
+    "status": "completed",
+    "screen": "redet_pretrained_dota15",
+    "gpu": 2,
+    "latest_observed": "Epoch 4 validation completed with mAP 0.1908 after epoch 3 validation mAP 0.1764; training continued into epoch 5 with finite losses.",
+    "best_epoch": 12,
+    "best_map": 0.2382,
+    "best_ap50": 0.238,
+    "final_epoch": 12,
+    "final_map": 0.2382,
+    "final_ap50": 0.238,
+    "metric_summary": "docs/experiments/20260526_redet_pretrained_dota15_metrics.json"
+  },
+  "verification": [
+    "3x Oriented R-CNN and RoI Transformer logs contain 36 validation records each.",
+    "ReDet pretrained log contains 12 validation records.",
+    "Best checkpoints exist outside Git; compact metric summaries are tracked under docs/experiments/."
+  ],
+  "status": "completed_and_archived"
+}

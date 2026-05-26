@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from openprompt_rs.models.hierarchy import HierarchyGraph
-from openprompt_rs.utils.embeddings import HashTextEmbedder
+from openprompt_rs.utils.embeddings import build_text_embedder
 from openprompt_rs.utils.io import load_json
 
 
@@ -44,16 +44,25 @@ class PromptBank(nn.Module):
         class_names: list[str] | None = None,
         hierarchy_lambda: float = 0.1,
         use_class_offsets: bool = True,
+        embedding_backend: str = "hash",
+        embedding_model_name: str | None = None,
+        embedding_checkpoint: str | Path | None = None,
+        embedding_cache_path: str | Path | None = None,
+        embedding_device: str | torch.device | None = None,
     ) -> "PromptBank":
         hierarchy = HierarchyGraph.from_json(taxonomy_path, class_names=class_names)
         templates = load_json(template_path)["templates"]
         prompt_strings = cls._build_prompt_strings(hierarchy, templates)
-        embedder = HashTextEmbedder(embedding_dim=embedding_dim)
-        embeddings = []
-        for class_name in hierarchy.class_names:
-            encoded = embedder.embed_texts(prompt_strings[class_name])
-            embeddings.append(encoded.mean(dim=0))
-        embedding_tensor = torch.stack(embeddings, dim=0)
+        embedding_tensor = cls._load_or_build_embeddings(
+            hierarchy=hierarchy,
+            prompt_strings=prompt_strings,
+            embedding_dim=embedding_dim,
+            embedding_backend=embedding_backend,
+            embedding_model_name=embedding_model_name,
+            embedding_checkpoint=embedding_checkpoint,
+            embedding_cache_path=embedding_cache_path,
+            embedding_device=embedding_device,
+        )
         return cls(
             class_names=hierarchy.class_names,
             base_embeddings=embedding_tensor,
@@ -63,6 +72,65 @@ class PromptBank(nn.Module):
             hierarchy_lambda=hierarchy_lambda,
             use_class_offsets=use_class_offsets,
         )
+
+    @staticmethod
+    def _load_or_build_embeddings(
+        hierarchy: HierarchyGraph,
+        prompt_strings: dict[str, list[str]],
+        embedding_dim: int,
+        embedding_backend: str,
+        embedding_model_name: str | None,
+        embedding_checkpoint: str | Path | None,
+        embedding_cache_path: str | Path | None,
+        embedding_device: str | torch.device | None,
+    ) -> torch.Tensor:
+        cache_path = Path(embedding_cache_path) if embedding_cache_path else None
+        if cache_path and cache_path.exists():
+            cache = torch.load(cache_path, map_location="cpu")
+            metadata = cache.get("metadata", {})
+            cached_embeddings = cache["embeddings"].float()
+            if (
+                metadata.get("class_names") == hierarchy.class_names
+                and metadata.get("embedding_backend") == embedding_backend
+                and metadata.get("embedding_model_name") == embedding_model_name
+                and metadata.get("embedding_checkpoint")
+                == (str(embedding_checkpoint) if embedding_checkpoint else None)
+                and metadata.get("embedding_dim") == embedding_dim
+                and cached_embeddings.shape[0] == len(hierarchy.class_names)
+            ):
+                return cached_embeddings
+
+        embedder = build_text_embedder(
+            backend=embedding_backend,
+            embedding_dim=embedding_dim,
+            model_name=embedding_model_name,
+            checkpoint=embedding_checkpoint,
+            device=embedding_device,
+        )
+        embeddings = []
+        for class_name in hierarchy.class_names:
+            encoded = embedder.embed_texts(prompt_strings[class_name])
+            embeddings.append(encoded.mean(dim=0))
+        embedding_tensor = torch.stack(embeddings, dim=0).float()
+
+        if cache_path:
+            cache_path.parent.mkdir(parents=True, exist_ok=True)
+            torch.save(
+                {
+                    "embeddings": embedding_tensor,
+                    "metadata": {
+                        "class_names": hierarchy.class_names,
+                        "embedding_backend": embedding_backend,
+                        "embedding_model_name": embedding_model_name,
+                        "embedding_checkpoint": str(embedding_checkpoint)
+                        if embedding_checkpoint
+                        else None,
+                        "embedding_dim": embedding_dim,
+                    },
+                },
+                cache_path,
+            )
+        return embedding_tensor
 
     @staticmethod
     def _build_prompt_strings(hierarchy: HierarchyGraph, templates: list[str]) -> dict[str, list[str]]:

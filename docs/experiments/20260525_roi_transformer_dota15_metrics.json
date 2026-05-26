@@ -5,26 +5,71 @@
   "metric": "MMRotate DOTAMetric, IoU=0.5",
   "config": "/data5/2025/ldh/OpenRSD/mmrotate_configs/strong_baseline_dota15/roi-trans-le90_r50_fpn_amp-1x_dota15.py",
   "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_rerun",
-  "status": "stable through epoch 11; epoch 12 not written at latest check",
+  "status": "superseded_by_completed_3x_run",
   "best_epoch_observed": 10,
   "best_map": 0.2485,
-  "best_ap50": 0.2480,
+  "best_ap50": 0.248,
   "epoch_metrics": [
-    {"epoch": 1, "map": 0.0901, "ap50": 0.0900},
-    {"epoch": 2, "map": 0.1362, "ap50": 0.1360},
-    {"epoch": 3, "map": 0.1709, "ap50": 0.1710},
-    {"epoch": 4, "map": 0.1899, "ap50": 0.1900},
-    {"epoch": 5, "map": 0.2075, "ap50": 0.2070},
-    {"epoch": 6, "map": 0.2088, "ap50": 0.2090},
-    {"epoch": 7, "map": 0.2240, "ap50": 0.2240},
-    {"epoch": 8, "map": 0.2402, "ap50": 0.2400},
-    {"epoch": 9, "map": 0.2391, "ap50": 0.2390},
-    {"epoch": 10, "map": 0.2485, "ap50": 0.2480},
-    {"epoch": 11, "map": 0.2436, "ap50": 0.2440}
+    {
+      "epoch": 1,
+      "map": 0.0901,
+      "ap50": 0.09
+    },
+    {
+      "epoch": 2,
+      "map": 0.1362,
+      "ap50": 0.136
+    },
+    {
+      "epoch": 3,
+      "map": 0.1709,
+      "ap50": 0.171
+    },
+    {
+      "epoch": 4,
+      "map": 0.1899,
+      "ap50": 0.19
+    },
+    {
+      "epoch": 5,
+      "map": 0.2075,
+      "ap50": 0.207
+    },
+    {
+      "epoch": 6,
+      "map": 0.2088,
+      "ap50": 0.209
+    },
+    {
+      "epoch": 7,
+      "map": 0.224,
+      "ap50": 0.224
+    },
+    {
+      "epoch": 8,
+      "map": 0.2402,
+      "ap50": 0.24
+    },
+    {
+      "epoch": 9,
+      "map": 0.2391,
+      "ap50": 0.239
+    },
+    {
+      "epoch": 10,
+      "map": 0.2485,
+      "ap50": 0.248
+    },
+    {
+      "epoch": 11,
+      "map": 0.2436,
+      "ap50": 0.244
+    }
   ],
   "notes": [
-    "Rerun used lr=0.001 after the earlier lr=0.005 run diverged.",
-    "Both cascade bbox heads were set to 16 DOTA v1.5 classes.",
-    "Latest visible log reached epoch 12 iter 1280/1410, but epoch_12.pth was absent."
-  ]
+    "This 1x low-LR rerun record is retained for troubleshooting history.",
+    "Use the completed RoI Transformer 3x epoch-34 record for paper-facing S0.",
+    "Earlier note about epoch_12.pth absence was resolved later; the 3x continuation is now archived separately."
+  ],
+  "superseded_by": "docs/experiments/20260526_roi_transformer_3x_dota15_metrics.json"
 }

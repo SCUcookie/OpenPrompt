@@ -24,6 +24,10 @@ dependencies = [
 dev = [
   "pytest>=8.0"
 ]
+vlm = [
+  "open-clip-torch>=2.24.0",
+  "openai-clip>=1.0.1"
+]
 
 [project.urls]
 Homepage = "https://github.com/SCUcookie/openprompt"
@@ -38,4 +42,3 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-

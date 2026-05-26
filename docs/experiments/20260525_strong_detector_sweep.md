@@ -2,8 +2,7 @@
 
 Date: 2026-05-25
 
-Status: mostly complete (Oriented R-CNN and ReDet completed; RoI Transformer
-stable through epoch 11, epoch 12 not written at latest check)
+Status: complete for S0 on DOTA v1.5
 
 Purpose: start the ordered strong-detector sweep for the current DOTA v1.5 path.
 The sweep order is Oriented R-CNN -> RoI Transformer -> ReDet, with the first
@@ -53,9 +52,14 @@ Embedding backend:
   prompt/VLM ablations
 
 Notes:
-- The first Oriented R-CNN baseline completed 12 epochs and produced a usable S0 result.
-- RoI Transformer low-LR rerun is usable through epoch 11, with best observed
-  validation at epoch 10.
+- The first Oriented R-CNN 12e baseline completed and produced a usable S0
+  reference result.
+- RoI Transformer 3x completed and is the best current S0 result: epoch 34,
+  `dota/mAP=0.2644`, `dota/AP50=0.2640`.
+- Oriented R-CNN 3x completed and is a close secondary result: epoch 33/34,
+  `dota/mAP=0.2620`, `dota/AP50=0.2620`.
+- ReDet pretrained completed and is the completed comparison result: epoch 12,
+  `dota/mAP=0.2382`, `dota/AP50=0.2380`.
 - The DOTA v1.5 wrappers use `PackDetInputs` pipelines and a 640x640 resize
   to keep memory within the available GPU budget.
 - Validation/test pipelines must resize the image before `LoadAnnotations`; loading annotations before resize produced near-zero AP by resizing GT boxes into the wrong evaluator coordinates.
@@ -135,7 +139,7 @@ Mid-run/final records:
 
 ## RoI Transformer
 
-Status: stable rerun usable through epoch 11; epoch 12 pending/stalled at latest check
+Status: completed 3x run; primary S0 baseline
 
 GPU allocation: 1 GPU (`CUDA_VISIBLE_DEVICES=2`)
 
@@ -155,13 +159,13 @@ Validation command:
 - pending exact server command paste
 
 External checkpoint path:
-- best observed checkpoint:
-  `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_rerun/epoch_10.pth`
-- active work dir:
-  `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_rerun/`
+- primary 3x checkpoint:
+  `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_3x/epoch_34.pth`
+- 3x work dir:
+  `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_3x/`
 
 External log path:
-- `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_rerun/train.log`
+- `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_3x/train.log`
 
 Training status:
 - Previous 1-epoch run reached `epoch_1.pth` but losses became NaN by epoch 1 with the earlier `lr=0.005` setting.
@@ -171,33 +175,30 @@ Training status:
   replaces list entries instead of deep-merging them.
 - Relaunched at 2026-05-25 20:07 server time in screen session
   `geonexus_roi_trans_lr001`.
-- Training and validation were stable through epoch 11. Best observed validation
-  was epoch 10 with `dota/mAP=0.2485`, `dota/AP50=0.2480`.
-- Latest visible log reached epoch 12 iter 1280/1410, but `epoch_12.pth` had
-  not been written and the screen hardcopy was blank. Treat epoch 12 as
-  pending/stalled until manually verified.
+- The 1x low-LR rerun completed through epoch 12 and was then superseded by the
+  3x continuation.
+- The 3x run completed 36 epochs. Best validation is epoch 34 with
+  `dota/mAP=0.2644`, `dota/AP50=0.2640`; final epoch 36 is
+  `dota/mAP=0.2612`, `dota/AP50=0.2610`.
 
 Validation result:
-- Usable through epoch 11. Best observed checkpoint is epoch 10.
+- Best checkpoint is epoch 34 from the 3x run.
 
-Class-wise AP:
-- Epoch 11 class-wise AP is recorded in
-  `docs/experiments/20260525_strong_detector_run_summary.md`; epoch 10
-  class-wise AP still needs to be extracted if it is used as the table row.
+Small metric summary:
+- `docs/experiments/20260526_roi_transformer_3x_dota15_metrics.json`
 
 Failure notes:
-- The earlier LR `0.005` run diverged. The LR `0.001` rerun did not show NaN
-  in the visible log. If epoch 12 remains stalled, use epoch 10 as the best
-  observed RoI Transformer checkpoint or relaunch from epoch 11.
+- The earlier LR `0.005` run diverged. Use the completed LR `0.001` 3x record
+  for paper-facing S0.
 
 ## ReDet
 
-Status: completed scratch rerun
+Status: completed pretrained rerun
 
 GPU allocation: 1 GPU (`CUDA_VISIBLE_DEVICES=4`) for the current rerun
 
 Config:
-- `OpenRSD/mmrotate_configs/strong_baseline_dota15/redet-le90_re50_refpn_amp-1x_dota15.py`
+- `OpenRSD/mmrotate_configs/strong_baseline_dota15/redet-le90_re50_refpn_amp-1x_dota15_pretrained.py`
 
 Training command:
 
@@ -212,10 +213,10 @@ Validation command:
 - pending exact server command paste
 
 External checkpoint path:
-- `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_scratch_rerun/epoch_12.pth`
+- `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun/epoch_12.pth`
 
 External log path:
-- `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_scratch_rerun/train.log`
+- `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun/train.log`
 
 Training status:
 - Previous 1-epoch scratch run reached `epoch_1.pth` with finite losses, but it used the earlier validation pipeline and is not final S0 evidence.
@@ -223,15 +224,17 @@ Training status:
   `geonexus_redet_scratch`.
 - Startup check: training reached epoch 1 iter 300 with finite losses after an
   initial `grad_norm: nan` at iter 50; monitor before counting any checkpoint.
+- The scratch rerun completed 12 epochs but is superseded by the pretrained
+  rerun.
+- Pretrained ReDet loaded
+  `/data5/2025/temp/Supplements/re_resnet50_c8_batch256-25b16846.pth`.
 - Completed 12 epochs. Final checkpoint:
-  `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_scratch_rerun/epoch_12.pth`.
-- Final validation at epoch 12: `dota/mAP=0.1221`, `dota/AP50=0.1220`.
-- Best validation in this scratch rerun is epoch 12 so far, but compare
-  cautiously because ReDet was initialized from scratch.
+  `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun/epoch_12.pth`.
+- Final validation at epoch 12: `dota/mAP=0.2382`, `dota/AP50=0.2380`.
 
 Validation result:
-- Final scratch rerun validation at epoch 12: `dota/mAP=0.1221`,
-  `dota/AP50=0.1220`.
+- Final pretrained rerun validation at epoch 12: `dota/mAP=0.2382`,
+  `dota/AP50=0.2380`.
 - Previous corrected-metadata-only spot validation before the pipeline-order fix
   was `dota/mAP=0.0001`, `dota/AP50=0.0000`; treat this as
   invalid/diagnostic because annotations were loaded before resize.
@@ -240,19 +243,15 @@ Class-wise AP:
 - Epoch 12 class-wise AP is recorded in
   `docs/experiments/20260525_strong_detector_run_summary.md`.
 
-Failure notes:
-- ReDet is a scratch run because the expected ReResNet checkpoint was missing; compare it cautiously against ImageNet-pretrained R50 baselines.
-- Rerun/revalidate with `LoadImageFromFile -> Resize -> LoadAnnotations -> ConvertBoxType -> RandomFlip(prob=0) -> PackDetInputs` before using any ReDet number.
+Small metric summary:
+- `docs/experiments/20260526_redet_pretrained_dota15_metrics.json`
 
 ## Next Action
 
-1. Verify whether the RoI Transformer screen session is stalled. If stalled,
-   use epoch 10 as the best observed RoI Transformer baseline or relaunch from
-   epoch 11.
-2. Download/stage ReResNet pretraining before rerunning ReDet as a fair
-   baseline.
-3. Use Oriented R-CNN epoch 12 as the first S0 gate for S1-S4 prompt/VLM
-   ablations.
-4. Follow `docs/setup/complete_experiment_plan.md` for paper table closure.
-5. Keep prompt/VLM ablations separate from closed-set detector results and do
+1. Use RoI Transformer 3x epoch 34 as the fixed detector for S1 unless a later
+   note chooses Oriented R-CNN 3x for implementation stability.
+2. Install or configure real VLM dependencies, then run the 16-class text
+   embedding smoke test before any S1 result is paper-facing.
+3. Follow `docs/setup/complete_experiment_plan.md` for paper table closure.
+4. Keep prompt/VLM ablations separate from closed-set detector results and do
    not claim open-vocabulary behavior from S0.

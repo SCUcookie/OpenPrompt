@@ -21,9 +21,10 @@ Each class should include:
 - confusing classes
 - negative cues
 
-The current `PromptBank` builds prompt strings from these fields. This is useful
-for testing, but the current embedding backend is still only a deterministic
-hash fallback.
+The current `PromptBank` builds prompt strings from these fields. Hash
+embeddings remain available for tests, while `clip`, `open_clip`, `remoteclip`,
+and `skyclip` can be selected for real VLM text embeddings when the required
+Python package and checkpoint are present.
 
 ## Current Baseline Evidence
 
@@ -34,10 +35,18 @@ hash fallback.
 - Validation metrics are `map50=1.0926445202230628e-05`, `mean_precision=0.0006667361585641629`, and `mean_recall=0.0011823561703749874`.
 - The current result is consistent with the hash-fallback / lightweight scaffold, so the real VLM embedder upgrade is still required before semantic claims.
 
-## Required Upgrade
+## Current Gate
 
-Before paper-level semantic claims, first pass the S0 strong-detector gate and
-then replace the hash embedder with one of:
+The S0 strong-detector gate is complete on DOTA v1.5. The next gate is real VLM
+embedding support:
+
+- RemoteCLIP checkpoint symlink exists at
+  `/data5/2025/ldh/OpenRSD/checkpoints/remoteclip/RemoteCLIP-ViT-B-32.pt`.
+- `/data1/anaconda3/envs/zwl_mmrotate/bin/python` has `torch`.
+- The same environment is missing `open_clip` and `clip`, so S1 cannot yet be
+  paper-valid.
+
+Before paper-level semantic claims, replace the hash embedder with one of:
 
 - CLIP
 - SkyCLIP
@@ -47,7 +56,7 @@ then replace the hash embedder with one of:
 Implementation target:
 
 - keep hash embeddings for offline smoke tests
-- add a real embedder selected by config
+- use a real embedder selected by config or script args
 - cache text embeddings to a generated artifact
 - record encoder name, checkpoint, preprocessing, embedding dimension, and
   prompt templates in the experiment summary
@@ -61,6 +70,17 @@ Config fields reserved for the real embedder path:
 
 Every prompt/VLM experiment record must state whether it used the deterministic
 hash fallback or a real VLM encoder.
+
+Smoke test before S1:
+
+```bash
+PYTHONPATH=src /data1/anaconda3/envs/zwl_mmrotate/bin/python \
+  scripts/smoke_vlm_embeddings.py \
+  --embedding-backend remoteclip \
+  --embedding-model-name ViT-B-32 \
+  --embedding-checkpoint /data5/2025/ldh/OpenRSD/checkpoints/remoteclip/RemoteCLIP-ViT-B-32.pt \
+  --embedding-device cuda
+```
 
 ## Experiment Stages
 

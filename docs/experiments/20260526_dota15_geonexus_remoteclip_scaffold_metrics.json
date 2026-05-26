@@ -1,0 +1,32 @@
+{
+  "date": "2026-05-26",
+  "experiment": "dota_v15_geonexus_remoteclip",
+  "status": "running",
+  "screen": "dota_v15_geonexus_remoteclip",
+  "gpu": 2,
+  "config": "/data5/2025/ldh/New/configs/experiments/dota_v15_geonexus.yaml",
+  "environment": "/home/zwl/.conda/envs/geonexus_vlm",
+  "output_dir": "/data5/2025/ldh/New/outputs/dota_v15_geonexus",
+  "train_log": "/data5/2025/ldh/New/outputs/dota_v15_geonexus/train_remoteclip.log",
+  "completed_epochs": [
+    {
+      "epoch": 1,
+      "checkpoint": "/data5/2025/ldh/New/outputs/dota_v15_geonexus/epoch_001.pt",
+      "metrics": "/data5/2025/ldh/New/outputs/dota_v15_geonexus/metrics_epoch_001.json",
+      "loss": 0.08780368215574876,
+      "loss_cls": 0.0017802888014902944,
+      "loss_box": 0.04291353176144651,
+      "loss_hier": 0.001963298497150242,
+      "loss_margin": 0.0,
+      "positive_cls_acc": 0.5590189151270305,
+      "positive_box_l1": 0.15612202842528075
+    }
+  ],
+  "known_log_events": [
+    "Earlier startup failed because cv2 was missing.",
+    "Earlier startup failed because scene_adapter expected 512-d scene features but received 256-d features.",
+    "The current run recovered and produced epoch_001.pt plus metrics_epoch_001.json."
+  ],
+  "paper_use_note": "Scaffold diagnostic only. This is not final MMRotate S1 evidence and should not be used for final paper claims until integrated with the selected strong detector.",
+  "artifact_note": "Large checkpoints stay outside Git under outputs; this JSON records compact metadata only."
+}

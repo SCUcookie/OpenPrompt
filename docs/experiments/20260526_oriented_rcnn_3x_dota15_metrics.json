@@ -1,0 +1,207 @@
+{
+  "date": "2026-05-26",
+  "experiment": "s0_strong_detector_dota15",
+  "detector": "Oriented R-CNN",
+  "dataset": "DOTA v1.5",
+  "split": "val",
+  "metric_implementation": "MMRotate DOTAMetric mAP, IoU 0.5",
+  "config": "/data5/2025/ldh/OpenRSD/mmrotate_configs/strong_baseline_dota15/oriented-rcnn-le90_r50_fpn_amp-3x_dota15.py",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn_3x_loadfrom/epoch_33.pth",
+  "initialization": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn/epoch_12.pth",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn_3x_loadfrom",
+  "log": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn_3x_loadfrom/train.log",
+  "epochs": 36,
+  "best_epoch": 33,
+  "best_map": 0.262,
+  "best_ap50": 0.262,
+  "final_epoch": 36,
+  "final_map": 0.2607,
+  "final_ap50": 0.261,
+  "epoch_metrics": [
+    {
+      "epoch": 1,
+      "map": 0.2368,
+      "ap50": 0.237
+    },
+    {
+      "epoch": 2,
+      "map": 0.2395,
+      "ap50": 0.24
+    },
+    {
+      "epoch": 3,
+      "map": 0.236,
+      "ap50": 0.236
+    },
+    {
+      "epoch": 4,
+      "map": 0.2476,
+      "ap50": 0.248
+    },
+    {
+      "epoch": 5,
+      "map": 0.2376,
+      "ap50": 0.238
+    },
+    {
+      "epoch": 6,
+      "map": 0.2408,
+      "ap50": 0.241
+    },
+    {
+      "epoch": 7,
+      "map": 0.2585,
+      "ap50": 0.259
+    },
+    {
+      "epoch": 8,
+      "map": 0.2558,
+      "ap50": 0.256
+    },
+    {
+      "epoch": 9,
+      "map": 0.2573,
+      "ap50": 0.257
+    },
+    {
+      "epoch": 10,
+      "map": 0.2349,
+      "ap50": 0.235
+    },
+    {
+      "epoch": 11,
+      "map": 0.2579,
+      "ap50": 0.258
+    },
+    {
+      "epoch": 12,
+      "map": 0.255,
+      "ap50": 0.255
+    },
+    {
+      "epoch": 13,
+      "map": 0.2529,
+      "ap50": 0.253
+    },
+    {
+      "epoch": 14,
+      "map": 0.2423,
+      "ap50": 0.242
+    },
+    {
+      "epoch": 15,
+      "map": 0.2589,
+      "ap50": 0.259
+    },
+    {
+      "epoch": 16,
+      "map": 0.249,
+      "ap50": 0.249
+    },
+    {
+      "epoch": 17,
+      "map": 0.2491,
+      "ap50": 0.249
+    },
+    {
+      "epoch": 18,
+      "map": 0.2576,
+      "ap50": 0.258
+    },
+    {
+      "epoch": 19,
+      "map": 0.2492,
+      "ap50": 0.249
+    },
+    {
+      "epoch": 20,
+      "map": 0.2484,
+      "ap50": 0.248
+    },
+    {
+      "epoch": 21,
+      "map": 0.2602,
+      "ap50": 0.26
+    },
+    {
+      "epoch": 22,
+      "map": 0.2588,
+      "ap50": 0.259
+    },
+    {
+      "epoch": 23,
+      "map": 0.2547,
+      "ap50": 0.255
+    },
+    {
+      "epoch": 24,
+      "map": 0.2517,
+      "ap50": 0.252
+    },
+    {
+      "epoch": 25,
+      "map": 0.2616,
+      "ap50": 0.262
+    },
+    {
+      "epoch": 26,
+      "map": 0.2607,
+      "ap50": 0.261
+    },
+    {
+      "epoch": 27,
+      "map": 0.2581,
+      "ap50": 0.258
+    },
+    {
+      "epoch": 28,
+      "map": 0.2581,
+      "ap50": 0.258
+    },
+    {
+      "epoch": 29,
+      "map": 0.2579,
+      "ap50": 0.258
+    },
+    {
+      "epoch": 30,
+      "map": 0.2603,
+      "ap50": 0.26
+    },
+    {
+      "epoch": 31,
+      "map": 0.2569,
+      "ap50": 0.257
+    },
+    {
+      "epoch": 32,
+      "map": 0.2582,
+      "ap50": 0.258
+    },
+    {
+      "epoch": 33,
+      "map": 0.262,
+      "ap50": 0.262
+    },
+    {
+      "epoch": 34,
+      "map": 0.262,
+      "ap50": 0.262
+    },
+    {
+      "epoch": 35,
+      "map": 0.2588,
+      "ap50": 0.259
+    },
+    {
+      "epoch": 36,
+      "map": 0.2607,
+      "ap50": 0.261
+    }
+  ],
+  "notes": [
+    "Large checkpoints and raw logs remain outside Git.",
+    "S0 closed-set detector baseline; no prompt/VLM embeddings used.",
+    "Validation uses the corrected resize-before-LoadAnnotations DOTA v1.5 pipeline."
+  ]
+}

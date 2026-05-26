@@ -1,0 +1,31 @@
+{
+  "date": "2026-05-26",
+  "experiment": "redet_pretrained_dota15_rerun",
+  "status": "completed",
+  "detector": "ReDet",
+  "dataset": "DOTA v1.5",
+  "config": "/data5/2025/ldh/OpenRSD/mmrotate_configs/strong_baseline_dota15/redet-le90_re50_refpn_amp-1x_dota15_pretrained.py",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun",
+  "train_log": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun/train.log",
+  "screen_session": "redet_pretrained_dota15",
+  "gpu": 2,
+  "pretrained_checkpoint": "/data5/2025/temp/Supplements/re_resnet50_c8_batch256-25b16846.pth",
+  "first_epoch_map": 0.1008,
+  "first_epoch_ap50": 0.101,
+  "notes": [
+    "Validation pipeline inherits the corrected resize-before-LoadAnnotations order from the DOTA v1.5 ReDet override.",
+    "Startup loaded the ReResNet-50 checkpoint from the user-staged Supplements directory.",
+    "Observed one initial grad_norm inf at iter 50; subsequent logged iterations through epoch 2 iter 700 were finite.",
+    "RemoteCLIP ViT-B-32 asset is staged at OpenRSD/checkpoints/remoteclip/RemoteCLIP-ViT-B-32.pt as a symlink to /data5/2025/temp/RemoteCLIP-ViT-B-32.pt.",
+    "The active zwl_mmrotate environment is missing open_clip and clip packages, so S1/S2 should not be launched until VLM dependencies and real embedder wiring are verified.",
+    "Run completed through epoch 12; epoch 12 is best/final with dota/mAP=0.2382 and dota/AP50=0.2380."
+  ],
+  "best_epoch": 12,
+  "best_map": 0.2382,
+  "best_ap50": 0.238,
+  "final_epoch": 12,
+  "final_map": 0.2382,
+  "final_ap50": 0.238,
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun/epoch_12.pth",
+  "metric_summary": "docs/experiments/20260526_redet_pretrained_dota15_metrics.json"
+}

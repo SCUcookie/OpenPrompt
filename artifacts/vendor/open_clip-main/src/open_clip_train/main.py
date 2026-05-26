@@ -1,0 +1,786 @@
+import copy
+import glob
+import logging
+import os
+
+import re
+import shutil
+import subprocess
+import sys
+import random
+from datetime import datetime
+from functools import partial
+
+import numpy as np
+import torch
+from torch import optim
+
+try:
+    import wandb
+except ImportError:
+    wandb = None
+
+try:
+    import torch.utils.tensorboard as tensorboard
+except ImportError:
+    tensorboard = None
+
+from open_clip import create_model_and_transforms, get_tokenizer, create_task
+from open_clip.task import (
+    load_checkpoint,
+    load_sharded_checkpoint,
+    save_checkpoint,
+    save_sharded_checkpoint,
+    unwrap_model,
+)
+from open_clip_train.data import get_data
+from open_clip_train.distributed import is_master, init_distributed_device, broadcast_object
+from open_clip_train.naflex_data import (
+    create_naflex_data_config_from_args,
+    get_naflex_model_image_seq_len,
+    get_naflex_model_patch_size,
+)
+from open_clip_train.logger import setup_logging
+from open_clip_train.params import parse_args
+from open_clip_train.scheduler import cosine_lr, const_lr, const_lr_cooldown, tensorize_learning_rate
+from open_clip_train.train import (
+    TrainState,
+    evaluate,
+    restore_train_state_counters,
+    train_one_epoch,
+)
+from open_clip_train.file_utils import start_sync_process, remote_sync
+from open_clip_train.zero_shot import validate_imagenet_zeroshot_compatible
+
+_logger = logging.getLogger('open_clip_train.main')
+LATEST_CHECKPOINT_NAME = "epoch_latest.pt"
+
+
+def random_seed(seed=42, rank=0):
+    torch.manual_seed(seed + rank)
+    np.random.seed(seed + rank)
+    random.seed(seed + rank)
+
+
+def natural_key(string_):
+    """See http://www.codinghorror.com/blog/archives/001018.html"""
+    return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_.lower())]
+
+
+def get_latest_checkpoint(path: str, remote: bool):
+    # as writen, this glob recurses, so can pick up checkpoints across multiple sub-folders
+    if remote:
+        result = subprocess.run(["aws", "s3", "ls", path + "/"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print(result)
+        if result.returncode == 1:
+            return None
+        checkpoints = [os.path.join(path, x.split(' ')[-1]) for x in result.stdout.decode().split('\n')[:-1]]
+    else:
+        checkpoints = glob.glob(path + '**/*.pt', recursive=True)
+        # Also find DCP checkpoint dirs (contain .metadata file from DCP)
+        for d in glob.glob(os.path.join(path, 'epoch_*')):
+            if os.path.isdir(d) and os.path.exists(os.path.join(d, '.metadata')):
+                checkpoints.append(d)
+    if checkpoints:
+        checkpoints = sorted(checkpoints, key=natural_key)
+        return checkpoints[-1]
+    return None
+
+
+def main(args):
+    args = parse_args(args)
+
+    if torch.cuda.is_available():
+        # This enables tf32 on Ampere GPUs which is only 8% slower than
+        # float16 and almost as accurate as float32
+        # This was a default in pytorch until 1.12
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.benchmark = True
+        torch.backends.cudnn.deterministic = False
+
+    # fully initialize distributed device environment
+    device = init_distributed_device(args)
+
+    # get the name of the experiments
+    if args.name is None:
+        # sanitize model name for filesystem / uri use, easier if we don't use / in name as a rule?
+        model_name_safe = args.model.replace('/', '-')
+        date_str = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
+        if args.distributed:
+            # sync date_str from master to all ranks
+            date_str = broadcast_object(args, date_str)
+        args.name = '-'.join([
+            date_str,
+            f"model_{model_name_safe}",
+            f"lr_{args.lr}",
+            f"b_{args.batch_size}",
+            f"j_{args.workers}",
+            f"p_{args.precision}",
+        ])
+
+    resume_latest = args.resume == 'latest'
+    log_base_path = os.path.join(args.logs, args.name)
+    args.log_path = None
+    if is_master(args, local=args.log_local):
+        os.makedirs(log_base_path, exist_ok=True)
+        log_filename = f'out-{args.rank}' if args.log_local else 'out.log'
+        args.log_path = os.path.join(log_base_path, log_filename)
+        if os.path.exists(args.log_path) and not resume_latest:
+            print(
+                "Error. Experiment already exists. Use --name {} to specify a new experiment."
+            )
+            return -1
+
+    # Setup text logger
+    args.log_level = logging.DEBUG if args.debug else logging.INFO
+    setup_logging(args.log_path, args.log_level)
+
+    # Setup wandb, tensorboard, checkpoint logging
+    args.wandb = 'wandb' in args.report_to or 'all' in args.report_to
+    args.tensorboard = 'tensorboard' in args.report_to or 'all' in args.report_to
+    args.checkpoint_path = os.path.join(log_base_path, "checkpoints")
+    if is_master(args):
+        args.tensorboard_path = os.path.join(log_base_path, "tensorboard") if args.tensorboard else ''
+        for dirname in [args.tensorboard_path, args.checkpoint_path]:
+            if dirname:
+                os.makedirs(dirname, exist_ok=True)
+    else:
+        args.tensorboard_path = ''
+
+    if resume_latest:
+        resume_from = None
+        checkpoint_path = args.checkpoint_path
+        # If using remote_sync, need to check the remote instead of the local checkpoints folder.
+        if args.remote_sync is not None:
+            checkpoint_path = os.path.join(args.remote_sync, args.name, "checkpoints")
+            if args.save_most_recent:
+                print('Error. Cannot use save-most-recent with remote_sync and resume latest.')
+                return -1
+            if args.remote_sync_protocol != 's3':
+                print('Error. Sync protocol not supported when using resume latest.')
+                return -1
+        if is_master(args):
+            # Checking for existing checkpoint via master rank only. It is possible for
+            # different rank processes to see different files if a shared file-system is under
+            # stress, however it's very difficult to fully work around such situations.
+            if args.save_most_recent:
+                # if --save-most-recent flag is set, look for latest at a fixed filename
+                resume_from = os.path.join(checkpoint_path, LATEST_CHECKPOINT_NAME)
+                if not os.path.exists(resume_from):
+                    # Check for DCP sharded latest directory
+                    latest_dir = os.path.join(checkpoint_path, "epoch_latest")
+                    if os.path.isdir(latest_dir):
+                        resume_from = latest_dir
+                    else:
+                        # If no latest checkpoint has been saved yet, don't try to resume
+                        resume_from = None
+            else:
+                # otherwise, list checkpoint dir contents and pick the newest checkpoint
+                resume_from = get_latest_checkpoint(checkpoint_path, remote=args.remote_sync is not None)
+            if resume_from:
+                _logger.info(f'Found latest resume checkpoint at {resume_from}.')
+            else:
+                _logger.info(f'No latest resume checkpoint found in {checkpoint_path}.')
+        # Master determines checkpoint type (dir = sharded DCP, file = full .pt)
+        # and broadcasts both path and type so all ranks agree — avoids per-rank
+        # os.path.isdir() divergence under shared filesystem stress.
+        resume_is_sharded = (
+            resume_from is not None and os.path.isdir(resume_from)
+        ) if is_master(args) else None
+        if args.distributed:
+            resume_from = broadcast_object(args, resume_from)
+            resume_is_sharded = broadcast_object(args, resume_is_sharded)
+        args.resume = resume_from
+        args.resume_is_sharded = resume_is_sharded
+
+    if args.copy_codebase:
+        copy_codebase(args)
+
+    # start the sync proces if remote-sync is not None
+    remote_sync_process = None
+    if is_master(args) and args.remote_sync is not None:
+        # first make sure it works
+        result = remote_sync(
+            os.path.join(args.logs, args.name), 
+            os.path.join(args.remote_sync, args.name), 
+            args.remote_sync_protocol
+        )
+        if result:
+            _logger.info('remote sync successful.')
+        else:
+            _logger.info('Error: remote sync failed. Exiting.')
+            return -1
+        # if all looks good, start a process to do this every args.remote_sync_frequency seconds
+        remote_sync_process = start_sync_process(
+            args.remote_sync_frequency,
+            os.path.join(args.logs, args.name), 
+            os.path.join(args.remote_sync, args.name), 
+            args.remote_sync_protocol
+        )
+        remote_sync_process.start()
+
+    if args.precision == 'fp16':
+        _logger.warning(
+            'It is recommended to use AMP mixed-precision instead of FP16. '
+            'FP16 support needs further verification and tuning, especially for train.')
+
+    if args.distributed:
+        _logger.info(
+            f'Running in distributed mode with multiple processes. Device: {args.device}.'
+            f'Process (global: {args.rank}, local {args.local_rank}), total {args.world_size}.')
+    else:
+        _logger.info(f'Running with a single process. Device {args.device}.')
+
+    dist_model = None
+    args.distill = args.distill_model is not None and args.distill_pretrained is not None
+    if args.distill:
+        #FIXME: support distillation with grad accum.
+        assert args.accum_freq == 1
+        #FIXME: support distillation with coca.
+        assert 'coca' not in args.model.lower()
+
+    if isinstance(args.force_image_size, (tuple, list)) and len(args.force_image_size) == 1:
+        # arg is nargs, single (square) image size list -> int
+        args.force_image_size = args.force_image_size[0]
+    random_seed(args.seed, 0)
+    model_kwargs = {}
+    if args.siglip:
+        model_kwargs['init_logit_scale'] = np.log(10)  # different from CLIP
+        model_kwargs['init_logit_bias'] = -10
+    audio_aug_cfg = dict(
+        data_trunc=args.audio_trunc,
+        data_fill=args.audio_fill,
+        enable_fusion=args.audio_fusion,
+        int16_normalize=args.audio_int16_normalize,
+    )
+    model, preprocess_train, preprocess_val = create_model_and_transforms(
+        args.model,
+        args.pretrained,
+        precision=args.precision,
+        device=device,
+        force_quick_gelu=args.force_quick_gelu,
+        force_custom_text=args.force_custom_text,
+        force_patch_dropout=args.force_patch_dropout,
+        force_image_size=args.force_image_size,
+        force_context_length=args.force_context_length,
+        image_mean=args.image_mean,
+        image_std=args.image_std,
+        image_interpolation=args.image_interpolation,
+        image_resize_mode=args.image_resize_mode,  # only effective for inference
+        aug_cfg=args.aug_cfg,
+        audio_aug_cfg=audio_aug_cfg,
+        force_naflex_vision=args.force_naflex_vision,
+        pretrained_image=args.pretrained_image,
+        pretrained_audio_path=args.pretrained_audio,
+        output_dict=True,
+        cache_dir=args.cache_dir,
+        **model_kwargs,
+    )
+    if args.distill:
+        # FIXME: currently assumes the model you're distilling from has the same tokenizer & transforms.
+        dist_model, _, _ = create_model_and_transforms(
+            args.distill_model, 
+            args.distill_pretrained,
+            device=device,
+            precision=args.precision,
+            output_dict=True,
+            cache_dir=args.cache_dir,
+        )
+    if args.use_bnb_linear is not None:
+        print('=> using a layer from bitsandbytes.\n'
+              '   this is an experimental feature which requires two extra pip installs\n'
+              '   pip install bitsandbytes triton'
+              '   please make sure to use triton 2.0.0')
+        import bitsandbytes as bnb
+        from open_clip.utils import replace_linear
+        print(f'=> replacing linear layers with {args.use_bnb_linear}')
+        linear_replacement_cls = getattr(bnb.nn.triton_based_modules, args.use_bnb_linear)
+        replace_linear(model, linear_replacement_cls)
+        model = model.to(device)
+
+    random_seed(args.seed, args.rank)
+
+    if args.lock_image:
+        # lock image tower as per LiT - https://arxiv.org/abs/2111.07991
+        if not hasattr(model, 'lock_image_tower'):
+            raise ValueError("--lock-image is only valid for image models.")
+        model.lock_image_tower(
+            unlocked_groups=args.lock_image_unlocked_groups,
+            freeze_bn_stats=args.lock_image_freeze_bn_stats)
+    if args.lock_text:
+        model.lock_text_tower(
+            unlocked_layers=args.lock_text_unlocked_layers,
+            freeze_layer_norm=args.lock_text_freeze_layer_norm)
+
+    if args.grad_checkpointing:
+        if args.fsdp and args.torchcompile:
+            # Composable AC will be applied inside prepare_fsdp() after per-block
+            # compile. Correct ordering: compile → AC → FSDP. Applying AC here
+            # would put hooks on the inner blocks, but torch.compile wraps them in
+            # OptimizedModule — leaving hooks at the wrong level.
+            pass
+        else:
+            model.set_grad_checkpointing(impl='composable' if args.fsdp else 'inline')
+
+    if is_master(args):
+        _logger.info("Model:")
+        _logger.info(f"{str(model)}")
+        _logger.info("Params:")
+        params_file = os.path.join(args.logs, args.name, "params.txt")
+        with open(params_file, "w") as f:
+            for name in sorted(vars(args)):
+                val = getattr(args, name)
+                _logger.info(f"  {name}: {val}")
+                f.write(f"{name}: {val}\n")
+
+    naflex_patch_size = get_naflex_model_patch_size(model) if args.use_naflex else None
+    naflex_eval_seq_len = get_naflex_model_image_seq_len(model) if args.use_naflex else None
+    naflex_data_config = (
+        create_naflex_data_config_from_args(
+            args,
+            default_patch_size=naflex_patch_size,
+            default_eval_seq_len=naflex_eval_seq_len,
+        )
+        if args.use_naflex else None
+    )
+
+    # Create task (wraps model + loss)
+    task = create_task(args, model=model, dist_model=dist_model, naflex_data_config=naflex_data_config)
+    if args.imagenet_val is not None or args.imagenet_v2 is not None:
+        validate_imagenet_zeroshot_compatible(model)
+
+    if args.fsdp and not args.distributed:
+        _logger.warning('--fsdp requires distributed mode. Ignoring --fsdp for single-process training.')
+        args.fsdp = False
+
+    if args.fsdp_checkpoint == 'sharded' and not args.fsdp:
+        _logger.warning("--fsdp-checkpoint sharded requires --fsdp. Falling back to 'full'.")
+        args.fsdp_checkpoint = 'full'
+
+    compile_kwargs = dict(
+        backend=args.torchcompile_backend,
+        mode=args.torchcompile_mode,
+    )
+    if args.torchcompile and args.grad_checkpointing and args.distributed and not args.fsdp:
+        _logger.info('Disabling DDP dynamo optimizer when grad checkpointing enabled.')
+        torch._dynamo.config.optimize_ddp = False
+
+    if args.torchcompile and args.torchcompile_strategy == 'model':
+        if args.fsdp:
+            _logger.info(
+                'torch.compile strategy=model with FSDP uses prepare_fsdp() per-block compile; '
+                'skipping root trainable_module compile.'
+            )
+        else:
+            _logger.info('Compiling trainable_module before distributed wrapping.')
+            task.compile(target='model', **compile_kwargs)
+
+    # Resolve FSDP mixed-precision from --precision.
+    # Always create MixedPrecisionPolicy when FSDP is active (at minimum for fp32 reductions).
+    # When FSDP is on, autocast is always suppressed — MP policy handles dtype casting.
+    fsdp_mp_dtype = None  # param_dtype for MixedPrecisionPolicy (None = no param casting)
+    if args.fsdp:
+        if args.precision in ('amp', 'fp16', 'pure_fp16'):
+            fsdp_mp_dtype = torch.float16
+        elif args.precision in ('amp_bf16', 'amp_bfloat16', 'bf16', 'pure_bf16'):
+            fsdp_mp_dtype = torch.bfloat16
+        # else: fp32 — fsdp_mp_dtype stays None (no param casting, fp32 reduce only)
+
+        if is_master(args):
+            _logger.info(
+                f'FSDP2: MixedPrecisionPolicy(param_dtype={fsdp_mp_dtype}, '
+                f'reduce_dtype=torch.float32). Autocast disabled.'
+            )
+
+    if args.distributed:
+        if args.use_bn_sync:
+            task.trainable_module = torch.nn.SyncBatchNorm.convert_sync_batchnorm(task.trainable_module)
+        if args.fsdp:
+            fsdp_kwargs = dict(reshard_after_forward=not args.fsdp_no_reshard_after_forward)
+            if args.fsdp_offload_cpu:
+                from torch.distributed._composable.fsdp import CPUOffloadPolicy
+                fsdp_kwargs['offload_policy'] = CPUOffloadPolicy()
+            from torch.distributed._composable.fsdp import MixedPrecisionPolicy
+            fsdp_kwargs['mp_policy'] = MixedPrecisionPolicy(
+                param_dtype=fsdp_mp_dtype,
+                reduce_dtype=torch.float32,
+            )
+            task.prepare_fsdp(
+                compile_blocks=bool(args.torchcompile),
+                compile_kwargs=compile_kwargs if args.torchcompile else None,
+                grad_checkpointing=bool(args.grad_checkpointing),
+                **fsdp_kwargs,
+            )
+        else:
+            ddp_args = {}
+            if args.ddp_static_graph:
+                # this doesn't exist in older PyTorch, arg only added if enabled
+                ddp_args['static_graph'] = True
+            ddp_args.update(task.ddp_extra_kwargs())
+            task.prepare_distributed(device_ids=[device], **ddp_args)
+
+    # create optimizer and scaler
+    optimizer = None
+    scaler = None
+
+    if args.train_data or args.dataset_type in ("synthetic", "synthetic-audio"):
+        opt = getattr(args, 'opt', 'adamw').lower()
+        use_tensor_learning_rate = (
+            args.torchcompile
+            and args.torchcompile_strategy == 'step'
+            and opt == 'adamw'
+            and device.type == 'cuda'
+        )
+        if opt.startswith('timm/'):
+            from timm.optim import create_optimizer_v2
+            timm_opt = opt.split('timm/')[-1]
+            opt_kwargs = {}
+            assert (args.beta1 is None) == (args.beta2 is None), \
+                'When using timm optimizer, BOTH beta1 and beta2 must be specified (or not specified).'
+            if args.beta1 is not None:
+                opt_kwargs['betas'] = (args.beta1, args.beta2)
+            if args.eps is not None:
+                opt_kwargs['eps'] = args.eps
+            if args.momentum is not None:
+                opt_kwargs['momentum'] = args.momentum
+            opt_kwargs.update(args.opt_kwargs or {})
+            optimizer = create_optimizer_v2(
+                task.trainable_module,
+                timm_opt,
+                lr=args.lr,
+                weight_decay=args.wd,
+                **opt_kwargs,
+            )
+        else:
+            # If some params are not passed, we use the default values based on model name.
+            exclude = lambda n, p: p.ndim < 2 or "bn" in n or "ln" in n or "bias" in n or 'logit_scale' in n
+            include = lambda n, p: not exclude(n, p)
+
+            named_parameters = list(task.trainable_module.named_parameters())
+            gain_or_bias_params = [p for n, p in named_parameters if exclude(n, p) and p.requires_grad]
+            rest_params = [p for n, p in named_parameters if include(n, p) and p.requires_grad]
+
+            if opt == 'adamw':
+                opt_kwargs = dict(
+                    lr=args.lr,
+                    betas=(args.beta1, args.beta2),
+                    eps=args.eps,
+                    capturable=use_tensor_learning_rate,
+                )
+                opt_kwargs.update(args.opt_kwargs or {})
+                if use_tensor_learning_rate:
+                    opt_kwargs['capturable'] = True
+                optimizer = optim.AdamW(
+                    [
+                        {"params": gain_or_bias_params, "weight_decay": 0.},
+                        {"params": rest_params, "weight_decay": args.wd},
+                    ],
+                    **opt_kwargs,
+                )
+                if use_tensor_learning_rate:
+                    tensorize_learning_rate(optimizer, device)
+            else:
+                assert False, f'Unknown optimizer {opt}'
+
+        if use_tensor_learning_rate:
+            _logger.info(
+                'Using tensor learning rate for native AdamW step compile to avoid optimizer-step recompiles.'
+            )
+
+        if is_master(args):
+            defaults = copy.deepcopy(optimizer.defaults)
+            defaults['weight_decay'] = args.wd
+            defaults = ', '.join([f'{k}: {v}' for k, v in defaults.items()])
+            _logger.info(
+                f'Created {type(optimizer).__name__} ({args.opt}) optimizer: {defaults}'
+            )
+
+        scaler = None
+        need_scaler = (args.precision == "amp")
+        if args.fsdp:
+            need_scaler = (fsdp_mp_dtype == torch.float16)
+        if need_scaler:
+            try:
+                scaler = torch.amp.GradScaler(device=device)
+            except (AttributeError, TypeError):
+                scaler = torch.cuda.amp.GradScaler()
+
+    # optionally resume from a checkpoint
+    start_epoch = 0
+    resume_metadata = {}
+    if args.resume is not None:
+        # Use master-determined flag when available (resume latest); fall back
+        # to local isdir check for explicit --resume <path> from CLI.
+        is_sharded = getattr(args, 'resume_is_sharded', None)
+        if is_sharded is None:
+            is_sharded = os.path.isdir(args.resume)
+        if is_sharded:
+            start_epoch = load_sharded_checkpoint(
+                task, args.resume,
+                optimizer=optimizer, scaler=scaler,
+                metadata=resume_metadata,
+            )
+        else:
+            start_epoch = load_checkpoint(
+                task, args.resume,
+                optimizer=optimizer, scaler=scaler,
+                is_distributed=args.distributed,
+                metadata=resume_metadata,
+            )
+        if optimizer is not None and use_tensor_learning_rate:
+            # Optimizer checkpoints may restore LR tensors on CPU or legacy float LRs.
+            tensorize_learning_rate(optimizer, device)
+
+    # initialize datasets
+    tokenizer = get_tokenizer(args.model, cache_dir=args.cache_dir, context_length=args.force_context_length)
+    data = get_data(
+        args,
+        (preprocess_train, preprocess_val),
+        epoch=start_epoch,
+        tokenizer=tokenizer,
+        naflex_data_config=getattr(task, 'naflex_data_config', None),
+    )
+    if args.audio_zeroshot_dataset:
+        from open_clip_train.audio_zero_shot import (
+            AudioZeroShotData,
+            build_hf_audio_zero_shot_dataset,
+            validate_audio_zeroshot_compatible,
+        )
+
+        validate_audio_zeroshot_compatible(task)
+        if is_master(args):
+            _logger.info("Building audio zero-shot dataset.")
+            data["audio-zeroshot"] = build_hf_audio_zero_shot_dataset(args, task)
+        else:
+            data["audio-zeroshot"] = AudioZeroShotData(
+                dataloader=None,
+                classnames=[],
+                dataset_name=args.audio_zeroshot_dataset,
+            )
+    assert len(data), 'At least one train, validation, ImageNet, or audio zero-shot dataset must be specified.'
+
+    # create scheduler if train
+    scheduler = None
+    if 'train' in data and optimizer is not None:
+        total_steps = (data["train"].dataloader.num_batches // args.accum_freq) * args.epochs
+        if args.lr_scheduler == "cosine":
+            scheduler = cosine_lr(optimizer, args.lr, args.warmup, total_steps)
+        elif args.lr_scheduler == "const":
+            scheduler = const_lr(optimizer, args.lr, args.warmup, total_steps)
+        elif args.lr_scheduler == "const-cooldown":
+            assert args.epochs_cooldown is not None,\
+                "Please specify the number of cooldown epochs for this lr schedule."
+            cooldown_steps = (data["train"].dataloader.num_batches // args.accum_freq) * args.epochs_cooldown
+            scheduler = const_lr_cooldown(
+                optimizer, args.lr, args.warmup, total_steps,
+                cooldown_steps, args.lr_cooldown_power, args.lr_cooldown_end)
+        else:
+            _logger.error(
+                f'Unknown scheduler, {args.lr_scheduler}. Available options are: cosine, const, const-cooldown.')
+            exit(1)
+
+    train_state = TrainState(
+        task=task,
+        optimizer=optimizer,
+        scaler=scaler,
+        scheduler=scheduler,
+        epoch=start_epoch,
+    )
+    restore_train_state_counters(train_state, resume_metadata if args.resume is not None else None, data, args)
+
+    # determine if this worker should save logs and checkpoints. only do so if it is rank == 0
+    args.save_logs = args.logs and args.logs.lower() != 'none' and is_master(args)
+    writer = None
+    if args.save_logs and args.tensorboard:
+        assert tensorboard is not None, "Please install tensorboard."
+        writer = tensorboard.SummaryWriter(args.tensorboard_path)
+
+    if args.wandb and is_master(args):
+        assert wandb is not None, 'Please install wandb.'
+        _logger.debug('Starting wandb.')
+        args.train_sz = data["train"].dataloader.num_samples
+        if args.val_data is not None:
+            args.val_sz = data["val"].dataloader.num_samples
+        # you will have to configure this for your project!
+        wandb.init(
+            project=args.wandb_project_name,
+            name=args.name,
+            id=args.name,
+            notes=args.wandb_notes,
+            tags=[],
+            resume='auto' if args.resume == "latest" else None,
+            config=vars(args),
+        )
+        if args.debug:
+            wandb.watch(train_state.task.trainable_module, log='all')
+        wandb.save(params_file)
+        _logger.debug('Finished loading wandb.')
+
+    if args.torchcompile:
+        _logger.info(f'Using torch.compile strategy={args.torchcompile_strategy}.')
+
+        # Suppress noisy dynamo/inductor logs
+        filter_prefixes = (
+            "torch._dynamo",
+            "torch._inductor",
+            "torch._functorch",
+            "torch._utils_internal",
+            "torch.fx",
+        )
+        for name in logging.root.manager.loggerDict:
+            if name.startswith(filter_prefixes):
+                logging.getLogger(name).setLevel(logging.WARNING)
+
+        if args.torchcompile_strategy == 'task':
+            _logger.info('Compiling task train/eval forward callables.')
+            train_state.task.compile(target='task', **compile_kwargs)
+        elif args.torchcompile_strategy == 'step':
+            _logger.info('Compiling task eval forward callable; train step compile is cached in TrainState.')
+            train_state.task.compile(target='task', compile_train=False, compile_eval=True, **compile_kwargs)
+
+    if 'train' not in data:
+        # If using int8, convert to inference mode.
+        if args.use_bnb_linear is not None:
+            from open_clip.utils import convert_int8_model_to_inference_mode
+            convert_int8_model_to_inference_mode(unwrap_model(train_state.task.trainable_module))
+        # Evaluate.
+        evaluate(train_state.task, data, train_state.epoch, args, tb_writer=writer, tokenizer=tokenizer)
+        return
+
+    for epoch in range(train_state.epoch, args.epochs):
+        train_state.epoch = epoch
+        if is_master(args):
+            _logger.info(f'Start epoch {epoch}')
+
+        train_one_epoch(train_state, data, args, tb_writer=writer)
+        completed_epoch = epoch + 1
+
+        if any(v in data for v in ('val', 'imagenet-val', 'imagenet-v2', 'audio-zeroshot')):
+            evaluate(train_state.task, data, completed_epoch, args, tb_writer=writer, tokenizer=tokenizer)
+            # sync to avoid some processes advancing/exiting while rank 0 finishes eval
+            if args.distributed:
+                torch.distributed.barrier()
+
+        # Saving checkpoints.
+        sharded_ckpt = args.fsdp and args.fsdp_checkpoint == 'sharded'
+
+        if sharded_ckpt:
+            # Sharded DCP — all ranks write shard files to a directory
+            save_epoch = completed_epoch == args.epochs or (
+                args.save_frequency > 0 and (completed_epoch % args.save_frequency) == 0
+            )
+            if save_epoch:
+                save_sharded_checkpoint(
+                    train_state.task, train_state.optimizer,
+                    os.path.join(args.checkpoint_path, f"epoch_{completed_epoch}"),
+                    epoch=completed_epoch, scaler=train_state.scaler,
+                    name=args.name, is_master=args.save_logs,
+                    global_step=train_state.global_step,
+                    samples_seen=train_state.samples_seen,
+                )
+            if args.save_most_recent:
+                latest_dir = os.path.join(args.checkpoint_path, "epoch_latest")
+                tmp_dir = os.path.join(args.checkpoint_path, "_tmp_latest")
+                save_sharded_checkpoint(
+                    train_state.task, train_state.optimizer, tmp_dir,
+                    epoch=completed_epoch, scaler=train_state.scaler,
+                    name=args.name, is_master=args.save_logs,
+                    global_step=train_state.global_step,
+                    samples_seen=train_state.samples_seen,
+                )
+                torch.distributed.barrier()
+                if args.save_logs:
+                    # Atomic-ish swap: rename old → trash, rename tmp → latest,
+                    # then delete trash. If preempted between any step, at least
+                    # one valid directory survives.
+                    trash_dir = os.path.join(args.checkpoint_path, "_trash_latest")
+                    if os.path.exists(trash_dir):
+                        shutil.rmtree(trash_dir)
+                    if os.path.exists(latest_dir):
+                        os.rename(latest_dir, trash_dir)
+                    os.rename(tmp_dir, latest_dir)
+                    if os.path.exists(trash_dir):
+                        shutil.rmtree(trash_dir)
+            if args.delete_previous_checkpoint and args.save_logs:
+                previous_epoch = completed_epoch - args.save_frequency
+                if previous_epoch > 0:
+                    prev_dir = os.path.join(args.checkpoint_path, f"epoch_{previous_epoch}")
+                    if os.path.isdir(prev_dir):
+                        shutil.rmtree(prev_dir)
+
+        else:
+            # Full checkpoint — gather to rank 0, single .pt file
+            # With FSDP2, state dict gather is collective — all ranks must participate
+            # even though only master writes to disk.
+            # With DDP, only master needs to call state_dict() to avoid wasting memory.
+            if train_state.task._fsdp_enabled or args.save_logs:
+                checkpoint_dict = save_checkpoint(
+                    train_state.task, train_state.optimizer,
+                    epoch=completed_epoch, scaler=train_state.scaler, name=args.name,
+                    global_step=train_state.global_step,
+                    samples_seen=train_state.samples_seen,
+                )
+
+            if args.save_logs:
+                if completed_epoch == args.epochs or (
+                    args.save_frequency > 0 and (completed_epoch % args.save_frequency) == 0
+                ):
+                    torch.save(
+                        checkpoint_dict,
+                        os.path.join(args.checkpoint_path, f"epoch_{completed_epoch}.pt"),
+                    )
+                if args.delete_previous_checkpoint:
+                    previous_epoch = completed_epoch - args.save_frequency
+                    if previous_epoch > 0:
+                        previous_checkpoint = os.path.join(args.checkpoint_path, f"epoch_{previous_epoch}.pt")
+                        if os.path.exists(previous_checkpoint):
+                            os.remove(previous_checkpoint)
+
+                if args.save_most_recent:
+                    # try not to corrupt the latest checkpoint if save fails
+                    tmp_save_path = os.path.join(args.checkpoint_path, "tmp.pt")
+                    latest_save_path = os.path.join(args.checkpoint_path, LATEST_CHECKPOINT_NAME)
+                    torch.save(checkpoint_dict, tmp_save_path)
+                    os.replace(tmp_save_path, latest_save_path)
+
+        # keep nodes in sync during checkpointing
+        if args.distributed:
+            torch.distributed.barrier()
+
+    if args.wandb and is_master(args):
+        wandb.finish()
+
+    # run a final sync.
+    if remote_sync_process is not None:
+        _logger.info('Final remote sync.')
+        remote_sync_process.terminate()
+        result = remote_sync(
+            os.path.join(args.logs, args.name), 
+            os.path.join(args.remote_sync, args.name), 
+            args.remote_sync_protocol
+        )
+        if result:
+            _logger.info('Final remote sync successful.')
+        else:
+            _logger.info('Final remote sync failed.')
+    
+
+def copy_codebase(args):
+    from shutil import copytree, ignore_patterns
+    new_code_path = os.path.join(args.logs, args.name, "code")
+    if os.path.exists(new_code_path):
+        print(
+            f"Error. Experiment already exists at {new_code_path}. Use --name to specify a new experiment."
+        )
+        return -1
+    print(f"Copying codebase to {new_code_path}")
+    current_code_path = os.path.realpath(__file__)
+    for _ in range(3):
+        current_code_path = os.path.dirname(current_code_path)
+    copytree(current_code_path, new_code_path, ignore=ignore_patterns('log', 'logs', 'wandb'))
+    print("Done copying code.")
+    return 1
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

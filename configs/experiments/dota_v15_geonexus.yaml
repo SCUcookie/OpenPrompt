@@ -1,15 +1,36 @@
 _base_:
   - ../models/geonexus_rsd.yaml
   - ../datasets/dota_v15_train.yaml
+  - ../datasets/dota_v15_val.yaml
 
 experiment:
   name: dota_v15_geonexus
   seed: 7
   epochs: 12
-  batch_size: 2
+  batch_size: 1
   learning_rate: 0.0002
   weight_decay: 0.0001
   device: cuda
   taxonomy_path: assets/hierarchies/remote_sensing_taxonomy.json
   prompt_template_path: assets/prompts/prompt_templates.json
   output_dir: outputs/dota_v15_geonexus
+  embedding_backend: remoteclip
+  embedding_model_name: ViT-B-32
+  embedding_checkpoint: /data5/2025/ldh/OpenRSD/checkpoints/remoteclip/RemoteCLIP-ViT-B-32.pt
+  embedding_cache_path: artifacts/generated/remoteclip_vit_b32_dota15_prompt_embeddings.pt
+  embedding_device: cpu
+
+model:
+  embedding_dim: 512
+  backbone_dim: 512
+  grid_size: 16
+
+dataset:
+  tile_size: 1024
+  tile_stride: 1024
+  include_empty_tiles: false
+
+val_dataset:
+  tile_size: 1024
+  tile_stride: 1024
+  include_empty_tiles: true

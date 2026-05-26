@@ -49,7 +49,9 @@ not yet contain paper-ready benchmark results.
 ## Current Limitations
 
 - The local detector is lightweight and mainly useful for plumbing.
-- The default text embedder is a deterministic hash fallback for smoke tests.
+- The default text embedder is a deterministic hash fallback for smoke tests;
+  real CLIP/OpenCLIP/RemoteCLIP text embeddings are selectable when the active
+  environment provides the required package and checkpoint.
 - Datasets and checkpoints are intentionally not tracked.
 - Official DOTA evaluation still needs to be integrated or documented before
   paper-level claims.
@@ -119,6 +121,15 @@ PYTHONPATH=src python scripts/build_prompt_bank.py \
   --templates assets/prompts/prompt_templates.json \
   --output artifacts/generated/prompt_bank_remote_sensing.pt \
   --embedding-dim 256
+```
+
+Smoke-test real RemoteCLIP text embeddings before S1:
+
+```bash
+PYTHONPATH=src python scripts/smoke_vlm_embeddings.py \
+  --embedding-backend remoteclip \
+  --embedding-model-name ViT-B-32 \
+  --embedding-checkpoint /path/to/RemoteCLIP-ViT-B-32.pt
 ```
 
 ## Recommended Experiment Order

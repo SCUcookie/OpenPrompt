@@ -1,6 +1,6 @@
 # Complete Experiment Plan For Paper Indicators
 
-Date: 2026-05-25
+Date: 2026-05-26
 
 Goal: move from small sanity experiments to paper-facing GeoNexus-RSD results.
 The paper tables should close around DOTA-style oriented detection mAP,
@@ -13,19 +13,21 @@ dataset switch.
 
 Credible closed-set baselines now exist:
 
-- Oriented R-CNN: completed 12 epochs, `dota/mAP=0.2561`, `AP50=0.2560`.
-- RoI Transformer: stable low-LR rerun reached epoch 11, best observed epoch 10
-  `dota/mAP=0.2485`, `AP50=0.2480`; epoch 12 had not written a checkpoint at
-  the latest check.
-- ReDet scratch: completed 12 epochs, `dota/mAP=0.1221`, `AP50=0.1220`.
+- RoI Transformer 3x: completed 36 epochs, best epoch 34
+  `dota/mAP=0.2644`, `AP50=0.2640`.
+- Oriented R-CNN 3x: completed 36 epochs, best epoch 33/34
+  `dota/mAP=0.2620`, `AP50=0.2620`.
+- ReDet pretrained: completed 12 epochs, best/final epoch 12
+  `dota/mAP=0.2382`, `AP50=0.2380`.
+- Oriented R-CNN 12e remains an archived reference at `dota/mAP=0.2561`,
+  `AP50=0.2560`.
 
 Paper-facing baseline choice:
 
-- Primary baseline: Oriented R-CNN epoch 12.
-- Secondary baseline: RoI Transformer epoch 10 if epoch 12 remains unavailable
-  or worse.
-- Diagnostic only: ReDet scratch, unless ReResNet ImageNet pretraining is
-  restored and rerun.
+- Primary baseline: RoI Transformer 3x epoch 34.
+- Secondary baseline: Oriented R-CNN 3x epoch 33/34; use it if implementation
+  simplicity/stability matters more than the small mAP lead.
+- Comparison baseline: ReDet pretrained epoch 12.
 
 ## Required Paper Tables
 
@@ -98,17 +100,18 @@ Measure on the same GPU type:
 
 ## Run Order
 
-1. Finish or diagnose the RoI Transformer epoch-12 job. If it remains stalled,
-   keep epoch 10 as the best RoI Transformer result and record the stall.
-2. Export small JSON summaries for RoI Transformer and ReDet, matching the
-   Oriented R-CNN metrics JSON style.
-3. Port the strong-baseline MMRotate config wrappers and `tools/test.py`
+1. S0 is archived in compact JSON/Markdown summaries; keep checkpoints and raw
+   logs outside Git.
+2. Port the strong-baseline MMRotate config wrappers and `tools/test.py`
    compatibility patch into a tracked transport location, or document them as
    server-local required files.
-4. Choose the primary detector for prompt experiments. Use Oriented R-CNN first
-   because it is the best completed stable result.
-5. Implement real VLM embedding support and text-embedding caching; keep hash
-   embeddings only for smoke tests.
+3. Use RoI Transformer 3x epoch 34 as the fixed detector for S1 unless a later
+   note chooses Oriented R-CNN 3x for implementation stability.
+4. Install or configure real VLM dependencies. The active
+   `/data1/anaconda3/envs/zwl_mmrotate/bin/python` currently has `torch` but is
+   missing both `open_clip` and `clip`.
+5. Run `scripts/smoke_vlm_embeddings.py` on all 16 DOTA v1.5 class prompts
+   with a real backend such as RemoteCLIP before launching S1.
 6. Run S1-S3 on DOTA v1.5 with the same split and evaluator.
 7. Generate pseudo labels with the selected teacher, evaluate purification on a
    heldout labeled subset, then run S4 retraining.
@@ -149,4 +152,3 @@ Public source anchors checked on 2026-05-25:
 - SkyCLIP / SkyScript release: `https://github.com/wangzhecheng/SkyScript`
 - SkyCLIP Hugging Face mirror: `https://huggingface.co/BiliSakura/SkyCLIP-ViT-L-14`
 - MMRotate model zoo: `https://mmrotate.readthedocs.io/en/stable/model_zoo.html`
-

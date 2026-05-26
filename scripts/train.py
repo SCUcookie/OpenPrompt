@@ -62,6 +62,15 @@ def main() -> None:
         class_names=dataset_cfg["class_names"],
         hierarchy_lambda=model_cfg.get("hierarchy_smoothing_lambda", 0.1),
         use_class_offsets=model_cfg.get("use_class_offsets", True),
+        embedding_backend=experiment_cfg.get("embedding_backend", "hash"),
+        embedding_model_name=experiment_cfg.get("embedding_model_name"),
+        embedding_checkpoint=resolve_repo_path(experiment_cfg["embedding_checkpoint"])
+        if experiment_cfg.get("embedding_checkpoint")
+        else None,
+        embedding_cache_path=resolve_repo_path(experiment_cfg["embedding_cache_path"])
+        if experiment_cfg.get("embedding_cache_path")
+        else None,
+        embedding_device=experiment_cfg.get("embedding_device"),
     )
     model = build_model(model_cfg=model_cfg, prompt_bank=prompt_bank)
     dataset = build_dataset(dataset_cfg)

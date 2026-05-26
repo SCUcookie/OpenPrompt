@@ -62,17 +62,17 @@ Current diagnosis:
 - Predictions collapse toward `small-vehicle`, `harbor`, `plane`, and `ship`, and a spot-checked validation tile shows center-biased boxes with very low same-class IoU.
 - `QueryGenerator` computes `query_centers`, but the current box heads do not consume them, so the scaffold currently regresses boxes without an explicit spatial anchor.
 - The anchor-repair quick test completed and wrote `outputs/dota_v15_anchor_repair/epoch_001.pt`; final training metrics were `loss=0.07363908355801901`, `loss_cls=0.001671954903589549`, `loss_box=0.035983564312892485`, `positive_cls_acc=0.5529336195676059`, and `positive_box_l1=0.10294117139314753`.
-- The next step is to archive the completed anchor-repair run and continue the parallel strong-baseline checklist before any S1-S5 prompt experiments.
-- The strong detector sweep order is Oriented R-CNN -> RoI Transformer -> ReDet; with 7 visible RTX 4090s, the first wave can be launched in parallel as separate jobs once the detector environment is ready, with ReDet using distributed training.
-- The corrected Oriented R-CNN DOTA v1.5 strong baseline completed 12 epochs with MMRotate DOTAMetric `map=0.2561` and `AP50=0.2560`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn/epoch_12.pth`; metric summary `docs/experiments/20260525_oriented_rcnn_dota15_epoch12_metrics.json`.
+- S0 strong-detector baselines are complete for the controlled DOTA v1.5 split.
+- The best current S0 detector is RoI Transformer 3x, epoch 34, with MMRotate DOTAMetric `dota/mAP=0.2644` and `dota/AP50=0.2640`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_3x/epoch_34.pth`; metric summary `docs/experiments/20260526_roi_transformer_3x_dota15_metrics.json`.
+- Oriented R-CNN 3x is the close secondary baseline, with best epoch 33/34 `dota/mAP=0.2620` and `dota/AP50=0.2620`; primary checkpoint path for the summary is `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn_3x_loadfrom/epoch_33.pth`; metric summary `docs/experiments/20260526_oriented_rcnn_3x_dota15_metrics.json`.
+- ReDet pretrained completed 12 epochs with best/final `dota/mAP=0.2382` and `dota/AP50=0.2380`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun/epoch_12.pth`; metric summary `docs/experiments/20260526_redet_pretrained_dota15_metrics.json`.
+- The earlier corrected Oriented R-CNN 12-epoch baseline remains an archived reference with `map=0.2561` and `AP50=0.2560`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn/epoch_12.pth`; metric summary `docs/experiments/20260525_oriented_rcnn_dota15_epoch12_metrics.json`.
 - The key strong-baseline fix was validation/test pipeline ordering: resize the image before `LoadAnnotations`, then convert qbox to rbox and pack explicit meta keys. Loading annotations before resize produced near-zero AP by evaluating against mis-scaled GT boxes.
-- RoI Transformer still needs a stable rerun after the previous NaN run; ReDet needs rerun/revalidation with the corrected validation pipeline and should be treated cautiously while initialized from scratch.
-- On 2026-05-25 at 20:07 server time, RoI Transformer was relaunched on GPU 2 with LR `0.001` in screen session `geonexus_roi_trans_lr001`, work dir `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_rerun/`. Its DOTA v1.5 wrapper now sets both cascade bbox heads to 16 classes.
-- On 2026-05-25 at 20:07 server time, ReDet was relaunched as a single-GPU scratch run on GPU 4 in screen session `geonexus_redet_scratch`, work dir `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_scratch_rerun/`. It completed 12 epochs with final `dota/mAP=0.1221` and `dota/AP50=0.1220`; compare cautiously because the startup log showed an initial `grad_norm: nan` at iter 50 and the run was initialized from scratch.
-- RoI Transformer low-LR rerun is usable through epoch 11 and had best observed validation at epoch 10: `dota/mAP=0.2485`, `dota/AP50=0.2480`. At the latest check, epoch 12 had reached iter 1280/1410 in the log but had not written `epoch_12.pth`; treat the screen session as possibly stalled until verified.
+- The earlier RoI Transformer 1x low-LR rerun and ReDet scratch rerun are superseded by the completed 3x RoI Transformer and pretrained ReDet records. Keep their logs only as troubleshooting history.
 - Mid-run detector curves, class-wise snapshots, and figure/table TODOs are recorded in `docs/experiments/20260525_strong_detector_midrun_records.md`.
 - The complete paper-indicator experiment matrix and current download/staging list are recorded in `docs/setup/complete_experiment_plan.md`.
 - Use `docs/experiments/20260524_dota_v15_anchor_repair_quick_test.md` and `docs/setup/strong_baseline_checklist.md` as the active planning anchors.
+- S1 may start only after real VLM embedding support passes a smoke test. `/data1/anaconda3/envs/zwl_mmrotate/bin/python` currently has `torch` but is missing both `open_clip` and `clip`; the RemoteCLIP checkpoint symlink exists at `/data5/2025/ldh/OpenRSD/checkpoints/remoteclip/RemoteCLIP-ViT-B-32.pt`.
 
 Paper-level claims require:
 
@@ -86,8 +86,8 @@ Paper-level claims require:
 
 Run experiments in this order:
 
-1. S0: strong closed-set oriented detector sweep on DOTA v1.0 or DOTA v1.5, ordered Oriented R-CNN -> RoI Transformer -> ReDet.
-2. S1: flat class-name prompt classifier.
+1. S0: strong closed-set oriented detector sweep on DOTA v1.5. Complete; use RoI Transformer 3x epoch 34 as the primary detector checkpoint unless simplicity/stability is prioritized over the small mAP lead.
+2. S1: flat class-name prompt classifier with real VLM text embeddings.
 3. S2: hierarchical prompt bank.
 4. S3: hierarchy plus scene/context adapter.
 5. S4: hierarchy plus context plus VLM-assisted pseudo-label purification.
