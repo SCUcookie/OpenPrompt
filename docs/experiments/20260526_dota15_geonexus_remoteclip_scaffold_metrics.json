@@ -1,6 +1,6 @@
 {
   "status": "diagnostic_only",
-  "reason": "positive_cls_acc is unstable and all completed epochs after epoch 1 are below epoch-1 value; log also contains earlier/recent tracebacks",
+  "reason": "scaffold training did not complete all 12 epochs; metrics reached epoch 10 and the log later reached epoch 11 before the screen/session died. positive_cls_acc is unstable and never recovered the epoch-1 value; log also contains earlier/recent tracebacks. Keep this run diagnostic-only and do not use it as paper evidence.",
   "preserved_output_dir": "/data5/2025/ldh/New/outputs/preserved_20260526_dota_v15_geonexus_remoteclip",
   "source_output_dir": "/data5/2025/ldh/New/outputs/dota_v15_geonexus",
   "completed_metric_epochs": [
@@ -10,10 +10,17 @@
     4,
     5,
     6,
-    7
+    7,
+    8,
+    9,
+    10
   ],
+  "latest_checkpoint_epoch": 10,
+  "last_observed_log_epoch": 11,
+  "completion_status": "crashed_or_session_terminated_before_epoch_11_checkpoint",
   "epoch_1_positive_cls_acc": 0.5590189151270305,
-  "latest_positive_cls_acc": 0.2753765276627394,
+  "latest_positive_cls_acc": 0.36192295339677816,
+  "best_positive_cls_acc_epoch": 1,
   "metrics": [
     {
       "loss": 0.08780368215574876,
@@ -84,6 +91,36 @@
       "positive_cls_acc": 0.2753765276627394,
       "positive_box_l1": 0.14417747127951,
       "epoch": 7
+    },
+    {
+      "loss": 0.08664535314651398,
+      "loss_cls": 0.0021505356834187216,
+      "loss_box": 0.042123444131075986,
+      "loss_hier": 0.0024792918697617225,
+      "loss_margin": 0.0,
+      "positive_cls_acc": 0.3031660440507784,
+      "positive_box_l1": 0.14559170384736303,
+      "epoch": 8
+    },
+    {
+      "loss": 0.08839710368825342,
+      "loss_cls": 0.002128689141211108,
+      "loss_box": 0.04295019466463251,
+      "loss_hier": 0.003680252237667105,
+      "loss_margin": 0.0,
+      "positive_cls_acc": 0.43127841917544246,
+      "positive_box_l1": 0.14431995171617198,
+      "epoch": 9
+    },
+    {
+      "loss": 0.09217578717136717,
+      "loss_cls": 0.0020613011551531275,
+      "loss_box": 0.044940468434068695,
+      "loss_hier": 0.0023354915751152327,
+      "loss_margin": 0.0,
+      "positive_cls_acc": 0.36192295339677816,
+      "positive_box_l1": 0.14721366180113887,
+      "epoch": 10
     }
   ],
   "tracebacks": [
