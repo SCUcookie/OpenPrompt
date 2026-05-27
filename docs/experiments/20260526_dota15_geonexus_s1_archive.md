@@ -1,6 +1,6 @@
 # DOTA v1.5 GeoNexus S1 Archive - 2026-05-26
 
-This archive records the DOTA v1.5 work done on 2026-05-26. It separates paper-facing MMRotate RoI Transformer S1 evidence from the scaffold diagnostics. Scaffold metrics are not paper evidence.
+This archive records the DOTA v1.5 work started on 2026-05-26 and completed on 2026-05-27. It separates paper-facing MMRotate RoI Transformer S1 evidence from the scaffold diagnostics. Scaffold metrics are not paper evidence.
 
 ## Paper-Facing Baselines
 
@@ -21,6 +21,49 @@ MMRotate S1 required these fixes before reliable training:
 - Runtime configs set `gpu_assign_thr=256` in RPN and both cascade-stage assigners so dense DOTA target assignment falls back to CPU instead of OOMing on large images.
 - Offset/logit ablation configs were corrected from `resume=True` to `resume=False`; they load S0 epoch 34 as weights only and do not restore incompatible optimizer state.
 
+## Completed S1 Result Selection
+
+All selected MMRotate S1 variants reached epoch 36 with DOTAMetric validation records. The current S1 candidate is the frozen-backbone S1 checkpoint at epoch 6; do not cite epoch 36 as the best result because multiple runs peaked earlier.
+
+| Variant | Work dir | Selected checkpoint | Best epoch | Best DOTAMetric mAP / AP50 | Final epoch 36 mAP / AP50 | Role |
+|---|---|---|---:|---:|---:|---|
+| Frozen backbone | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_frozen_backbone` | `epoch_6.pth` | 6 | 0.2666 / 0.2670 | 0.2506 / 0.2510 | Current strongest S1 candidate |
+| Main sanitized S1 | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1` | `epoch_32.pth` | 32 | 0.2651 / 0.2650 | 0.2597 / 0.2600 | Supporting S1 ablation |
+| Learnable prompt offsets | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_offsets` | `epoch_29.pth` | 29 | 0.2654 / 0.2650 | 0.2541 / 0.2540 | Supporting S1 ablation |
+| Prompt logit scale 5.0 | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_logit5` | `epoch_21.pth` | 21 | 0.2606 / 0.2610 | 0.2507 / 0.2510 | Diagnostic ablation only |
+
+Metric source files:
+
+- Frozen backbone: `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_frozen_backbone/20260526_211216/vis_data/scalars.json`
+- Main sanitized S1: `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1/20260526_210320/vis_data/scalars.json`
+- Learnable prompt offsets: `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_offsets/20260526_211754/vis_data/scalars.json`
+- Prompt logit scale 5.0: `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_logit5/20260526_211754/vis_data/scalars.json`
+
+Checkpoint existence was confirmed for the promoted/supporting S1 selections:
+
+- Frozen backbone epoch 6: `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_frozen_backbone/epoch_6.pth`
+- Main sanitized epoch 32: `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1/epoch_32.pth`
+- Learnable prompt offsets epoch 29: `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_offsets/epoch_29.pth`
+
+The S1 validation curves are completed MMRotate DOTAMetric evidence on the same reduced DOTA v1.5 tiled split as S0. Full paper artifact parity with S0 is now complete for frozen-backbone S1 epoch 6.
+
+## Frozen-Backbone S1 Evidence Package
+
+Canonical evidence directory: `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/geonexus_s1_frozen_epoch6_cuda`
+
+| Artifact | Path / value |
+|---|---|
+| Checkpoint | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_frozen_backbone/epoch_6.pth` |
+| Re-run DOTAMetric | `dota/mAP=0.2666`, `dota/AP50=0.2670` |
+| Raw JSON | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/geonexus_s1_frozen_epoch6_cuda/20260527_094448/20260527_094448.json` |
+| Prediction dump | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/geonexus_s1_frozen_epoch6_cuda/preds.pkl` |
+| Test log | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/geonexus_s1_frozen_epoch6_cuda/test.log` |
+| Confusion matrix | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/geonexus_s1_frozen_epoch6_cuda/confusion/confusion_matrix.png` |
+| Qualitative examples | `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/geonexus_s1_frozen_epoch6_cuda/qualitative_confidence/` |
+| Benchmark | `12.6 FPS`, `79.4 ms/img`, `546 MB CUDA`; log `/data5/2025/ldh/OpenRSD/work_dirs/paper_evidence_dota15/geonexus_s1_frozen_epoch6_cuda/benchmark.log` |
+
+The standard `tools/analysis_tools/analyze_results.py` qualitative path emitted the expected per-image mAP fallback warning and stalled before writing PNGs. The packaged qualitative examples therefore use `/data5/2025/ldh/New/scripts/render_mmrotate_qualitative_confidence.py`, which ranks the existing `preds.pkl` by mean detection confidence and renders 5 `good` plus 5 `bad` examples with the MMRotate visualizer. `qualitative_confidence/ranking_summary.txt` records the selected tile indices and confidence scores.
+
 ## Main S1 Run
 
 | Field | Value |
@@ -30,19 +73,20 @@ MMRotate S1 required these fixes before reliable training:
 | Work dir | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1` |
 | Runtime config | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1/roi_trans_remoteclip_s1_sanitized.py` |
 | Current log | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1/screen_train_gpu1_cpuassign.log` |
-| Checkpoints observed | `epoch_1.pth`, `epoch_2.pth` |
-| State at archive time | Training epoch 3 with finite losses |
-| Validation observed | Epoch 2 DOTAMetric `dota/mAP=0.2510`, `dota/AP50=0.2510` |
+| Checkpoints selected for evidence | `epoch_32.pth` as supporting ablation; `epoch_36.pth` as completed final checkpoint |
+| Completion state | Completed 36 epochs with finite training losses and validation at epoch 36 |
+| Best validation observed | Epoch 32 DOTAMetric `dota/mAP=0.2651`, `dota/AP50=0.2650` |
+| Final validation observed | Epoch 36 DOTAMetric `dota/mAP=0.2597`, `dota/AP50=0.2600` |
 
-The epoch-2 result is below the S0 RoI Transformer best AP50 of `0.2640`, but it is an early S1 checkpoint. Do not add S1 to the main comparison table until the run finishes or a best-checkpoint validation is selected.
+The epoch-32 result is slightly above the S0 RoI Transformer best AP50 of `0.2640`, but it is not the strongest S1 result after the frozen-backbone run completed.
 
 ## Parallel S1 Variants
 
-| Variant | Screen | GPU | Config | Log | Status at archive time |
+| Variant | Screen | GPU | Config | Log | Completed status |
 |---|---|---:|---|---|---|
-| Frozen backbone | `s1_frozen_gpu4` | 4 | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_frozen_backbone/roi_trans_remoteclip_s1_frozen_backbone.py` | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_frozen_backbone/train.log` | Training epoch 1 with finite losses |
-| Learnable prompt offsets | `s1_offsets_gpu0` | 0 | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_offsets/roi_trans_remoteclip_s1_offsets.py` | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_offsets/train_v3.log` | Training epoch 1 with finite losses |
-| Prompt logit scale 5.0 | `s1_logit5_gpu3` | 3 | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_logit5/roi_trans_remoteclip_s1_logit5.py` | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_logit5/train_v3.log` | Training epoch 1 with finite losses |
+| Frozen backbone | `s1_frozen_gpu4` | 4 | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_frozen_backbone/roi_trans_remoteclip_s1_frozen_backbone.py` | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_frozen_backbone/train.log` | Completed 36 epochs; best epoch 6 `mAP=0.2666`, `AP50=0.2670` |
+| Learnable prompt offsets | `s1_offsets_gpu0` | 0 | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_offsets/roi_trans_remoteclip_s1_offsets.py` | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_offsets/train_v3.log` | Completed 36 epochs; best epoch 29 `mAP=0.2654`, `AP50=0.2650` |
+| Prompt logit scale 5.0 | `s1_logit5_gpu3` | 3 | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_logit5/roi_trans_remoteclip_s1_logit5.py` | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_logit5/train_v3.log` | Completed 36 epochs; best epoch 21 `mAP=0.2606`, `AP50=0.2610` |
 
 All three variants use `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_3x/epoch_34.pth` as `load_from` and `resume=False`.
 
@@ -65,23 +109,11 @@ The scaffold run remains diagnostic-only:
 
 Do not cite scaffold metrics in paper tables or claims.
 
-## Active Processes At Archive Time
+## Process Status
 
-| GPU | Process/session | Purpose |
-|---:|---|---|
-| 0 | `s1_offsets_gpu0` | S1 learnable prompt offsets ablation |
-| 1 | `roi_trans_remoteclip_s1_gpu1_cpuassign` | Main S1 MMRotate run |
-| 2 | `dota_v15_geonexus_remoteclip` | Scaffold diagnostic run |
-| 3 | `s1_logit5_gpu3` | S1 prompt-logit-scale ablation |
-| 4 | `s1_frozen_gpu4` | S1 frozen-backbone ablation |
-| 5 | unrelated `lyc` process | left untouched |
-| 6 | unrelated `lyc` process | left untouched |
-
-Expected finish window for the MMRotate S1 set was approximately 02:10-03:30 on 2026-05-27, assuming no OOM or crash.
+The MMRotate S1 set completed after the original archive-time live-process snapshot. Earlier failed or corrected attempts remain in the logs and are retained as provenance. Completed evidence should be taken from the `20260526_210320`, `20260526_211216`, and `20260526_211754` run directories listed above, not from the earlier OOM/import/resume-fix logs.
 
 ## Next Actions
 
-1. Let the four MMRotate S1 runs finish or reach useful validation checkpoints.
-2. Extract `dota/mAP` and `dota/AP50` from each run's `vis_data/*.json` or log.
-3. Update `20260526_paper_evidence_dota15_summary.md`; only promote S1 into the main comparison when a completed DOTAMetric best checkpoint is selected.
-4. If all S1 variants remain below the S0 RoI Transformer AP50 `0.2640`, prioritize staged unfreezing: freeze the detector trunk first, train prompt projection/bias, then unfreeze RoI heads.
+1. Optionally generate the same compact test JSON for main sanitized epoch 32 and offsets epoch 29 so the supporting ablations are reproducible from selected checkpoints, not only training validation curves.
+2. Start S2 hierarchical prompt bank from the frozen-backbone S1 setup.
