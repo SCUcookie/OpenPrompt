@@ -2,6 +2,43 @@
 
 Date: 2026-04-06
 
+## Update: 2026-05-28 S0/OpenRSD Protocol Correction
+
+The latest OpenRSD/MMRotate work showed that the current local S0 detector
+numbers on `/data5/2025/ldh/OpenPrompt/DOTA` are diagnostic only, not
+paper-protocol S0 reproduction numbers. The completed Oriented R-CNN repeats
+reached about `0.286-0.292` local `DOTAMetric` mAP/AP50, with the strongest
+checkpoint at:
+
+```text
+/data5/2025/ldh/OpenRSD/work_dirs/route_a1_repeat_seed9281/epoch_33.pth
+```
+
+This is low because those runs used the original-image DOTA tree
+(`1411` train images, `458` val images) resized to `640` or `1024`, not the
+standard tiled DOTA protocol used by RoI Transformer, Oriented R-CNN, ReDet, or
+OpenRSD papers. Small-object recall is therefore badly damaged and the results
+must not be compared to paper S0 tables.
+
+The next valid reproduction step is to use the downloaded OpenRSD tiled data:
+
+```text
+/data5/2025/ldh/OpenRSD/data/DOTA2_1024_500/train
+/data5/2025/ldh/OpenRSD/data/DOTA2_1024_500/ss_val
+```
+
+First OpenRSD-native S0 targets:
+
+```text
+M_configs/G02_Baselines/Data1_DOTA2/G02_Baselines_Data1_DOTA2_M2_RoITrans.py
+M_configs/G02_Baselines/Data1_DOTA2/G02_Baselines_Data1_DOTA2_M5_ORCNN_R50.py
+```
+
+Detailed records:
+
+- `docs/experiments/20260528_s0_opensrd_status_and_protocol_correction.md`
+- `docs/reproducibility/20260528_opensrd_data_minimum.md`
+
 ## Scope
 
 You currently have two complementary local repos:
