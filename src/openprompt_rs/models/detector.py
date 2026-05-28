@@ -5,7 +5,7 @@ from typing import Any
 import torch
 import torch.nn as nn
 
-from openprompt_rs.models.backbone import QueryGenerator, TinyBackbone
+from openprompt_rs.models.backbone import QueryGenerator, ResNetBackbone, TinyBackbone
 from openprompt_rs.models.heads import AlignmentHead, FusionHead
 from openprompt_rs.models.innovations import build_innovation_modules
 from openprompt_rs.models.prompt_bank import PromptBank
@@ -16,9 +16,21 @@ class ModularPromptDetector(nn.Module):
         super().__init__()
         embedding_dim = model_cfg["embedding_dim"]
         use_query_centers_in_box_head = bool(model_cfg.get("use_query_centers_in_box_head", False))
+        backbone_type = model_cfg.get("backbone_type", "tiny")
+        backbone_dim = model_cfg["backbone_dim"]
+
         self.prompt_bank = prompt_bank
-        self.backbone = TinyBackbone(output_dim=model_cfg["backbone_dim"])
-        self.query_generator = QueryGenerator(feature_dim=model_cfg["backbone_dim"], grid_size=model_cfg["grid_size"])
+        if backbone_type == "resnet50":
+            self.backbone = ResNetBackbone(
+                output_dim=backbone_dim,
+                pretrained=model_cfg.get("pretrained_backbone", True),
+                output_stride=model_cfg.get("backbone_output_stride", 16),
+            )
+        elif backbone_type == "tiny":
+            self.backbone = TinyBackbone(output_dim=backbone_dim)
+        else:
+            raise ValueError(f"Unknown backbone_type: {backbone_type}")
+        self.query_generator = QueryGenerator(feature_dim=backbone_dim, grid_size=model_cfg["grid_size"])
         self.alignment_head = AlignmentHead(
             embedding_dim=embedding_dim,
             use_query_centers=use_query_centers_in_box_head,
