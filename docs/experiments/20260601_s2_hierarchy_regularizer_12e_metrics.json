@@ -1,0 +1,32 @@
+{
+  "date": "2026-06-01",
+  "experiment": "GeoNexus S2 hierarchy regularizer 12e",
+  "dataset": "DOTA v1.5 reduced tiled split",
+  "framework": "OpenRSD/MMRotate",
+  "config": "/data5/2025/ldh/OpenRSD/mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-12e_dota15.py",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e/epoch_12.pth",
+  "log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e/20260531_180850/20260531_180850.log",
+  "metric_source": "DOTAMetric validation log, epoch 12",
+  "best_epoch_observed": 11,
+  "best_metrics": {
+    "dota/mAP": 0.3652,
+    "dota/AP50": 0.3650
+  },
+  "final_epoch": 12,
+  "final_metrics": {
+    "dota/mAP": 0.3644,
+    "dota/AP50": 0.3640
+  },
+  "comparison": {
+    "roi_transformer_s0_map": 0.2644,
+    "s1_frozen_backbone_map": 0.2666,
+    "absolute_gain_vs_s0_final_map": 0.1000,
+    "absolute_gain_vs_s1_final_map": 0.0978
+  },
+  "notes": [
+    "Validation used the same DOTA v1.5 reduced tiled split and DOTAMetric protocol as the S0/S1 records.",
+    "This result is paper-facing evidence for the S2 hierarchy regularizer, subject to repeat/longer-run confirmation.",
+    "A 72-epoch S2 hierarchy-regularizer continuation was already running when this record was created."
+  ]
+}

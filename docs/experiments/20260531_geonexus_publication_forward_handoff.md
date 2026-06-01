@@ -49,6 +49,7 @@ Canonical summary:
 | RoI Transformer S0 | `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_3x/epoch_34.pth` | 34 | 0.2644 / 0.2640 | Primary closed-set baseline |
 | GeoNexus S1 frozen backbone | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_frozen_backbone/epoch_6.pth` | 6 | 0.2666 / 0.2670 | Current strongest S1 |
 | GeoNexus S2 hierarchy offsets | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_frozen_offsets_12e/epoch_1.pth` | 1 | 0.2666 / 0.2670 | Parity/slight S1 improvement, not robust yet |
+| GeoNexus S2 hierarchy regularizer | `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e/epoch_12.pth` | 11/12 | 0.3652 / 0.3650 best; 0.3644 / 0.3640 final | Strong positive S2 evidence; needs 72e/repeat confirmation |
 | Oriented R-CNN S0 | `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn_3x_loadfrom/epoch_33.pth` | 33 | 0.2620 / 0.2620 | Secondary detector baseline |
 | ReDet pretrained | `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun/epoch_12.pth` | 12 | 0.2382 / 0.2380 | Comparison baseline |
 
@@ -58,6 +59,10 @@ Important interpretation:
   claim by itself.
 - S2 hierarchy offsets currently match S1 within rounding. Treat it as parity,
   not a robust hierarchy gain.
+- S2 hierarchy regularizer 12e is the first large positive result, about
+  `+0.1000` mAP over RoI Transformer S0 and `+0.0978` over S1 frozen at the
+  final checkpoint. Confirm with the active 72e continuation and at least one
+  repeat/secondary-detector check before final paper claims.
 - The paper-worthy path is now robustness, hierarchy regularization, scene
   context, confusion reduction, and repeatability.
 
@@ -101,10 +106,61 @@ Verification:
   model `CascadeRCNN`, two `HierarchyPromptShared2FCBBoxHead` cascade stages,
   hierarchy loss weights `[0.05, 0.05]`, relation matrices `(16, 16)`.
 
-Not yet achieved:
+Completed 12e result:
 
-- No training result exists yet for the S2 regularizer config.
-- Need 12-epoch smoke/full run and then 36-epoch if it is non-negative.
+- Final checkpoint:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e/epoch_12.pth`.
+- Final log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e/20260531_180850/20260531_180850.log`.
+- Metrics archive:
+  `/data5/2025/ldh/New/docs/experiments/20260601_s2_hierarchy_regularizer_12e_metrics.json`.
+- Best observed epoch 11: `dota/mAP=0.3652`, `dota/AP50=0.3650`.
+- Final epoch 12: `dota/mAP=0.3644`, `dota/AP50=0.3640`.
+
+Active launch on 2026-05-31:
+
+- Screen session: `2996544.geonexus_s2_hierarchy_reg_12e`.
+- Work dir:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e`.
+- Config:
+  `/data5/2025/ldh/OpenRSD/mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-12e_dota15.py`.
+- Launch log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e/launch_resume_cpuassign_20260531_1811.log`.
+- Failed first launch log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e/launch_oom_20260531_1803.log`.
+- Initial verification: reached `Epoch(train) [1][70/1410]` with finite losses;
+  `s0.loss_hierarchy` and `s1.loss_hierarchy` are present, confirming the
+  regularizer path is active. First logged line reported `grad_norm: nan`, then
+  subsequent logged lines reported finite gradient norms.
+- First launch crashed at epoch 1 iter 190 with CUDA OOM during RPN assignment
+  on a dense image. The config now matches the S1 runtime precedent by setting
+  `gpu_assign_thr=256` on the RPN and both cascade-stage assigners, so dense
+  target assignment falls back to CPU instead of allocating the full overlap
+  matrix on GPU.
+- Corrected run completed epoch 1, saved
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e/epoch_1.pth`,
+  and produced first validation `dota/mAP=0.3423`, `dota/AP50=0.3420`.
+- After validation, training resumed into epoch 2 with finite losses.
+- Validation is enabled every epoch through `DOTAMetric` on the same DOTA v1.5
+  reduced tiled split inherited from the S1/S0 configs.
+
+Follow-up status checked on 2026-06-01:
+
+- S2 hierarchy-regularizer 72e continuation is active in
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_72e`;
+  observed in epoch 68 with finite losses.
+- S3 scene-adapter 72e failed before training on the first queue launch because
+  the inherited S3 base config nested `roi_head.bbox_head` incorrectly and the
+  child config dropped full assigner definitions. The child config
+  `/data5/2025/ldh/OpenRSD/mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s3-72e_dota15.py`
+  was corrected to inherit from S1 directly, define the scene-adapter heads as a
+  proper list, and keep full S2-style assigner/sampler blocks.
+- The broken base config
+  `/data5/2025/ldh/OpenRSD/mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s3_dota15.py`
+  is owned by `nobody:nogroup`; avoid depending on it until ownership is fixed.
+- Queue file `New/queues/geonexus_gpu_queue_20260531.json` now has S3 72e reset
+  to `pending`, with retry log
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_72e/queue_launch_retry_20260601.log`.
 
 ## DOTA2 OpenRSD Status
 
@@ -123,13 +179,12 @@ Full run:
   `/data5/2025/ldh/OpenRSD/work_dirs/opensrd_step2_dota2_nozero_full_20260531/opensrd_step2_dota2_nozero_full_20260531.py`
 - Work dir:
   `/data5/2025/ldh/OpenRSD/work_dirs/opensrd_step2_dota2_nozero_full_20260531`
-- Resume session:
-  `2396455.opensrd_dota2_full_20260531`
-- Active process observed on 2026-05-31:
-  `/data1/anaconda3/envs/zwl_mmrotate/bin/python tools/bootstrap_run.py tools/train.py ... --resume auto`
-- Latest observed log state:
-  `Epoch(train) [9][10750/12000]` at `2026/05/31 16:04:41`
-- Saved checkpoints observed: `epoch_1.pth` through `epoch_8.pth`.
+- Final checkpoint:
+  `/data5/2025/ldh/OpenRSD/work_dirs/opensrd_step2_dota2_nozero_full_20260531/epoch_12.pth`
+- Final log state:
+  `Epoch(train) [12][12000/12000]`, finite losses, checkpoint saved at 12
+  epochs.
+- Saved checkpoints observed: `epoch_1.pth` through `epoch_12.pth`.
 - Validation is disabled. This is training/scalability evidence only until
   validation against `ss_val/annfiles` is adapted and run.
 
@@ -219,10 +274,11 @@ AAAI threshold:
 
 Immediate:
 
-1. Let the active DOTA2 full run finish.
-2. Archive final DOTA2 checkpoint, log, and note that validation remains disabled.
+1. Monitor the active S2 hierarchy regularizer 12e run.
+2. Archive S2 regularizer config, final checkpoint, log, metric JSON/log source,
+   and interpretation.
 3. Adapt DOTA2 validation against `ss_val/annfiles` if safe.
-4. Run S2 hierarchy regularizer 12e using the new config.
+4. Treat DOTA2 as not claimable until that validation is adapted and run.
 5. Compare S2 regularizer against S1 frozen and S2 hierarchy-offset epoch 1.
 
 Next:

@@ -158,3 +158,22 @@ CUDA_VISIBLE_DEVICES=2 MPLCONFIGDIR=/tmp/matplotlib_opensrd_dota2_full \
 - Detached session: `2396455.opensrd_dota2_full_20260531`.
 - Resume checkpoint: `epoch_1.pth`, reported `resumed epoch: 1, iter: 12000`.
 - Status at `2026-05-31 11:22:49 CST`: active on GPU 2, observed past `Epoch(train) [2][1950/12000]`, ETA about `6:24:34`.
+
+## Final Training Gate Result
+
+- The resumed full run completed all 12 epochs on `2026-05-31`.
+- Final checkpoint: `OpenRSD/work_dirs/opensrd_step2_dota2_nozero_full_20260531/epoch_12.pth`.
+- Last checkpoint pointer: `OpenRSD/work_dirs/opensrd_step2_dota2_nozero_full_20260531/last_checkpoint`.
+- Final resume log: `OpenRSD/work_dirs/opensrd_step2_dota2_nozero_full_20260531/launch_resume_20260531_1101.log`.
+- Final observed state: `Epoch(train) [12][12000/12000]`, finite losses, checkpoint saved at 12 epochs.
+- The unreadable-image guard was exercised during epoch 12 for `P3536__2048__4192___3144.png` and training continued.
+
+This is a training-only gate. Validation/test loops were disabled, so DOTA2
+performance is not claimable yet. Treat this run as evidence that the DOTA2
+online-label training path is now runnable through 12 epochs. Before reporting
+DOTA2 mAP/AP50, adapt and run validation against
+`OpenRSD/data/DOTA2_1024_500/ss_val/annfiles` with a compatible evaluator.
+
+Next paper-facing experiment gate: S2 hierarchy regularizer on the existing
+DOTA v1.5 reduced tiled split. Compare it against S1 frozen and the S2
+hierarchy-offset epoch-1 evidence before deciding whether to proceed to S3.

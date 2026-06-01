@@ -1,0 +1,61 @@
+[
+  {
+    "name": "geonexus_s2_hierarchy_reg_72e",
+    "workdir": "/data5/2025/ldh/OpenRSD",
+    "command": "/data1/anaconda3/envs/zwl_mmrotate/bin/python tools/bootstrap_run.py tools/train.py mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-72e_dota15.py --work-dir work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_72e",
+    "log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_72e/queue_launch_20260531.log",
+    "wait_for": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e/epoch_12.pth",
+    "gpus": [
+      2
+    ],
+    "status": "launched",
+    "launched_at": "2026-05-31 20:52:40",
+    "gpu": 2
+  },
+  {
+    "name": "geonexus_s3_scene_adapter_72e",
+    "workdir": "/data5/2025/ldh/OpenRSD",
+    "command": "/data1/anaconda3/envs/zwl_mmrotate/bin/python tools/bootstrap_run.py tools/train.py mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s3-72e_dota15.py --work-dir work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_72e",
+    "log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_72e/queue_launch_retry_20260601.log",
+    "wait_for": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e/epoch_12.pth",
+    "gpus": [
+      1,
+      3,
+      4,
+      5,
+      6
+    ],
+    "status": "launched",
+    "retry_after_config_fix": "2026-06-01 09:32:00",
+    "launched_at": "2026-06-01 09:55:44",
+    "gpu": 1
+  },
+  {
+    "name": "geonexus_s2_hierarchy_reg_144e",
+    "workdir": "/data5/2025/ldh/OpenRSD",
+    "command": "/data1/anaconda3/envs/zwl_mmrotate/bin/python tools/bootstrap_run.py tools/train.py mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-144e_dota15.py --work-dir work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_144e",
+    "log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_144e/queue_launch_20260531.log",
+    "wait_for": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_72e/epoch_72.pth",
+    "gpus": [
+      2
+    ],
+    "status": "launched",
+    "launched_at": "2026-06-01 10:29:50",
+    "gpu": 2
+  },
+  {
+    "name": "geonexus_s3_scene_adapter_144e",
+    "workdir": "/data5/2025/ldh/OpenRSD",
+    "command": "/data1/anaconda3/envs/zwl_mmrotate/bin/python tools/bootstrap_run.py tools/train.py mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s3-144e_dota15.py --work-dir work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_144e",
+    "log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_144e/queue_launch_20260531.log",
+    "wait_for": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_72e/epoch_72.pth",
+    "gpus": [
+      1,
+      3,
+      4,
+      5,
+      6
+    ],
+    "status": "pending"
+  }
+]
