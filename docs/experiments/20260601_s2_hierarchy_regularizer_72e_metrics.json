@@ -1,0 +1,68 @@
+{
+  "date": "2026-06-01",
+  "experiment": "GeoNexus S2 hierarchy regularizer 72e",
+  "dataset": "DOTA v1.5 reduced tiled split",
+  "framework": "OpenRSD/MMRotate",
+  "config": "/data5/2025/ldh/OpenRSD/mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-72e_dota15.py",
+  "base_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e/epoch_12.pth",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_72e",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_72e/epoch_72.pth",
+  "log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_72e/20260531_205243/20260531_205243.log",
+  "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_72e/20260531_205243/vis_data/scalars.json",
+  "metric_implementation": "MMRotate DOTAMetric mAP, IoU 0.5",
+  "best_epoch_observed": 56,
+  "best_metrics": {
+    "dota/mAP": 0.3757308125,
+    "dota/AP50": 0.3760
+  },
+  "final_epoch": 72,
+  "final_metrics": {
+    "dota/mAP": 0.3737608492,
+    "dota/AP50": 0.3740
+  },
+  "comparison": {
+    "roi_transformer_s0_best_map": 0.2644,
+    "s1_frozen_backbone_best_map": 0.2666,
+    "s2_hierarchy_regularizer_12e_best_map": 0.3652,
+    "absolute_gain_best_vs_s0_best_map": 0.1113,
+    "absolute_gain_best_vs_s1_best_map": 0.1091,
+    "absolute_gain_best_vs_s2_12e_best_map": 0.0105,
+    "absolute_gain_final_vs_s2_12e_final_map": 0.0094
+  },
+  "active_follow_up_at_archive_time": {
+    "s3_scene_adapter_72e": {
+      "status": "active",
+      "screen": "3845911.geonexus_s3_scene_adapter_72e",
+      "gpu": 1,
+      "pid": 3846084,
+      "latest_completed_validation_epoch": 21,
+      "best_epoch_observed": 14,
+      "best_metrics": {
+        "dota/mAP": 0.3675319552,
+        "dota/AP50": 0.3680
+      }
+    },
+    "s2_hierarchy_regularizer_144e": {
+      "status": "active",
+      "screen": "3891792.geonexus_s2_hierarchy_reg_144e",
+      "gpu": 2,
+      "pid": 3891957,
+      "latest_completed_validation_epoch": 19,
+      "best_epoch_observed": 10,
+      "best_metrics": {
+        "dota/mAP": 0.3769713938,
+        "dota/AP50": 0.3770
+      }
+    },
+    "s3_scene_adapter_144e": {
+      "status": "pending",
+      "wait_for": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_72e/epoch_72.pth"
+    }
+  },
+  "notes": [
+    "Validation used the same DOTA v1.5 reduced tiled split and DOTAMetric protocol as the S0/S1/S2 12e records.",
+    "The 72e result supersedes the 12e result as the strongest completed S2 hierarchy-regularizer evidence.",
+    "No new run was launched during this archive update because S3 72e and S2 144e were active."
+  ]
+}
+
