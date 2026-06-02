@@ -1,0 +1,58 @@
+{
+  "date": "2026-06-02",
+  "experiment": "GeoNexus S3 scene adapter 72e",
+  "dataset": "DOTA v1.5 reduced tiled split",
+  "framework": "OpenRSD/MMRotate",
+  "status": "completed",
+  "config": "/data5/2025/ldh/OpenRSD/mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s3-72e_dota15.py",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_72e",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_72e/epoch_72.pth",
+  "queue_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_72e/queue_launch_retry_20260601.log",
+  "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_72e/20260601_095547/vis_data/scalars.json",
+  "metric_implementation": "MMRotate DOTAMetric mAP, IoU 0.5",
+  "launched_at": "2026-06-01 09:55:44",
+  "completed_at": "2026-06-02 00:38:26",
+  "final_epoch": 72,
+  "final_metrics": {
+    "dota/mAP": 0.3758765459060669,
+    "dota/AP50": 0.376
+  },
+  "final_metrics_rounded_log": {
+    "dota/mAP": 0.3759,
+    "dota/AP50": 0.3760
+  },
+  "best_epoch_observed": 51,
+  "best_metrics": {
+    "dota/mAP": 0.3799615502357483,
+    "dota/AP50": 0.38
+  },
+  "comparison": {
+    "s2_hierarchy_regularizer_72e_final": {
+      "dota/mAP": 0.3738,
+      "dota/AP50": 0.3740
+    },
+    "s2_hierarchy_regularizer_72e_best": {
+      "epoch": 56,
+      "dota/mAP": 0.3757,
+      "dota/AP50": 0.3760
+    },
+    "s3_minus_s2_72e_final_map": 0.0021,
+    "s3_best_minus_s2_72e_best_map": 0.0043
+  },
+  "queue_follow_up": {
+    "s3_scene_adapter_144e": {
+      "status": "launched",
+      "screen": "425331.geonexus_s3_scene_adapter_144e",
+      "gpu": 6,
+      "launched_at": "2026-06-02 00:37:05",
+      "queue_log_evidence": "/data5/2025/ldh/New/logs/geonexus_gpu_queue_20260531.log",
+      "training_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_144e/queue_launch_20260531.log",
+      "loaded_from": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_72e/epoch_72.pth"
+    }
+  },
+  "notes": [
+    "S3 72e completed and produced epoch_72.pth.",
+    "The final epoch slightly exceeds the S2 72e final record; the best observed S3 72e validation also exceeds the best observed S2 72e validation.",
+    "Treat this as completed S3 evidence only. Do not make final context-adapter claims until S3 144e and other active follow-up runs finish."
+  ]
+}

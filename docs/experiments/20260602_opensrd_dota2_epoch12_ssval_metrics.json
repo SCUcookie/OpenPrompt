@@ -1,0 +1,52 @@
+{
+  "date": "2026-06-02",
+  "experiment": "OpenRSD DOTA2 epoch-12 ss_val evaluation",
+  "dataset": "DOTA2_1024_500 ss_val",
+  "framework": "OpenRSD/MMRotate",
+  "config": "/data5/2025/ldh/OpenRSD/work_dirs/opensrd_formal_dota2_ssval_eval/a10_formal_dota2_eval_no_star.py",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/opensrd_step2_dota2_nozero_full_20260531/epoch_12.pth",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/opensrd_dota2_epoch12_ssval_eval_20260602",
+  "predictions": "/data5/2025/ldh/OpenRSD/work_dirs/opensrd_dota2_epoch12_ssval_eval_20260602/preds.pkl",
+  "launch_log": "/data5/2025/ldh/OpenRSD/work_dirs/opensrd_dota2_epoch12_ssval_eval_20260602/launch_20260602.log",
+  "run_log": "/data5/2025/ldh/OpenRSD/work_dirs/opensrd_dota2_epoch12_ssval_eval_20260602/20260602_091614/20260602_091614.log",
+  "metric_implementation": "DETAILDOTAMetric mAP, IoU 0.5",
+  "metrics": {
+    "dota/mAP": 0.4202,
+    "dota/AP50": 0.4200
+  },
+  "class_detail": {
+    "airport": {"ap": 0.1482, "recall": 0.6535, "num_dets": 38417, "num_gts": 101},
+    "baseball-diamond": {"ap": 0.4202, "recall": 0.7397, "num_dets": 47493, "num_gts": 653},
+    "basketball-court": {"ap": 0.5519, "recall": 0.7540, "num_dets": 56720, "num_gts": 439},
+    "bridge": {"ap": 0.3228, "recall": 0.6371, "num_dets": 71237, "num_gts": 1466},
+    "container-crane": {"ap": 0.0002, "recall": 0.1972, "num_dets": 15612, "num_gts": 71},
+    "ground-track-field": {"ap": 0.3922, "recall": 0.8816, "num_dets": 63203, "num_gts": 397},
+    "harbor": {"ap": 0.6230, "recall": 0.7850, "num_dets": 88318, "num_gts": 6381},
+    "helicopter": {"ap": 0.0579, "recall": 0.5704, "num_dets": 18001, "num_gts": 284},
+    "helipad": {"ap": 0.0007, "recall": 0.3333, "num_dets": 8756, "num_gts": 6},
+    "large-vehicle": {"ap": 0.6163, "recall": 0.8171, "num_dets": 319872, "num_gts": 14169},
+    "plane": {"ap": 0.7961, "recall": 0.8828, "num_dets": 60345, "num_gts": 8718},
+    "roundabout": {"ap": 0.5133, "recall": 0.7306, "num_dets": 52872, "num_gts": 620},
+    "ship": {"ap": 0.7783, "recall": 0.8683, "num_dets": 195139, "num_gts": 45001},
+    "small-vehicle": {"ap": 0.2874, "recall": 0.4405, "num_dets": 706574, "num_gts": 150145},
+    "soccer-ball-field": {"ap": 0.3412, "recall": 0.6023, "num_dets": 81109, "num_gts": 430},
+    "storage-tank": {"ap": 0.5492, "recall": 0.6549, "num_dets": 202228, "num_gts": 10557},
+    "swimming-pool": {"ap": 0.3230, "recall": 0.5921, "num_dets": 90248, "num_gts": 2324},
+    "tennis-court": {"ap": 0.8425, "recall": 0.9385, "num_dets": 81742, "num_gts": 1870}
+  },
+  "comparison": {
+    "prior_official_dota2_ssval_evaluator": {
+      "dota/mAP": 0.6510,
+      "dota/AP50": 0.6510
+    },
+    "absolute_delta_vs_prior": {
+      "dota/mAP": -0.2308,
+      "dota/AP50": -0.2310
+    }
+  },
+  "notes": [
+    "This is DOTA2 ss_val evidence for the completed OpenRSD DOTA2 epoch-12 checkpoint.",
+    "This is not a GeoNexus S2 or S3 result.",
+    "Evaluation completed in detached screen opensrd_dota2_epoch12_ssval_eval_20260602_gpu0 on GPU 0; the screen exited after completion."
+  ]
+}
