@@ -65,14 +65,15 @@ Current diagnosis:
 - S0 strong-detector baselines are complete for the controlled DOTA v1.5 split.
 - The best current S0 detector is RoI Transformer 3x, epoch 34, with MMRotate DOTAMetric `dota/mAP=0.2644` and `dota/AP50=0.2640`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/roi_trans_lr001_3x/epoch_34.pth`; metric summary `docs/experiments/20260526_roi_transformer_3x_dota15_metrics.json`.
 - GeoNexus S2 hierarchy regularizer 12e completed on the same DOTA v1.5 reduced tiled split. Final epoch 12: `dota/mAP=0.3644`, `dota/AP50=0.3640`; best observed epoch 11: `dota/mAP=0.3652`, `dota/AP50=0.3650`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_12e/epoch_12.pth`; metric summary `docs/experiments/20260601_s2_hierarchy_regularizer_12e_metrics.json`.
-- GeoNexus S2 hierarchy regularizer 72e completed on the same DOTA v1.5 reduced tiled split. Final epoch 72: `dota/mAP=0.3738`, `dota/AP50=0.3740`; best observed epoch 56: `dota/mAP=0.3757`, `dota/AP50=0.3760`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_72e/epoch_72.pth`; metric summary `docs/experiments/20260601_s2_hierarchy_regularizer_72e_metrics.json`. Treat this as the strongest completed S2 hierarchy-regularizer evidence, while still waiting for the active 144e and S3 runs before final convergence/context claims.
+- GeoNexus S2 hierarchy regularizer 72e completed on the same DOTA v1.5 reduced tiled split. Final epoch 72: `dota/mAP=0.3738`, `dota/AP50=0.3740`; best observed epoch 56: `dota/mAP=0.3757`, `dota/AP50=0.3760`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_72e/epoch_72.pth`; metric summary `docs/experiments/20260601_s2_hierarchy_regularizer_72e_metrics.json`.
+- GeoNexus S2 hierarchy regularizer 144e completed on the same DOTA v1.5 reduced tiled split. Final epoch 144: `dota/mAP=0.3723`, `dota/AP50=0.3720`; best observed epoch 30: `dota/mAP=0.3819`, `dota/AP50=0.3820`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_144e/epoch_144.pth`; metric summary `docs/experiments/20260602_s2_hierarchy_regularizer_144e_metrics.json`. Treat best and final numbers separately: the 144e best is the strongest observed S2 validation point, while the 144e final is slightly below the 72e final.
 - S3 scene-adapter 72e first queue launch failed before training because the inherited base config nested `roi_head.bbox_head` incorrectly and the child config also dropped full RCNN assigner definitions. The owned child config `/data5/2025/ldh/OpenRSD/mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s3-72e_dota15.py` was corrected to inherit from S1 directly, define scene-adapter heads with a proper `bbox_head` list, and keep full assigner/sampler configs. The failed base file `/data5/2025/ldh/OpenRSD/mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s3_dota15.py` is owned by `nobody:nogroup`; avoid relying on it until permissions are fixed.
 - GeoNexus S3 scene-adapter 72e completed on the same DOTA v1.5 reduced tiled split. Final epoch 72: `dota/mAP=0.3759`, `dota/AP50=0.3760`; best observed epoch 51: `dota/mAP=0.3800`, `dota/AP50=0.3800`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_72e/epoch_72.pth`; metric summary `docs/experiments/20260602_s3_scene_adapter_72e_metrics.json`. Treat this as completed S3 evidence; do not make stronger context-adapter claims until S3 144e and the active follow-up runs finish.
-- `New/queues/geonexus_gpu_queue_20260531.json` launched S3 scene-adapter 144e on GPU 6 at `2026-06-02 00:37:05` after detecting the S3 72e checkpoint. It is active under screen `425331.geonexus_s3_scene_adapter_144e` and loaded from `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_72e/epoch_72.pth`. S2 144e remains active under screen `3891792.geonexus_s2_hierarchy_reg_144e`, PID `3891957`.
-- Active process snapshot at `2026-06-02 16:25 +0800`: `docs/experiments/20260602_active_process_snapshot_1625.md`. It records four active experiment screens/PIDs: S2 hierarchy regularizer 144e on GPU 2, S3 scene adapter 144e on GPU 6, S0 DOTA2 RoITrans valid-PNG on GPU 0, and S0 DOTA2 ORCNN R50 valid-PNG on GPU 1. S2 epoch-144 validation had logged `dota/mAP=0.3723`, `dota/AP50=0.3720`; parse and archive those metrics before making final S2 144e comparisons. S3 144e was at epoch 75 with about 12h48m remaining; S0 RoITrans was at epoch 2 with about 1d2h remaining; ORCNN was still in filtered annotation preparation and needs epoch-1 iteration verification after training starts.
+- GeoNexus S3 scene-adapter 144e completed on the same DOTA v1.5 reduced tiled split. Final epoch 144: `dota/mAP=0.3712`, `dota/AP50=0.3710`; best observed epochs 65 and 73 tied at rounded log `dota/mAP=0.3813`, `dota/AP50=0.3810`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_144e/epoch_144.pth`; metric summary `docs/experiments/20260603_s3_scene_adapter_144e_metrics.json`. Treat best and final separately: the best S3 144e validation is slightly below the S2 144e best, and the final S3 144e is below the S3 72e final.
+- Current GPU status at `2026-06-03 17:08 +0800`: our active valid-PNG DOTA2 baseline jobs occupy GPUs 0, 1, 2, 4, and 6; other users occupy GPUs 3 and 5. The DOTA2 RoI Transformer valid-PNG recovery completed and released GPU 0, then RTMDet-L was launched there.
 - The manual S0 DOTA2 RoI Transformer rebuild `s0_dota2_roi_trans_rebuild_20260601` was launched on GPU 0 and marked `launched_manually=true` in the queue metadata, then failed during epoch 1 with `libpng error: IDAT: CRC error` and `AttributeError: 'NoneType' object has no attribute 'shape'` from image loading. Preserve `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260601/queue_launch_20260601.log`; failure note `docs/experiments/20260602_s0_dota2_roi_trans_rebuild_failure.md`.
-- S0 DOTA2 RoI Transformer recovery on `2026-06-02`: a full Pillow decode scan of `/data5/2025/ldh/OpenRSD/data/DOTA2_1024_500/train/images` found `47` corrupt PNGs out of `170878`; corrupt list `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/corrupt_train_pngs_20260602.txt`; scan summary `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/corrupt_train_pngs_scan_summary_20260602.txt`. Filtered annotation symlink dir `/data5/2025/ldh/OpenRSD/data/DOTA2_1024_500/train/annfiles_validpng_20260602` links `170831` valid annotations and excludes the `47` corrupt-image annotations. Restart config `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/G02_Baselines_Data1_DOTA2_M2_RoITrans_validpng_20260602.py`; restart workdir/log `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/launch_20260602.log`; screen `s0_dota2_roi_trans_rebuild_validpng_20260602_gpu0`. The restart completed dataset preparation to `170831/170831`, passed the old crash point `Epoch(train) [1][1400/39007]`, reached the acceptance threshold `Epoch(train) [1][1600/39007]`, and was latest checked at `Epoch(train) [1][9500/39007]` on `2026-06-02 14:46 +0800` without `libpng`/`NoneType`/`CRC`/`Traceback` signatures. Treat this only as verified S0 DOTA2 RoI Transformer valid-PNG recovery, not S1/S2/S3/S4 evidence and not final completed-run evidence; note `docs/experiments/20260602_s0_dota2_roi_trans_rebuild_validpng_restart.md`.
-- S0 DOTA2 Oriented R-CNN R50 valid-PNG baseline launched on GPU 1 at `2026-06-02 14:53 +0800`: workdir `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_orcnn_r50_validpng_20260602`; runtime config `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_orcnn_r50_validpng_20260602/G02_Baselines_Data1_DOTA2_M5_ORCNN_R50_validpng_20260602.py`; launch log `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_orcnn_r50_validpng_20260602/launch_20260602.log`; screen `s0_dota2_orcnn_r50_validpng_20260602_gpu1`; PID `1598732`. The runtime config changes only `train_ann_file` to `train/annfiles_validpng_20260602/` and keeps `ss_val/annfiles/`, `load_from = None`, `resume = False`, `max_epochs = 12`, `val_interval = 4`, and `ckpt_interval = 4`. Launch verification passed and the log entered the filtered annotation preparation pass, latest observed around `4295/170831` at `2026-06-02 14:59 +0800` with no `libpng`/`NoneType`/`CRC`/`Traceback` signatures. Training-iteration verification is still pending; do not cite as completed ORCNN evidence until `Epoch(train)` reaches at least `[1][1600/39007]` or the equivalent denominator without PNG-related crashes; note `docs/experiments/20260602_s0_dota2_orcnn_r50_validpng_launch.md`.
+- S0 DOTA2 RoI Transformer valid-PNG recovery completed on `2026-06-03`: a full Pillow decode scan of `/data5/2025/ldh/OpenRSD/data/DOTA2_1024_500/train/images` found `47` corrupt PNGs out of `170878`; corrupt list `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/corrupt_train_pngs_20260602.txt`; scan summary `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/corrupt_train_pngs_scan_summary_20260602.txt`. Filtered annotation symlink dir `/data5/2025/ldh/OpenRSD/data/DOTA2_1024_500/train/annfiles_validpng_20260602` links `170831` valid annotations and excludes the `47` corrupt-image annotations. Restart config `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/G02_Baselines_Data1_DOTA2_M2_RoITrans_validpng_20260602.py`; launch log `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/launch_20260602.log`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/epoch_12.pth`. Final epoch 12 on `DOTA2_1024_500/ss_val`: `dota/mAP=0.6088`, `dota/AP50=0.6090` at `2026-06-03 14:31:57 +0800`; metric summary `docs/experiments/20260603_s0_dota2_roi_trans_validpng_metrics.json`; record `docs/experiments/20260602_s0_dota2_roi_trans_rebuild_validpng_restart.md`. Treat this as completed S0 DOTA2 `ss_val` evidence only, not GeoNexus S1/S2/S3/S4 evidence.
+- S0 DOTA2 Oriented R-CNN R50 valid-PNG baseline launched on GPU 1 at `2026-06-02 14:53 +0800`: workdir `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_orcnn_r50_validpng_20260602`; runtime config `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_orcnn_r50_validpng_20260602/G02_Baselines_Data1_DOTA2_M5_ORCNN_R50_validpng_20260602.py`; launch log `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_orcnn_r50_validpng_20260602/launch_20260602.log`; screen `s0_dota2_orcnn_r50_validpng_20260602_gpu1`; PID `1598732`. It passed filtered annotation preparation and entered training, but failed at `Epoch(train) [1][300/39007]` with CUDA out-of-memory while computing anchor-target IoU. Preserve the log and do not cite as completed ORCNN evidence. The next ORCNN retry should reduce memory pressure before relaunching.
 - OpenRSD DOTA2 epoch-12 checkpoint evaluation on `DOTA2_1024_500/ss_val` completed on `2026-06-02`: `dota/mAP=0.4202`, `dota/AP50=0.4200`. Checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/opensrd_step2_dota2_nozero_full_20260531/epoch_12.pth`; config `/data5/2025/ldh/OpenRSD/work_dirs/opensrd_formal_dota2_ssval_eval/a10_formal_dota2_eval_no_star.py`; predictions `/data5/2025/ldh/OpenRSD/work_dirs/opensrd_dota2_epoch12_ssval_eval_20260602/preds.pkl`; metric summary `docs/experiments/20260602_opensrd_dota2_epoch12_ssval_metrics.json`. This is below the prior official DOTA2 `ss_val` evaluator result `dota/mAP=0.6510`, `dota/AP50=0.6510` by `-0.2308` mAP and `-0.2310` AP50. Keep claims narrow: this is DOTA2 `ss_val` evidence for the completed OpenRSD DOTA2 epoch-12 checkpoint, not a GeoNexus S2/S3 result.
 - Oriented R-CNN 3x is the close secondary baseline, with best epoch 33/34 `dota/mAP=0.2620` and `dota/AP50=0.2620`; primary checkpoint path for the summary is `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/oriented_rcnn_3x_loadfrom/epoch_33.pth`; metric summary `docs/experiments/20260526_oriented_rcnn_3x_dota15_metrics.json`.
 - ReDet pretrained completed 12 epochs with best/final `dota/mAP=0.2382` and `dota/AP50=0.2380`; checkpoint `/data5/2025/ldh/OpenRSD/work_dirs/strong_baseline_dota15/redet_pretrained_rerun/epoch_12.pth`; metric summary `docs/experiments/20260526_redet_pretrained_dota15_metrics.json`.
@@ -83,6 +84,19 @@ Current diagnosis:
 - The complete paper-indicator experiment matrix and current download/staging list are recorded in `docs/setup/complete_experiment_plan.md`.
 - Use `docs/experiments/20260524_dota_v15_anchor_repair_quick_test.md` and `docs/setup/strong_baseline_checklist.md` as the active planning anchors.
 - S1 may start only after real VLM embedding support passes a smoke test. `/data1/anaconda3/envs/zwl_mmrotate/bin/python` currently has `torch` but is missing both `open_clip` and `clip`; the RemoteCLIP checkpoint symlink exists at `/data5/2025/ldh/OpenRSD/checkpoints/remoteclip/RemoteCLIP-ViT-B-32.pt`.
+- GeoNexus S1 rerun on `2026-06-03` passed the real RemoteCLIP smoke test
+  (`classes=16`, `embedding_shape=[16, 512]`) and launched on GPU 1, then
+  failed at `2026-06-03 18:02:19 +0800` after epoch 1 iter 190 with CUDA OOM
+  during RPN target assignment. No epoch checkpoint was produced. S2 must stay
+  queued behind a successful S1 rerun checkpoint.
+- 2026-06-04 GPU pruning is archived in
+  `docs/experiments/20260604_gpu_pruning_and_next_priority.md`: lower-priority
+  `zwl` jobs on GPUs 0/1/2/4 were stopped after checkpoint confirmation, GPU 3
+  was left untouched, GeoNexus S1 retry 2 stayed active on GPU 5 with current
+  best epoch 25 `dota/mAP=0.376255`, and DOTA2 ORCNN stayed active on GPU 6
+  with current best epoch 8 `dota/mAP=0.585885`. The next priority is to finish
+  and archive S1, then launch the next S2 hierarchy-regularizer rerun from the
+  best S1 checkpoint before restarting secondary DOTA2 baselines.
 
 Paper-level claims require:
 
@@ -203,3 +217,106 @@ do not make unsupported performance claims, keep routing/compression secondary,
 maintain the local/server GitHub workflow, start with DOTA v1.0 or DOTA v1.5
 if those server assets are already staged, and update the canonical manuscript
 before code/docs when the research direction changes.
+
+For active experiment monitoring, every pass must check `screen -ls`,
+`nvidia-smi`, and the active run log before reporting status. If a run is gone
+or the log shows a failure, first read the traceback and classify the reason.
+For `CUDA out of memory`, wait for an allowed physical GPU with
+`memory.used <= 4000 MiB` and `util <= 10%` for three consecutive polls before
+restarting there. For `libpng`, `CRC`, `NoneType`, or other data-read errors,
+identify the bad file/sample first and do not relaunch unchanged unless that
+input is fixed or excluded. For import/config errors, fix the environment or
+config before relaunch. For an unknown traceback, record the traceback and
+allow one clean-GPU relaunch; if the same traceback repeats, stop and fix it.
+Cap automatic retries at three per experiment. Each retry must use a new log
+name containing the retry index and GPU, and the handoff note must record the
+failure reason plus restart command. If `last_checkpoint` exists, resume from
+it; otherwise restart from epoch 0. Do not launch S2 until the current S1 rerun
+successfully completes and produces the intended initialization checkpoint.
+
+## Active Server Runs
+
+- 2026-06-03 19:15 CST: GeoNexus S1 RemoteCLIP prompt-head rerun retry 1 ran
+  on physical GPU 1 in screen `geonexus_s1_rerun_retry1_20260603_gpu1`; PID
+  `3300816`.
+  Config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_rerun_20260603/roi-trans-le90_r50_fpn_remoteclip-s1-rerun-20260603_dota15.py`.
+  Log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_rerun_20260603/launch_retry1_20260603_gpu1.log`.
+  The first launch failed at `2026-06-03 18:02:19 +0800` with CUDA OOM after
+  epoch 1 iter 190 and no checkpoint. Retry 1 was started only after physical
+  GPU 1 passed three consecutive OOM-retry polls below `4000 MiB` and `10%`.
+  Startup check reached `Epoch(train) [1][30/1410]` at
+  `2026-06-03 19:18:07 +0800`, then failed at
+  `2026-06-03 19:19:11 +0800` with the same CUDA OOM class at iter 190. No
+  checkpoint was produced and no S1 screen remained active. The S1 rerun config
+  was then patched to add `gpu_assign_thr=256` to the RPN and both cascade RCNN
+  assigners, matching the corrected S2/S3 dense-assignment memory mitigation.
+  Retry 2 may start only after the CUDA-OOM GPU gate passes again. Keep S2
+  blocked until this S1 rerun produces the intended checkpoint.
+
+- 2026-06-03 09:13 CST: OpenRSD S0 DOTA2 Oriented R-CNN R50 valid-PNG
+  memory-safe retry is running on physical GPU 6 in screen
+  `s0_dota2_orcnn_r50_validpng_bs1_20260603_gpu6`.
+  Config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_orcnn_r50_validpng_bs1_20260603/G02_Baselines_Data1_DOTA2_M5_ORCNN_R50_validpng_bs1_20260603.py`.
+  Log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_orcnn_r50_validpng_bs1_20260603/launch_20260603.log`.
+  This retry uses the DOTA2 valid-PNG train annotations
+  `train/annfiles_validpng_20260602/`, `ss_val/annfiles/` validation,
+  batch size 1, lr 0.00125, 800x800 scale, 12 epochs, val/ckpt interval 4.
+  Accepted startup check: dataset prep completed, training passed the previous
+  OOM point `[1][300/78014]`, and reached `[1][1800/78014]` with no
+  `CUDA out of memory`, `Traceback`, `libpng`, `CRC`, or `NoneType` signatures.
+  Latest observed progress at 2026-06-03 16:48 CST was
+  `Epoch(train) [3][15300/78014]`, ETA about 1 day 9:17.
+
+- 2026-06-03 09:29 CST: OpenRSD S0 DOTA2 S2ANet valid-PNG batch-size-1 run
+  is running on physical GPU 1 in screen
+  `s0_dota2_s2anet_validpng_bs1_20260603_gpu1`.
+  Config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_s2anet_validpng_bs1_20260603/G02_Baselines_Data1_DOTA2_M3_S2ANet_validpng_bs1_20260603.py`.
+  Log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_s2anet_validpng_bs1_20260603/launch_20260603.log`.
+  Startup check reached `[1][1050/78014]`; latest observed progress at
+  2026-06-03 16:48 CST was `Epoch(train) [3][50650/78014]`, ETA about
+  1 day 0:48.
+
+- 2026-06-03 09:29 CST: OpenRSD S0 DOTA2 R3Det-KFIoU valid-PNG
+  batch-size-1 run is running on physical GPU 2 in screen
+  `s0_dota2_r3det_kfiou_validpng_bs1_20260603_gpu2`.
+  Config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_r3det_kfiou_validpng_bs1_20260603/G02_Baselines_Data1_DOTA2_M4_R3Det_KFIoU_validpng_bs1_20260603.py`.
+  Log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_r3det_kfiou_validpng_bs1_20260603/launch_20260603.log`.
+  Startup check reached `[1][600/78014]`; latest observed progress at
+  2026-06-03 16:48 CST was `Epoch(train) [2][62600/78014]`, ETA about
+  1 day 16:50.
+
+- 2026-06-03 09:29 CST: OpenRSD S0 DOTA2 RTMDet-M valid-PNG batch-size-1 run
+  is running on physical GPU 4 in screen
+  `s0_dota2_rtmdet_m_validpng_bs1_20260603_gpu4`.
+  Config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_rtmdet_m_validpng_bs1_20260603/G02_Baselines_Data1_DOTA2_M9_RTMDet_M_validpng_bs1_20260603.py`.
+  Log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_rtmdet_m_validpng_bs1_20260603/launch_20260603.log`.
+  The CSPNeXt-M checkpoint downloaded successfully. Startup check reached
+  `[1][750/78014]`; latest observed progress at 2026-06-03 16:48 CST was
+  `Epoch(train) [3][16250/78014]`, ETA about 1 day 7:58.
+
+- 2026-06-03 16:51 CST: OpenRSD S0 DOTA2 RTMDet-L valid-PNG batch-size-1 run
+  is running on physical GPU 0 in screen
+  `s0_dota2_rtmdet_l_validpng_bs1_20260603_gpu0`; PID `3031320`.
+  Config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_rtmdet_l_validpng_bs1_20260603/G02_Baselines_Data1_DOTA2_M10_RTMDet_L_validpng_bs1_20260603.py`.
+  Log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_rtmdet_l_validpng_bs1_20260603/launch_20260603.log`.
+  This run uses DOTA2 valid-PNG train annotations
+  `train/annfiles_validpng_20260602/`, `ss_val/annfiles/` validation,
+  batch size 1, 12 epochs, val/ckpt interval 4, and the cached CSPNeXt-L
+  checkpoint `/home/zwl/.cache/torch/hub/checkpoints/cspnext-l_8xb256-rsb-a1-600e_in1k-6a760974.pth`.
+  Dataset preparation completed over `170831/170831` annotations, with
+  non-fatal too-many-instances cut warnings on dense tiles. Startup check
+  reached `[1][1600/78014]` at 2026-06-03 17:07:55 CST with no
+  `CUDA out of memory`, `Traceback`, `libpng`, `CRC`, or `NoneType`
+  signatures.

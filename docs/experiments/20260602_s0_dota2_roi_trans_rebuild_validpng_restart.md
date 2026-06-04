@@ -38,25 +38,31 @@ The restart completed the training annotation preparation pass:
 No `libpng`, `NoneType`, `Traceback`, or `CRC` crash signature was present in
 the launch log through the last check.
 
-## Verification Status
+## Completion
 
-The requested acceptance threshold was reached. The old failure point was
-`Epoch(train) [1][1400/39022]`, and the intended restart verification was at
-least `Epoch(train) [1][1600/39022]`.
-
-As of `2026-06-02 14:46 +0800`, the restart screen was still present and the
-training PID `1077281` was active on GPU 0. The launch log had advanced past
-the old crash point and the acceptance threshold:
+The requested startup acceptance threshold was reached early in epoch 1. The
+old failure point was `Epoch(train) [1][1400/39022]`, and the intended restart
+verification was at least `Epoch(train) [1][1600/39022]`.
 
 ```text
 06/02 14:17:31 - mmengine - INFO - Epoch(train)  [1][ 1600/39007] ...
-06/02 14:46:15 - mmengine - INFO - Epoch(train)  [1][ 9500/39007] ...
+```
+
+The run then completed epoch 12 and saved the final checkpoint:
+
+- Checkpoint: `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/epoch_12.pth`.
+- Final validation timestamp: `2026-06-03 14:31:57 +0800`.
+- Final metrics: `dota/mAP=0.6088`, `dota/AP50=0.6090`.
+- Metric summary: `docs/experiments/20260603_s0_dota2_roi_trans_validpng_metrics.json`.
+
+```text
+06/03 14:20:11 - mmengine - INFO - Saving checkpoint at 12 epochs
+06/03 14:31:57 - mmengine - INFO - Epoch(val) [12][6917/6917]    dota/mAP: 0.6088  dota/AP50: 0.6090  data_time: 0.0061  time: 0.0947
 ```
 
 No `libpng`, `NoneType`, `Traceback`, or `CRC` crash signature was present in
-the launch log through the latest targeted check. The iteration denominator is
-`39007` after filtering corrupt-image annotations.
+the final launch log. The iteration denominator is `39007` after filtering
+corrupt-image annotations.
 
-This verifies S0 DOTA2 RoI Transformer valid-PNG recovery past the previous
-PNG decode failure point. Do not cite this as S1/S2/S3/S4 evidence or as a
-completed training run until the run finishes and final metrics are parsed.
+This is completed S0 DOTA2 RoI Transformer valid-PNG evidence on
+`DOTA2_1024_500/ss_val`. Do not cite this as GeoNexus S1/S2/S3/S4 evidence.

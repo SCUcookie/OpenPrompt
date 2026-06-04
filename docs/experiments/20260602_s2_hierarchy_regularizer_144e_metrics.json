@@ -1,0 +1,48 @@
+{
+  "date": "2026-06-02",
+  "experiment": "GeoNexus S2 hierarchy regularizer 144e",
+  "dataset": "DOTA v1.5 reduced tiled split",
+  "framework": "OpenRSD/MMRotate",
+  "status": "completed",
+  "config": "/data5/2025/ldh/OpenRSD/mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-144e_dota15.py",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_144e",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_144e/epoch_144.pth",
+  "queue_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_144e/queue_launch_20260531.log",
+  "training_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_144e/20260601_103001/20260601_103001.log",
+  "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_frozen_144e/20260601_103001/vis_data/scalars.json",
+  "metric_implementation": "MMRotate DOTAMetric mAP, IoU 0.5",
+  "launched_at": "2026-06-01 10:30:01",
+  "completed_at": "2026-06-02 16:25:54",
+  "final_epoch": 144,
+  "final_metrics": {
+    "dota/mAP": 0.3723289370536804,
+    "dota/AP50": 0.372
+  },
+  "final_metrics_rounded_log": {
+    "dota/mAP": 0.3723,
+    "dota/AP50": 0.3720
+  },
+  "best_epoch_observed": 30,
+  "best_metrics": {
+    "dota/mAP": 0.38188496232032776,
+    "dota/AP50": 0.382
+  },
+  "comparison": {
+    "s2_hierarchy_regularizer_72e_final": {
+      "dota/mAP": 0.3738,
+      "dota/AP50": 0.3740
+    },
+    "s2_hierarchy_regularizer_72e_best": {
+      "epoch": 56,
+      "dota/mAP": 0.3757,
+      "dota/AP50": 0.3760
+    },
+    "s2_144e_final_minus_s2_72e_final_map": -0.0015,
+    "s2_144e_best_minus_s2_72e_best_map": 0.0062
+  },
+  "notes": [
+    "S2 144e completed cleanly and produced epoch_144.pth.",
+    "The best observed validation occurs much earlier than the final epoch, so use best and final numbers separately in comparisons.",
+    "The final epoch underperforms the S2 72e final record, while the best observed epoch exceeds the S2 72e best record."
+  ]
+}

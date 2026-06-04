@@ -1,0 +1,61 @@
+{
+  "date": "2026-06-03",
+  "experiment": "GeoNexus S3 scene adapter 144e",
+  "dataset": "DOTA v1.5 reduced tiled split",
+  "framework": "OpenRSD/MMRotate",
+  "status": "completed",
+  "config": "/data5/2025/ldh/OpenRSD/mmrotate_configs/geonexus_dota15/roi-trans-le90_r50_fpn_remoteclip-s3-144e_dota15.py",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_144e",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_144e/epoch_144.pth",
+  "queue_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_144e/queue_launch_20260531.log",
+  "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_144e/20260602_003719/vis_data/scalars.json",
+  "metric_implementation": "MMRotate DOTAMetric mAP, IoU 0.5",
+  "launched_at": "2026-06-02 00:37:05",
+  "completed_at": "2026-06-03 07:52:35",
+  "final_epoch": 144,
+  "final_metrics": {
+    "dota/mAP": 0.3712484836578369,
+    "dota/AP50": 0.371
+  },
+  "final_metrics_rounded_log": {
+    "dota/mAP": 0.3712,
+    "dota/AP50": 0.3710
+  },
+  "best_epochs_observed_rounded_log": [
+    65,
+    73
+  ],
+  "best_metrics_rounded_log": {
+    "dota/mAP": 0.3813,
+    "dota/AP50": 0.3810
+  },
+  "comparison": {
+    "s3_scene_adapter_72e_final": {
+      "dota/mAP": 0.3759,
+      "dota/AP50": 0.3760
+    },
+    "s3_scene_adapter_72e_best": {
+      "epoch": 51,
+      "dota/mAP": 0.3800,
+      "dota/AP50": 0.3800
+    },
+    "s2_hierarchy_regularizer_144e_final": {
+      "dota/mAP": 0.3723,
+      "dota/AP50": 0.3720
+    },
+    "s2_hierarchy_regularizer_144e_best": {
+      "epoch": 30,
+      "dota/mAP": 0.3819,
+      "dota/AP50": 0.3820
+    },
+    "s3_144e_final_minus_s3_72e_final_map": -0.0047,
+    "s3_144e_best_minus_s3_72e_best_map": 0.0013,
+    "s3_144e_final_minus_s2_144e_final_map": -0.0011,
+    "s3_144e_best_minus_s2_144e_best_map": -0.0006
+  },
+  "notes": [
+    "S3 144e completed and produced epoch_144.pth.",
+    "The final epoch is below the S3 72e final and below the S2 144e final; the best observed S3 144e validation is slightly above the S3 72e best but below the S2 144e best.",
+    "Treat best and final numbers separately. This supports cautious S3 evidence only, not a stronger context-adapter claim."
+  ]
+}

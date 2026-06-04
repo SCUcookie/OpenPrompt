@@ -75,6 +75,21 @@ Important interpretation:
 - Scaffold diagnostics:
   `/data5/2025/ldh/New/docs/experiments/20260526_dota15_geonexus_remoteclip_scaffold_metrics.json`
 
+## 2026-06-04 Update
+
+GPU pruning and next priority are archived in
+`/data5/2025/ldh/New/docs/experiments/20260604_gpu_pruning_and_next_priority.md`.
+Lower-priority `zwl` jobs on GPUs 0, 1, 2, and 4 were stopped after confirming
+saved checkpoints; GPU 3 was left untouched. GeoNexus S1 retry 2 stayed active
+on GPU 5 with current best epoch 25 `dota/mAP=0.376255`, and DOTA2 ORCNN stayed
+active on GPU 6 with current best epoch 8 `dota/mAP=0.585885`.
+
+The priority is to finish and archive the active GeoNexus S1 rerun, then launch
+the next S2 hierarchy-regularizer rerun from the best S1 checkpoint. This
+outranks launching more DOTA2 baselines because S1 gates the GeoNexus S2/S3
+paper path, while DOTA2 baseline expansion is secondary until that S1-to-S2
+rerun is secured.
+
 The `New/` scaffold remains diagnostic-only. Paper-facing evidence is the
 MMRotate/OpenRSD strong-detector path.
 
@@ -274,12 +289,32 @@ AAAI threshold:
 
 Immediate:
 
-1. Monitor the active S2 hierarchy regularizer 12e run.
+1. Restart and monitor the 2026-06-03 GeoNexus S1 rerun only after a safe GPU
+   is available. The first S1 rerun failed at `2026-06-03 18:02:19 +0800` with
+   CUDA OOM after epoch 1 iter 190 and produced no epoch checkpoint. Retry 1
+   passed the three-poll GPU gate and relaunched on GPU 1, but failed again at
+   `2026-06-03 19:19:11 +0800` with the same CUDA OOM class at iter 190. The S1
+   rerun config now has `gpu_assign_thr=256` on the RPN and both cascade-stage
+   RCNN assigners, matching the corrected S2/S3 dense-assignment mitigation.
+   Retry 2 must wait for the CUDA-OOM GPU gate again. S2 remains blocked until a
+   successful S1 checkpoint exists.
 2. Archive S2 regularizer config, final checkpoint, log, metric JSON/log source,
    and interpretation.
 3. Adapt DOTA2 validation against `ss_val/annfiles` if safe.
 4. Treat DOTA2 as not claimable until that validation is adapted and run.
 5. Compare S2 regularizer against S1 frozen and S2 hierarchy-offset epoch 1.
+
+Monitoring rule:
+
+Every monitoring pass must check `screen -ls`, `nvidia-smi`, and the active run
+log. On failure, classify the traceback before relaunch. CUDA OOM may be
+restarted only after an allowed physical GPU reports `memory.used <= 4000 MiB`
+and `util <= 10%` for three consecutive polls. Data-read failures (`libpng`,
+`CRC`, `NoneType`) require identifying and fixing/excluding the bad input before
+relaunch. Import/config failures require a fix first. Unknown tracebacks get one
+clean-GPU relaunch; repeated identical tracebacks stop the experiment for
+diagnosis. Cap automatic retries at three per experiment and record each retry's
+failure reason, GPU, log name, and restart command in the handoff note.
 
 Next:
 

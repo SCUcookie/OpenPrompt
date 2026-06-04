@@ -1,0 +1,40 @@
+{
+  "experiment": "s0_dota2_roi_trans_rebuild_validpng_restart",
+  "scope": "S0 DOTA2 RoI Transformer valid-PNG recovery on DOTA2_1024_500/ss_val",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart",
+  "config": "/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/G02_Baselines_Data1_DOTA2_M2_RoITrans_validpng_20260602.py",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/epoch_12.pth",
+  "launch_log": "/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/launch_20260602.log",
+  "train_ann_file": "train/annfiles_validpng_20260602/",
+  "val_ann_file": "ss_val/annfiles/",
+  "epoch": 12,
+  "validation_timestamp": "2026-06-03 14:31:57 +0800",
+  "metrics": {
+    "dota/mAP": 0.6088,
+    "dota/AP50": 0.6090
+  },
+  "per_class": [
+    {"class": "airport", "gts": 101, "dets": 192, "recall": 0.772, "ap": 0.668},
+    {"class": "baseball-diamond", "gts": 653, "dets": 1932, "recall": 0.879, "ap": 0.536},
+    {"class": "basketball-court", "gts": 439, "dets": 928, "recall": 0.802, "ap": 0.667},
+    {"class": "bridge", "gts": 1466, "dets": 6395, "recall": 0.729, "ap": 0.492},
+    {"class": "container-crane", "gts": 71, "dets": 113, "recall": 0.014, "ap": 0.001},
+    {"class": "ground-track-field", "gts": 397, "dets": 1868, "recall": 0.914, "ap": 0.678},
+    {"class": "harbor", "gts": 6381, "dets": 10103, "recall": 0.864, "ap": 0.772},
+    {"class": "helicopter", "gts": 284, "dets": 993, "recall": 0.750, "ap": 0.633},
+    {"class": "helipad", "gts": 6, "dets": 69, "recall": 0.333, "ap": 0.303},
+    {"class": "large-vehicle", "gts": 14169, "dets": 28467, "recall": 0.831, "ap": 0.735},
+    {"class": "plane", "gts": 8718, "dets": 11253, "recall": 0.927, "ap": 0.895},
+    {"class": "roundabout", "gts": 620, "dets": 2161, "recall": 0.790, "ap": 0.629},
+    {"class": "ship", "gts": 45001, "dets": 50180, "recall": 0.836, "ap": 0.804},
+    {"class": "small-vehicle", "gts": 150145, "dets": 102324, "recall": 0.372, "ap": 0.303},
+    {"class": "soccer-ball-field", "gts": 430, "dets": 1200, "recall": 0.867, "ap": 0.690},
+    {"class": "storage-tank", "gts": 10557, "dets": 10092, "recall": 0.647, "ap": 0.614},
+    {"class": "swimming-pool", "gts": 2324, "dets": 3718, "recall": 0.710, "ap": 0.640},
+    {"class": "tennis-court", "gts": 1870, "dets": 2596, "recall": 0.937, "ap": 0.899}
+  ],
+  "notes": [
+    "This is S0 DOTA2 ss_val evidence only.",
+    "Do not cite as GeoNexus S1/S2/S3/S4 evidence."
+  ]
+}
