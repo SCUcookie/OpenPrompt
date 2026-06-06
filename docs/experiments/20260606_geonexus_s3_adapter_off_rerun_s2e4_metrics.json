@@ -1,0 +1,44 @@
+{
+  "date": "2026-06-06",
+  "experiment": "GeoNexus S3 adapter-off rerun from S2 epoch 4",
+  "dataset": "DOTA v1.5 reduced tiled split",
+  "base_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_rerun_s1e32_20260604/epoch_4.pth",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_adapter_off_rerun_s2e4_20260605",
+  "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_adapter_off_rerun_s2e4_20260605/roi-trans-le90_r50_fpn_remoteclip-s3-adapter-off-rerun-s2e4-20260605_dota15.py",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_adapter_off_rerun_s2e4_20260605/epoch_12.pth",
+  "best_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_adapter_off_rerun_s2e4_20260605/epoch_3.pth",
+  "log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_adapter_off_rerun_s2e4_20260605/launch_20260605_gpu3.log",
+  "epochs": 12,
+  "epoch_metrics": [
+    {"epoch": 1, "dota/mAP": 0.3650, "dota/AP50": 0.3650},
+    {"epoch": 2, "dota/mAP": 0.3665, "dota/AP50": 0.3660},
+    {"epoch": 3, "dota/mAP": 0.3772, "dota/AP50": 0.3770},
+    {"epoch": 4, "dota/mAP": 0.3640, "dota/AP50": 0.3640},
+    {"epoch": 5, "dota/mAP": 0.3722, "dota/AP50": 0.3720},
+    {"epoch": 6, "dota/mAP": 0.3745, "dota/AP50": 0.3750},
+    {"epoch": 7, "dota/mAP": 0.3719, "dota/AP50": 0.3720},
+    {"epoch": 8, "dota/mAP": 0.3639, "dota/AP50": 0.3640},
+    {"epoch": 9, "dota/mAP": 0.3706, "dota/AP50": 0.3710},
+    {"epoch": 10, "dota/mAP": 0.3730, "dota/AP50": 0.3730},
+    {"epoch": 11, "dota/mAP": 0.3758, "dota/AP50": 0.3760},
+    {"epoch": 12, "dota/mAP": 0.3758, "dota/AP50": 0.3760}
+  ],
+  "best_epoch_observed": 3,
+  "best_metrics": {
+    "dota/mAP": 0.3772,
+    "dota/AP50": 0.3770
+  },
+  "final_epoch": 12,
+  "final_metrics": {
+    "dota/mAP": 0.3758,
+    "dota/AP50": 0.3760
+  },
+  "comparison": {
+    "s2_rerun_best_epoch_4": {"dota/mAP": 0.3858, "dota/AP50": 0.3860},
+    "s3_rerun_best_epoch_2": {"dota/mAP": 0.3827, "dota/AP50": 0.3830},
+    "s3_identity_best_epoch_9": {"dota/mAP": 0.3806, "dota/AP50": 0.3810},
+    "s3_adapter_off_stop_threshold": {"dota/mAP": 0.3827}
+  },
+  "decision": "Stop S3 diagnostics and do not launch S4 from S3 because adapter-off best mAP stayed below 0.3827.",
+  "interpretation": "Removing scene-adapter modulation did not recover the S2 best or prior S3 rerun best. The degradation is not isolated to the adapter residual; continue with S2 stabilization/refinement instead of S4."
+}

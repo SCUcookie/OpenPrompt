@@ -1,0 +1,43 @@
+{
+  "date": "2026-06-05",
+  "experiment": "GeoNexus S3 scene adapter rerun from S2 epoch 4",
+  "dataset": "DOTA v1.5 reduced tiled split",
+  "base_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_rerun_s1e32_20260604/epoch_4.pth",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_rerun_s2e4_20260605",
+  "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_rerun_s2e4_20260605/roi-trans-le90_r50_fpn_remoteclip-s3-rerun-s2e4-20260605_dota15.py",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_rerun_s2e4_20260605/epoch_12.pth",
+  "best_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_rerun_s2e4_20260605/epoch_2.pth",
+  "log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_rerun_s2e4_20260605/launch_20260605_gpu1.log",
+  "epochs": 12,
+  "epoch_metrics": [
+    {"epoch": 1, "dota/mAP": 0.3704, "dota/AP50": 0.3700},
+    {"epoch": 2, "dota/mAP": 0.3827, "dota/AP50": 0.3830},
+    {"epoch": 3, "dota/mAP": 0.3675, "dota/AP50": 0.3670},
+    {"epoch": 4, "dota/mAP": 0.3662, "dota/AP50": 0.3660},
+    {"epoch": 5, "dota/mAP": 0.3794, "dota/AP50": 0.3790},
+    {"epoch": 6, "dota/mAP": 0.3709, "dota/AP50": 0.3710},
+    {"epoch": 7, "dota/mAP": 0.3727, "dota/AP50": 0.3730},
+    {"epoch": 8, "dota/mAP": 0.3718, "dota/AP50": 0.3720},
+    {"epoch": 9, "dota/mAP": 0.3759, "dota/AP50": 0.3760},
+    {"epoch": 10, "dota/mAP": 0.3788, "dota/AP50": 0.3790},
+    {"epoch": 11, "dota/mAP": 0.3754, "dota/AP50": 0.3750},
+    {"epoch": 12, "dota/mAP": 0.3756, "dota/AP50": 0.3760}
+  ],
+  "best_epoch_observed": 2,
+  "best_metrics": {
+    "dota/mAP": 0.3827,
+    "dota/AP50": 0.3830
+  },
+  "final_epoch": 12,
+  "final_metrics": {
+    "dota/mAP": 0.3756,
+    "dota/AP50": 0.3760
+  },
+  "comparison": {
+    "s1_retry2_best_epoch_32": {"dota/mAP": 0.3800, "dota/AP50": 0.3800},
+    "s1_retry2_final_epoch_36": {"dota/mAP": 0.3793, "dota/AP50": 0.3790},
+    "s2_rerun_best_epoch_4": {"dota/mAP": 0.3858, "dota/AP50": 0.3860},
+    "s2_rerun_final_epoch_12": {"dota/mAP": 0.3784, "dota/AP50": 0.3780}
+  },
+  "interpretation": "Hierarchy is currently positive, but the scene adapter is not stable enough to support the paper claim. Run a controlled S3 repair before any S4 launch."
+}

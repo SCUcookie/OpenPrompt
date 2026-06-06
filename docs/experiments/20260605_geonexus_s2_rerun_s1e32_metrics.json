@@ -1,0 +1,24 @@
+{
+  "date": "2026-06-05",
+  "experiment": "GeoNexus S2 hierarchy regularizer rerun from S1 epoch 32",
+  "dataset": "DOTA v1.5 reduced tiled split",
+  "base_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_rerun_20260603/epoch_32.pth",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_rerun_s1e32_20260604",
+  "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_rerun_s1e32_20260604/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-rerun-s1e32-20260604_dota15.py",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_rerun_s1e32_20260604/epoch_12.pth",
+  "best_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_rerun_s1e32_20260604/epoch_4.pth",
+  "log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_rerun_s1e32_20260604/20260604_184151/20260604_184151.log",
+  "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_rerun_s1e32_20260604/20260604_184151/vis_data/scalars.json",
+  "epochs": 12,
+  "best_epoch_observed": 4,
+  "best_metrics": {
+    "dota/mAP": 0.3858095109462738,
+    "dota/AP50": 0.386
+  },
+  "final_epoch": 12,
+  "final_metrics": {
+    "dota/mAP": 0.378351092338562,
+    "dota/AP50": 0.378
+  },
+  "notes": "Best rounded log line is epoch 4 at dota/mAP=0.3858 and dota/AP50=0.3860. Use epoch_4.pth as the S3 initialization checkpoint."
+}

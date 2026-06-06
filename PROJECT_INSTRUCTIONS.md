@@ -11,7 +11,8 @@ changing code, configs, or secondary docs.
 Project name: GeoNexus-RSD.
 
 Primary goal: hierarchy- and context-aware vision-language prompting for
-DOTA-style oriented remote sensing object detection.
+DOTA2-centered oriented remote sensing object detection, with DIOR-R as the
+required cross-dataset validation and FAIR1M as stretch fine-grained evidence.
 
 Practical first target: IEEE JSTARS. Consider TGRS or ISPRS P&RS only if final
 results are strong across at least two datasets. Consider GRSL, IGARSS, or a
@@ -22,6 +23,27 @@ Main paper claim:
 Hierarchy- and context-aware vision-language prompting improves fine-grained
 oriented object detection and semi-supervised pseudo-label quality in remote
 sensing imagery.
+
+2026-06-06 research pivot:
+
+- DOTA v1.5 GeoNexus runs are diagnostic/archive-only evidence. They remain
+  useful for debugging hierarchy/context code paths, but they are no longer the
+  formal benchmark route for the paper and must not be used as headline table
+  evidence.
+- The formal benchmark order is now DOTA2 first, DIOR-R second, and FAIR1M
+  only after DOTA2 plus DIOR-R are stable.
+- Stop extending the DOTA v1.5 S2/S3/S4 chain. The lower-LR DOTA v1.5 S2
+  refinement in screen
+  `geonexus_s2_hierarchy_refine_s2e4_lr5e5_20260606_gpu1` was stopped by
+  research pivot on 2026-06-06 at about epoch 3, not classified as a failed
+  experiment. Preserve its workdir, launch log, and any partial checkpoints:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_refine_s2e4_lr5e5_20260606`.
+- Active priority order: finish DOTA2 baselines and archive their exact
+  config/checkpoint/metric sources; run only the most defensible DOTA2
+  GeoNexus S1/S2 module on the strongest stable detector; establish a DIOR-R
+  baseline on `DIOR_R_dota/train_val` and `DIOR_R_dota/test`; then repeat the
+  same minimal GeoNexus module on DIOR-R. FAIR1M is stretch evidence for
+  fine-grained hierarchy claims, not the first cross-dataset proof.
 
 Core modules:
 
@@ -83,12 +105,11 @@ Current diagnosis:
 - Mid-run detector curves, class-wise snapshots, and figure/table TODOs are recorded in `docs/experiments/20260525_strong_detector_midrun_records.md`.
 - The complete paper-indicator experiment matrix and current download/staging list are recorded in `docs/setup/complete_experiment_plan.md`.
 - Use `docs/experiments/20260524_dota_v15_anchor_repair_quick_test.md` and `docs/setup/strong_baseline_checklist.md` as the active planning anchors.
-- S1 may start only after real VLM embedding support passes a smoke test. `/data1/anaconda3/envs/zwl_mmrotate/bin/python` currently has `torch` but is missing both `open_clip` and `clip`; the RemoteCLIP checkpoint symlink exists at `/data5/2025/ldh/OpenRSD/checkpoints/remoteclip/RemoteCLIP-ViT-B-32.pt`.
-- GeoNexus S1 rerun on `2026-06-03` passed the real RemoteCLIP smoke test
-  (`classes=16`, `embedding_shape=[16, 512]`) and launched on GPU 1, then
-  failed at `2026-06-03 18:02:19 +0800` after epoch 1 iter 190 with CUDA OOM
-  during RPN target assignment. No epoch checkpoint was produced. S2 must stay
-  queued behind a successful S1 rerun checkpoint.
+- S1 real VLM embedding support passed the RemoteCLIP smoke test (`classes=16`,
+  `embedding_shape=[16, 512]`), using the checkpoint symlink at
+  `/data5/2025/ldh/OpenRSD/checkpoints/remoteclip/RemoteCLIP-ViT-B-32.pt`.
+  Earlier S1 launches on 2026-06-03 failed with CUDA OOM before checkpointing,
+  but the patched retry 2 completed 36 epochs on 2026-06-04.
 - 2026-06-04 GPU pruning is archived in
   `docs/experiments/20260604_gpu_pruning_and_next_priority.md`: lower-priority
   `zwl` jobs on GPUs 0/1/2/4 were stopped after checkpoint confirmation, GPU 3
@@ -97,6 +118,120 @@ Current diagnosis:
   with current best epoch 8 `dota/mAP=0.585885`. The next priority is to finish
   and archive S1, then launch the next S2 hierarchy-regularizer rerun from the
   best S1 checkpoint before restarting secondary DOTA2 baselines.
+- 2026-06-05 recovery update: GeoNexus S1 retry 2 completed 36 epochs. Best
+  epoch 32: `dota/mAP=0.3800`, `dota/AP50=0.3800`; final epoch 36:
+  `dota/mAP=0.3793`, `dota/AP50=0.3790`; metric summary
+  `docs/experiments/20260605_geonexus_s1_retry2_metrics.json`.
+- 2026-06-05 recovery update: GeoNexus S2 hierarchy-regularizer rerun from S1
+  epoch 32 completed 12 epochs. Best epoch 4: `dota/mAP=0.3858`,
+  `dota/AP50=0.3860`; final epoch 12: `dota/mAP=0.3784`,
+  `dota/AP50=0.3780`; metric summary
+  `docs/experiments/20260605_geonexus_s2_rerun_s1e32_metrics.json`. Use
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_rerun_s1e32_20260604/epoch_4.pth`
+  as the S3 initialization checkpoint.
+- 2026-06-05 recovery update: GeoNexus S3 scene-adapter rerun from S2 epoch 4
+  completed 12 epochs and released GPU 1. Best epoch 2: `dota/mAP=0.3827`,
+  `dota/AP50=0.3830`; final epoch 12: `dota/mAP=0.3756`,
+  `dota/AP50=0.3760`; metric summary
+  `docs/experiments/20260605_geonexus_s3_rerun_s2e4_metrics.json`.
+  Compared with S1 retry2 best epoch 32 `0.3800/0.3800` and S2 rerun best
+  epoch 4 `0.3858/0.3860`, hierarchy is currently positive but the scene
+  adapter is not yet stable enough to support the paper claim. Do not launch S4
+  yet. The next diagnostic priority is a controlled S3 repair from S2 epoch 4
+  using an identity-initialized scene adapter that honors `scene_adapter_dim`
+  and a reduced residual scale.
+- 2026-06-05 launch update: the controlled S3 repair run was launched on GPU 1
+  in screen `geonexus_s3_identity_rerun_s2e4_20260605_gpu1`. Work dir:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_identity_rerun_s2e4_20260605`;
+  config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_identity_rerun_s2e4_20260605/roi-trans-le90_r50_fpn_remoteclip-s3-identity-rerun-s2e4-20260605_dota15.py`;
+  launch log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_scene_adapter_identity_rerun_s2e4_20260605/launch_20260605_gpu1.log`.
+  Startup acceptance passed at `Epoch(train) [1][200/1410]` with no
+  `Traceback`, CUDA OOM, `libpng`, `CRC`, or `NoneType` signature in the log.
+- 2026-06-05 recovery update: the controlled S3 identity repair from S2 epoch
+  4 completed 12 epochs. Best epoch 9: `dota/mAP=0.3806`,
+  `dota/AP50=0.3810`; final epoch 12: `dota/mAP=0.3792`,
+  `dota/AP50=0.3790`; metric summary
+  `docs/experiments/20260605_geonexus_s3_identity_rerun_s2e4_metrics.json`.
+  This did not recover the prior S3 rerun best `0.3827/0.3830` or the S2
+  rerun best `0.3858/0.3860`. The final S3 diagnostic is an adapter-off rerun
+  from the same S2 epoch-4 checkpoint to isolate whether degradation comes from
+  scene modulation or the S3 head/config transition.
+- 2026-06-05 launch update: the final S3 adapter-off diagnostic was launched
+  on GPU 3 in screen `geonexus_s3_adapter_off_rerun_s2e4_20260605_gpu3`.
+  Work dir:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_adapter_off_rerun_s2e4_20260605`;
+  config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_adapter_off_rerun_s2e4_20260605/roi-trans-le90_r50_fpn_remoteclip-s3-adapter-off-rerun-s2e4-20260605_dota15.py`;
+  launch log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s3_adapter_off_rerun_s2e4_20260605/launch_20260605_gpu3.log`.
+  Preflight passed: GPU 3 stayed at `14 MiB` and `0%` over three polls, the
+  config parsed with both cascade bbox heads reporting `use_scene_adapter=False`,
+  and startup reached `Epoch(train) [1][200/1410]` with no `Traceback`, CUDA
+  OOM, `libpng`, `CRC`, or `NoneType` signature in the launch log.
+- 2026-06-06 recovery update: the final S3 adapter-off diagnostic from S2
+  epoch 4 completed 12 epochs. Best epoch 3: `dota/mAP=0.3772`,
+  `dota/AP50=0.3770`; final epoch 12: `dota/mAP=0.3758`,
+  `dota/AP50=0.3760`; metric summary
+  `docs/experiments/20260606_geonexus_s3_adapter_off_rerun_s2e4_metrics.json`.
+  This stayed below the stop threshold `0.3827` and below the S2 rerun best
+  `0.3858/0.3860`. Stop S3 diagnostics and do not launch S4 from S3. The next
+  GeoNexus paper-path run is an S2 hierarchy-stabilization refinement from S2
+  epoch 4 with LR `1e-4`, not S4.
+- 2026-06-05 DOTA2 secondary status: ORCNN completed epoch 12 at
+  `dota/mAP=0.5973`, `dota/AP50=0.5970`; S2ANet completed epoch 12 at
+  `dota/mAP=0.5869`, `dota/AP50=0.5870`; R3Det, RTMDet-M, and RTMDet-L were
+  interrupted by `KeyboardInterrupt`. Do not auto-restart those secondary runs
+  before the next GeoNexus paper-path run. Status note:
+  `docs/experiments/20260605_dota2_baseline_status.md`.
+- 2026-06-05 GPU state before S3 launch planning: screens for our training runs
+  are gone; GPUs 0, 1, 3, 5, and 6 are effectively free, while user `lyc`
+  owns compute jobs on GPUs 2 and 4. Prefer GPU 1 for S3 if three consecutive
+  `nvidia-smi` polls keep it at `memory.used <= 4000 MiB` and `util <= 10%`;
+  otherwise use GPU 5 or GPU 6. Do not use GPU 3 for the next S3 launch.
+- 2026-06-06 DOTA2 secondary update: RTMDet-M resumed and completed epoch 12
+  with `dota/mAP=0.3312`, `dota/AP50=0.3310`. R3Det-KFIoU is active on GPU 5
+  in screen `s0_dota2_r3det_kfiou_validpng_bs1_resume_20260605_gpu5`, currently
+  epoch 10 with about nine hours remaining as of `2026-06-06 09:45 +0800`.
+  RTMDet-L remains the only unfinished secondary baseline resume candidate;
+  resume from
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_rtmdet_l_validpng_bs1_20260603/epoch_4.pth`
+  only if GPU 6 passes the three-poll idle check.
+- 2026-06-06 launch update: with R3Det still active on GPU 5, GPU 1 and GPU 6
+  passed three idle polls (`14 MiB`, `0%` each). RTMDet-L was resumed on GPU 6
+  in screen `s0_dota2_rtmdet_l_validpng_bs1_resume_20260606_gpu6`; launch log
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_rtmdet_l_validpng_bs1_20260603/launch_resume_20260606_gpu6.log`;
+  startup passed at epoch 5 `[200/78014]` with no `Traceback`, CUDA OOM,
+  `libpng`, `CRC`, `NoneType`, or immediate `KeyboardInterrupt`. GeoNexus S2
+  hierarchy refinement from S2 epoch 4 was launched on GPU 1 in screen
+  `geonexus_s2_hierarchy_refine_s2e4_lr1e4_20260606_gpu1`; work dir
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_refine_s2e4_lr1e4_20260606`;
+  config
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_refine_s2e4_lr1e4_20260606/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-refine-s2e4-lr1e4-20260606_dota15.py`;
+  launch log
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_refine_s2e4_lr1e4_20260606/launch_20260606_gpu1.log`;
+  startup passed at epoch 1 `[200/1410]` with no listed failure signatures.
+- 2026-06-06 recovery update: GeoNexus S2 hierarchy refinement from S2 epoch 4
+  with LR `1e-4` completed 12 epochs and released GPU 1. Best epoch 1:
+  `dota/mAP=0.3804`, `dota/AP50=0.3800`; final epoch 12:
+  `dota/mAP=0.3765`, `dota/AP50=0.3760`; metric summary
+  `docs/experiments/20260606_geonexus_s2_refine_s2e4_lr1e4_metrics.json`.
+  This did not improve the S2 rerun best epoch 4 `0.3858/0.3860`. The later
+  lower-LR S2 refinement is now archive-only under the 2026-06-06 DOTA2
+  cross-dataset pivot.
+- 2026-06-06 launch update: the lower-LR S2 refinement from S2 epoch 4 was
+  launched on GPU 1 with LR `5e-5` in screen
+  `geonexus_s2_hierarchy_refine_s2e4_lr5e5_20260606_gpu1`. Work dir:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_refine_s2e4_lr5e5_20260606`;
+  config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_refine_s2e4_lr5e5_20260606/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-refine-s2e4-lr5e5-20260606_dota15.py`;
+  launch log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_refine_s2e4_lr5e5_20260606/launch_20260606_gpu1.log`.
+  Startup passed at epoch 1 `[200/1410]` with no `Traceback`, CUDA OOM,
+  `libpng`, `CRC`, `NoneType`, `KeyboardInterrupt`, or early exit signature.
+  It was stopped by research pivot on 2026-06-06 at about epoch 3; preserve the
+  partial log/checkpoint artifacts and do not relaunch as paper-path evidence.
 
 Paper-level claims require:
 
@@ -110,12 +245,25 @@ Paper-level claims require:
 
 Run experiments in this order:
 
-1. S0: strong closed-set oriented detector sweep on DOTA v1.5. Complete; use RoI Transformer 3x epoch 34 as the primary detector checkpoint unless simplicity/stability is prioritized over the small mAP lead.
-2. S1: flat class-name prompt classifier with real VLM text embeddings.
-3. S2: hierarchical prompt bank.
-4. S3: hierarchy plus scene/context adapter.
-5. S4: hierarchy plus context plus VLM-assisted pseudo-label purification.
-6. S5: optional routing ablation.
+1. DOTA2 S0: complete and archive strong closed-set baselines. Completed
+   baselines: RoI Transformer `0.6088/0.6090`, Oriented R-CNN
+   `0.5973/0.5970`, S2ANet `0.5869/0.5870`, RTMDet-M `0.3312/0.3310` on
+   `DOTA2_1024_500/ss_val`. Let active R3Det finish because it is already
+   near completion. Reassess RTMDet-L after its next validation; if it remains
+   near `0.35`, stop it and free GPU 6.
+2. DOTA2 GeoNexus S1/S2: port only the strongest defensible module first:
+   hierarchy-aware prompt scoring or hierarchy regularization on the strongest
+   stable DOTA2 detector. Do not run S3/S4 until DOTA2 S1/S2 beats or clearly
+   complements the strongest closed-set baseline.
+3. DIOR-R S0: run an Oriented R-CNN or RoI Transformer baseline using local
+   `DIOR_R_dota/train_val` and `DIOR_R_dota/test`, with a smoke validation
+   before full training.
+4. DIOR-R GeoNexus S1/S2: repeat the same minimal GeoNexus module used on
+   DOTA2, without changing the paper story between datasets.
+5. FAIR1M: stretch evidence after DOTA2 and DIOR-R are stable. Use it for
+   fine-grained hierarchy claims only.
+6. S3/S4 and optional routing: run only after S1/S2 provide credible evidence
+   on the DOTA2 and DIOR-R path.
 
 Do not add S5 to the main story unless S2-S4 already show stable gains.
 
@@ -152,7 +300,8 @@ Before any paper-facing claim is added:
 
 - identify which experiment record supports it
 - link the config and command used to produce it
-- record whether the run used DOTA v1.0 or DOTA v1.5, and do not mix those numbers with later DOTA v2 results
+- record the exact dataset version and split, especially distinguishing
+  DOTA v1.0, DOTA v1.5, DOTA2, DIOR-R, and FAIR1M
 - record whether embeddings are hash fallback or real VLM embeddings
 - record whether metrics are from scaffold evaluation or accepted DOTA-style
   evaluation
@@ -212,11 +361,12 @@ Ignored or external:
 When starting a new coding session, give the agent this instruction:
 
 Read `PROJECT_INSTRUCTIONS.md`, then inspect the current Git status. Preserve
-unrelated user changes. Continue the GeoNexus-RSD baseline-first JSTARS path:
+unrelated user changes. Continue the GeoNexus-RSD DOTA2-first JSTARS path:
 do not make unsupported performance claims, keep routing/compression secondary,
-maintain the local/server GitHub workflow, start with DOTA v1.0 or DOTA v1.5
-if those server assets are already staged, and update the canonical manuscript
-before code/docs when the research direction changes.
+maintain the local/server GitHub workflow, treat DOTA v1.5 as archive-only
+diagnostic evidence, make DOTA2 the primary benchmark, make DIOR-R the required
+cross-dataset validation, and update the canonical manuscript before code/docs
+when the research direction changes.
 
 For active experiment monitoring, every pass must check `screen -ls`,
 `nvidia-smi`, and the active run log before reporting status. If a run is gone
@@ -231,92 +381,26 @@ allow one clean-GPU relaunch; if the same traceback repeats, stop and fix it.
 Cap automatic retries at three per experiment. Each retry must use a new log
 name containing the retry index and GPU, and the handoff note must record the
 failure reason plus restart command. If `last_checkpoint` exists, resume from
-it; otherwise restart from epoch 0. Do not launch S2 until the current S1 rerun
-successfully completes and produces the intended initialization checkpoint.
+it; otherwise restart from epoch 0. Do not relaunch DOTA v1.5 GeoNexus
+refinements unless the user explicitly asks for archive/debug work.
 
 ## Active Server Runs
 
-- 2026-06-03 19:15 CST: GeoNexus S1 RemoteCLIP prompt-head rerun retry 1 ran
-  on physical GPU 1 in screen `geonexus_s1_rerun_retry1_20260603_gpu1`; PID
-  `3300816`.
-  Config:
-  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_rerun_20260603/roi-trans-le90_r50_fpn_remoteclip-s1-rerun-20260603_dota15.py`.
-  Log:
-  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s1_rerun_20260603/launch_retry1_20260603_gpu1.log`.
-  The first launch failed at `2026-06-03 18:02:19 +0800` with CUDA OOM after
-  epoch 1 iter 190 and no checkpoint. Retry 1 was started only after physical
-  GPU 1 passed three consecutive OOM-retry polls below `4000 MiB` and `10%`.
-  Startup check reached `Epoch(train) [1][30/1410]` at
-  `2026-06-03 19:18:07 +0800`, then failed at
-  `2026-06-03 19:19:11 +0800` with the same CUDA OOM class at iter 190. No
-  checkpoint was produced and no S1 screen remained active. The S1 rerun config
-  was then patched to add `gpu_assign_thr=256` to the RPN and both cascade RCNN
-  assigners, matching the corrected S2/S3 dense-assignment memory mitigation.
-  Retry 2 may start only after the CUDA-OOM GPU gate passes again. Keep S2
-  blocked until this S1 rerun produces the intended checkpoint.
-
-- 2026-06-03 09:13 CST: OpenRSD S0 DOTA2 Oriented R-CNN R50 valid-PNG
-  memory-safe retry is running on physical GPU 6 in screen
-  `s0_dota2_orcnn_r50_validpng_bs1_20260603_gpu6`.
-  Config:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_orcnn_r50_validpng_bs1_20260603/G02_Baselines_Data1_DOTA2_M5_ORCNN_R50_validpng_bs1_20260603.py`.
-  Log:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_orcnn_r50_validpng_bs1_20260603/launch_20260603.log`.
-  This retry uses the DOTA2 valid-PNG train annotations
-  `train/annfiles_validpng_20260602/`, `ss_val/annfiles/` validation,
-  batch size 1, lr 0.00125, 800x800 scale, 12 epochs, val/ckpt interval 4.
-  Accepted startup check: dataset prep completed, training passed the previous
-  OOM point `[1][300/78014]`, and reached `[1][1800/78014]` with no
-  `CUDA out of memory`, `Traceback`, `libpng`, `CRC`, or `NoneType` signatures.
-  Latest observed progress at 2026-06-03 16:48 CST was
-  `Epoch(train) [3][15300/78014]`, ETA about 1 day 9:17.
-
-- 2026-06-03 09:29 CST: OpenRSD S0 DOTA2 S2ANet valid-PNG batch-size-1 run
-  is running on physical GPU 1 in screen
-  `s0_dota2_s2anet_validpng_bs1_20260603_gpu1`.
-  Config:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_s2anet_validpng_bs1_20260603/G02_Baselines_Data1_DOTA2_M3_S2ANet_validpng_bs1_20260603.py`.
-  Log:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_s2anet_validpng_bs1_20260603/launch_20260603.log`.
-  Startup check reached `[1][1050/78014]`; latest observed progress at
-  2026-06-03 16:48 CST was `Epoch(train) [3][50650/78014]`, ETA about
-  1 day 0:48.
-
-- 2026-06-03 09:29 CST: OpenRSD S0 DOTA2 R3Det-KFIoU valid-PNG
-  batch-size-1 run is running on physical GPU 2 in screen
-  `s0_dota2_r3det_kfiou_validpng_bs1_20260603_gpu2`.
-  Config:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_r3det_kfiou_validpng_bs1_20260603/G02_Baselines_Data1_DOTA2_M4_R3Det_KFIoU_validpng_bs1_20260603.py`.
-  Log:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_r3det_kfiou_validpng_bs1_20260603/launch_20260603.log`.
-  Startup check reached `[1][600/78014]`; latest observed progress at
-  2026-06-03 16:48 CST was `Epoch(train) [2][62600/78014]`, ETA about
-  1 day 16:50.
-
-- 2026-06-03 09:29 CST: OpenRSD S0 DOTA2 RTMDet-M valid-PNG batch-size-1 run
-  is running on physical GPU 4 in screen
-  `s0_dota2_rtmdet_m_validpng_bs1_20260603_gpu4`.
-  Config:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_rtmdet_m_validpng_bs1_20260603/G02_Baselines_Data1_DOTA2_M9_RTMDet_M_validpng_bs1_20260603.py`.
-  Log:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_rtmdet_m_validpng_bs1_20260603/launch_20260603.log`.
-  The CSPNeXt-M checkpoint downloaded successfully. Startup check reached
-  `[1][750/78014]`; latest observed progress at 2026-06-03 16:48 CST was
-  `Epoch(train) [3][16250/78014]`, ETA about 1 day 7:58.
-
-- 2026-06-03 16:51 CST: OpenRSD S0 DOTA2 RTMDet-L valid-PNG batch-size-1 run
-  is running on physical GPU 0 in screen
-  `s0_dota2_rtmdet_l_validpng_bs1_20260603_gpu0`; PID `3031320`.
-  Config:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_rtmdet_l_validpng_bs1_20260603/G02_Baselines_Data1_DOTA2_M10_RTMDet_L_validpng_bs1_20260603.py`.
-  Log:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_rtmdet_l_validpng_bs1_20260603/launch_20260603.log`.
-  This run uses DOTA2 valid-PNG train annotations
-  `train/annfiles_validpng_20260602/`, `ss_val/annfiles/` validation,
-  batch size 1, 12 epochs, val/ckpt interval 4, and the cached CSPNeXt-L
-  checkpoint `/home/zwl/.cache/torch/hub/checkpoints/cspnext-l_8xb256-rsb-a1-600e_in1k-6a760974.pth`.
-  Dataset preparation completed over `170831/170831` annotations, with
-  non-fatal too-many-instances cut warnings on dense tiles. Startup check
-  reached `[1][1600/78014]` at 2026-06-03 17:07:55 CST with no
-  `CUDA out of memory`, `Traceback`, `libpng`, `CRC`, or `NoneType`
-  signatures.
+- DOTA2 R3Det-KFIoU baseline remains active on GPU 5 in screen
+  `s0_dota2_r3det_kfiou_validpng_bs1_resume_20260605_gpu5`; let it finish
+  and archive the final metric source.
+- DOTA2 RTMDet-L baseline remains active on GPU 6 in screen
+  `s0_dota2_rtmdet_l_validpng_bs1_resume_20260606_gpu6`; reassess after the
+  next validation and stop it if it stays near `0.35`.
+- DIOR-R Oriented R-CNN R50 baseline is active on GPU 1 in screen
+  `s0_dior_orcnn_r50_20260606_gpu1`. Workdir:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_orcnn_r50_20260606`; config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_orcnn_r50_20260606/G02_Baselines_Data2_DIOR_R_M5_ORCNN_R50.py`;
+  launch log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_orcnn_r50_20260606/launch_20260606_gpu1.log`.
+  Startup acceptance passed at epoch 1 `[100/5862]` with no `Traceback`, CUDA
+  OOM, `libpng`, `CRC`, `NoneType`, or early-exit signature.
+- Result monitor `s0_result_log_monitor_20260603` remains active.
+- No active GeoNexus DOTA v1.5 training screen should exist after the
+  2026-06-06 pivot. GPU 1 was freed after stopping
+  `geonexus_s2_hierarchy_refine_s2e4_lr5e5_20260606_gpu1`.

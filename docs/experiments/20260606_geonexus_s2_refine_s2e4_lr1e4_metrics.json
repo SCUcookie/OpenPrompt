@@ -1,0 +1,42 @@
+{
+  "date": "2026-06-06",
+  "experiment": "GeoNexus S2 hierarchy refinement from S2 epoch 4 with LR 1e-4",
+  "dataset": "DOTA v1.5 reduced tiled split",
+  "base_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_rerun_s1e32_20260604/epoch_4.pth",
+  "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_refine_s2e4_lr1e4_20260606",
+  "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_refine_s2e4_lr1e4_20260606/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-refine-s2e4-lr1e4-20260606_dota15.py",
+  "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_refine_s2e4_lr1e4_20260606/epoch_12.pth",
+  "best_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_refine_s2e4_lr1e4_20260606/epoch_1.pth",
+  "log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_refine_s2e4_lr1e4_20260606/launch_20260606_gpu1.log",
+  "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota15/roi_trans_remoteclip_s2_hierarchy_reg_refine_s2e4_lr1e4_20260606/20260606_095623/vis_data/scalars.json",
+  "epochs": 12,
+  "optimizer_lr": 0.0001,
+  "epoch_metrics": [
+    {"epoch": 1, "dota/mAP": 0.3803628087043762, "dota/AP50": 0.38},
+    {"epoch": 2, "dota/mAP": 0.37638723850250244, "dota/AP50": 0.376},
+    {"epoch": 3, "dota/mAP": 0.3780551254749298, "dota/AP50": 0.378},
+    {"epoch": 4, "dota/mAP": 0.37842652201652527, "dota/AP50": 0.378},
+    {"epoch": 5, "dota/mAP": 0.3800840973854065, "dota/AP50": 0.38},
+    {"epoch": 6, "dota/mAP": 0.3770796060562134, "dota/AP50": 0.377},
+    {"epoch": 7, "dota/mAP": 0.3757053315639496, "dota/AP50": 0.376},
+    {"epoch": 8, "dota/mAP": 0.37463295459747314, "dota/AP50": 0.375},
+    {"epoch": 9, "dota/mAP": 0.37568652629852295, "dota/AP50": 0.376},
+    {"epoch": 10, "dota/mAP": 0.37738171219825745, "dota/AP50": 0.377},
+    {"epoch": 11, "dota/mAP": 0.3765178918838501, "dota/AP50": 0.377},
+    {"epoch": 12, "dota/mAP": 0.3764580488204956, "dota/AP50": 0.376}
+  ],
+  "best_epoch_observed": 1,
+  "best_metrics": {
+    "dota/mAP": 0.3803628087043762,
+    "dota/AP50": 0.38
+  },
+  "final_epoch": 12,
+  "final_metrics": {
+    "dota/mAP": 0.3764580488204956,
+    "dota/AP50": 0.376
+  },
+  "comparison": {
+    "s2_rerun_best_epoch_4": {"dota/mAP": 0.3858, "dota/AP50": 0.3860}
+  },
+  "decision": "LR 1e-4 refinement did not improve the S2 rerun best; continue with a lower-LR S2 refinement from the same checkpoint."
+}

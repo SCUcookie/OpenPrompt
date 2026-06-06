@@ -26,7 +26,7 @@ Xi'an Jiaotong University\\
 \vspace{-1.5em}
 
 \begin{abstract}
-Object detection in remote sensing images is a fundamental problem for urban analysis, traffic monitoring, maritime surveillance, and disaster assessment. Modern oriented detectors have made strong progress on benchmarks such as DOTA, but their performance still depends heavily on fixed category definitions and sufficient box annotations. This short paper describes a hierarchical prompt learning framework for oriented remote sensing object detection. The method constructs taxonomy aware class prompts, adapts them with scene context, and filters pseudo labels with vision language evidence before semi supervised training. The proposed study focuses on method design and evaluation protocol rather than completed benchmark results. Code will be released at \url{https://github.com/SCUcookie/openprompt}.
+Object detection in remote sensing images is a fundamental problem for urban analysis, traffic monitoring, maritime surveillance, and disaster assessment. Modern oriented detectors have made strong progress on benchmarks such as DOTA, but their performance still depends heavily on fixed category definitions and sufficient box annotations. This short paper describes a hierarchical prompt learning framework for oriented remote sensing object detection. The method constructs taxonomy aware class prompts, adapts them with scene context, and filters pseudo labels with vision language evidence before semi supervised training. The paper-facing evaluation is reframed around DOTA2 as the primary benchmark and DIOR-R as the required cross-dataset validation, with FAIR1M reserved for fine-grained stretch evidence. DOTA v1.5 experiments are treated as diagnostic archive runs rather than headline benchmark results. Code will be released at \url{https://github.com/SCUcookie/openprompt}.
 \end{abstract}
 
 \section{Introduction}
@@ -37,9 +37,9 @@ Current oriented object detectors have improved localization accuracy through ro
 
 Vision language models provide a possible way to introduce semantic knowledge into detection. CLIP shows that image and text representations can be aligned through large scale contrastive learning \cite{radford2021clip}. Open vocabulary detection methods such as GLIP, RegionCLIP, and Detic further demonstrate that language supervision can support recognition beyond a fixed detector vocabulary \cite{li2022glip, zhong2022regionclip, zhou2022detic}. For remote sensing, direct transfer is still difficult. Aerial objects are small, rotated, and often visually ambiguous. Simple class name prompts cannot fully describe taxonomic relations such as vehicle, small vehicle, and large vehicle, or contextual differences such as ship in water and bridge over water.
 
-This paper proposes a hierarchical prompt learning framework for oriented remote sensing object detection. The method is built on three components. First, a taxonomy based prompt bank represents each class with leaf level names, parent categories, aliases, and contrastive descriptions. Second, a scene context prompt adapter adjusts prompt embeddings according to tile level and region level visual context. Third, a vision language model assisted purification module filters pseudo labels before they are used for semi supervised training. Recent remote sensing studies on multimodal prompting and vision language based pseudo label purification support this direction \cite{rsmpod2026, semiearth2026}, but the core evaluation in this paper remains tied to established oriented detection protocols. The first server experiments will use DOTA v1.0 or DOTA v1.5, depending on which staged asset is already available, and every reported number must state the exact dataset version.
+This paper proposes a hierarchical prompt learning framework for oriented remote sensing object detection. The method is built on three components. First, a taxonomy based prompt bank represents each class with leaf level names, parent categories, aliases, and contrastive descriptions. Second, a scene context prompt adapter adjusts prompt embeddings according to tile level and region level visual context. Third, a vision language model assisted purification module filters pseudo labels before they are used for semi supervised training. Recent remote sensing vision-language studies show that remote-sensing-specific image-text pretraining improves semantic alignment and cross-dataset transfer \cite{remoteclip2023, skyscript2023, georsclip2023}, and OpenRSD motivates open-prompt detection across remote-sensing datasets \cite{huang2025openrsd}. The core evaluation remains tied to established oriented detection protocols: DOTA2 provides the primary oriented detection table, DIOR-R provides the required second dataset, and FAIR1M is used only if compute allows fine-grained hierarchy analysis.
 
-The local OpenPrompt repository is used as an implementation scaffold for DOTA loading and prompt construction. It also supports OpenRSD style detection experiments \cite{huang2025openrsd}. The paper does not report completed results. Instead, it defines the method and an evaluation protocol for testing whether hierarchy, context, and label purification can improve fine grained remote sensing detection without relying only on fixed category classifiers.
+The local OpenPrompt repository is used as an implementation scaffold for DOTA loading and prompt construction. It also supports OpenRSD style detection experiments \cite{huang2025openrsd}. Current DOTA v1.5 GeoNexus runs are retained only as diagnostic evidence for the code path. The paper-facing protocol requires dataset version, split, checkpoint, config, and metric source for every reported number, and no formal table should use DOTA v1.5 GeoNexus results as headline evidence.
 
 The main contributions are as follows: 
 1) We propose a taxonomy aware prompt representation for oriented remote sensing detection. Unlike flat class name prompts, the prompt bank includes parent categories, aliases, and contrastive descriptions, which are designed to reduce confusion among fine grained aerial categories. 
@@ -127,7 +127,7 @@ The ablation will compare fixed fusion, learned soft fusion, and Gumbel based ro
 
 \subsection{Datasets and Evaluation Metrics}
 
-The primary evaluation will use DOTA style rotated object detection. Images are split into manageable tiles, and annotations are converted to oriented boxes. The method should be evaluated under standard supervised training and under a semi supervised extension where additional unlabeled or weakly labeled tiles are purified before use. If cross dataset testing is available, the same prompt bank can be evaluated on held out vocabularies or prompt variants to measure vocabulary robustness.
+The primary evaluation will use DOTA2 style rotated object detection. Images are split into manageable tiles, and annotations are converted to oriented boxes. DIOR-R is the required second dataset for cross-dataset validation, using the local \texttt{DIOR\_R\_dota/train\_val} and \texttt{DIOR\_R\_dota/test} splits. FAIR1M is reserved for a later fine-grained hierarchy study if DOTA2 and DIOR-R are stable. The method should be evaluated under standard supervised training and under a semi supervised extension where additional unlabeled or weakly labeled tiles are purified before use. The same prompt bank should be evaluated across datasets and prompt variants to measure vocabulary robustness.
 
 The main metrics are rotated mean average precision, class wise AP, and confusion statistics for fine grained categories. Because prompt methods are sensitive to wording, we also plan a prompt robustness evaluation that compares exact class labels, alias prompts, parent level prompts, and mixed prompt sets. Runtime and memory should be reported because prompt banks and purification can introduce nontrivial overhead.
 
@@ -138,7 +138,7 @@ The comparison experiments should separate conventional oriented detection, open
 \begin{table}[t]
 \centering
 \small
-\caption{Comparison settings to run before submission. The final manuscript should replace this protocol table with measured rotated mAP and class wise AP.}
+\caption{Comparison settings to run before submission. DOTA2 is the primary benchmark and DIOR-R is the required cross-dataset validation. The final manuscript should replace this protocol table with measured rotated mAP and class wise AP.}
 \begin{tabular}{lll}
 \toprule
 Group & Method setting & Purpose \\
@@ -178,7 +178,7 @@ S4 & Optional routing & Branch usage and cost accuracy tradeoff \\
 
 \subsection{Required Final Analyses}
 
-The final experiment section should report prompt robustness, pseudo label quality, and efficiency with measured values. Prompt robustness should compare exact class names, alias prompts, parent level prompts, and mixed prompt sets. Pseudo label quality should compare teacher only predictions, hierarchy filtering, vision language filtering, and the full purification score on a held out labeled subset. Efficiency should report parameters, memory, and latency per tile for the baseline, prompt bank, context adapter, and optional routing. These analyses should appear only after the corresponding experiments have been completed. The initial baseline tables may come from DOTA v1.0 or DOTA v1.5, but the manuscript must distinguish those runs from any later DOTA v2 experiments.
+The final experiment section should report prompt robustness, pseudo label quality, and efficiency with measured values. Prompt robustness should compare exact class names, alias prompts, parent level prompts, and mixed prompt sets. Pseudo label quality should compare teacher only predictions, hierarchy filtering, vision language filtering, and the full purification score on a held out labeled subset. Efficiency should report parameters, memory, and latency per tile for the baseline, prompt bank, context adapter, and optional routing. These analyses should appear only after the corresponding experiments have been completed. The formal tables should prioritize DOTA2 and DIOR-R; DOTA v1.0 or DOTA v1.5 numbers may appear only as clearly marked archive diagnostics.
 
 \subsection{Analysis Plan}
 
@@ -188,13 +188,13 @@ Failure analysis should focus on class pairs that are naturally confusing in aer
 
 \subsection{Current Implementation Status}
 
-The current repository implements the data loading, prompt bank, lightweight detector scaffold, DOTA style validation path, and an anchored box decoding repair path. The reduced tiled DOTA v1.0 and DOTA v1.5 scaffold runs have completed only as pipeline sanity checks, with near zero AP50 values. These results must not be presented as evidence for the proposed method. The diagnostic evidence indicates that the weak scaffold is not mainly a score thresholding problem; predictions concentrate on a small subset of classes and decoded boxes show poor localization. Therefore, the immediate experimental priority is to repair the localization path or to introduce a stronger oriented detector baseline before running the hierarchy, context, and pseudo label ablations.
+The current repository implements the data loading, prompt bank, lightweight detector scaffold, DOTA style validation path, and an anchored box decoding repair path. The reduced tiled DOTA v1.0 and DOTA v1.5 scaffold runs, as well as the later DOTA v1.5 GeoNexus S1/S2/S3 diagnostics, are archive-only evidence for implementation behavior. They must not be presented as the paper's main performance evidence. The immediate experimental priority is to finish the DOTA2 closed-set baseline table, port the most defensible hierarchy-aware prompt scoring or hierarchy regularization module to the strongest stable DOTA2 detector, and then reproduce that minimal module on DIOR-R after a clean DIOR-R baseline smoke.
 
-The active repair branch anchors predicted box centers to the query grid centers produced by the query generator. This change is intended to test whether explicit spatial anchoring reduces center biased predictions. A short DOTA v1.5 smoke run should be used only to decide whether the lightweight scaffold is worth further investment. In parallel, a standard oriented detector such as Oriented R-CNN or RoI Transformer should be prepared as the credible S0 baseline for the final paper.
+Current DOTA2 closed-set evidence includes RoI Transformer, Oriented R-CNN, S2ANet, and RTMDet-M baselines, with R3Det and RTMDet-L still under monitoring. GeoNexus S3/S4 should not be advanced until the DOTA2 S1/S2 module beats or clearly complements the strongest closed-set baseline. A standard oriented detector such as RoI Transformer or Oriented R-CNN should also be used for the first DIOR-R baseline before launching the matching GeoNexus variant.
 
 \section{Summary}
 
-We presented a short method paper for vision language guided hierarchical prompt learning in remote sensing object detection. The proposed GeoNexus RSD direction updates an OpenPrompt and OpenRSD based plan into a detection centered study built around taxonomy aware semantics, scene context adaptation, and pseudo label purification. DOTA style rotated detection is the main task, while optional routing remains a lightweight extension rather than the core claim. The first experimental stage may use DOTA v1.0 or DOTA v1.5 as the server baseline, but any final claim must identify the exact dataset version and evaluation protocol.
+We presented a short method paper for vision language guided hierarchical prompt learning in remote sensing object detection. The proposed GeoNexus RSD direction updates an OpenPrompt and OpenRSD based plan into a detection centered study built around taxonomy aware semantics, scene context adaptation, and pseudo label purification. DOTA2 rotated detection is the main benchmark, DIOR-R is the required cross-dataset validation, and FAIR1M is optional fine-grained evidence. Optional routing remains a lightweight extension rather than the core claim. Any final claim must identify the exact dataset version, split, checkpoint, config, and evaluation protocol.
 
 This work is still limited by the absence of completed benchmark results. Therefore, the paper should be read as a method and experiment design document rather than an empirical performance report. Another limitation is that vision language based filtering may reject correct but rare aerial objects if the external model lacks remote sensing knowledge. The final version should report measured accuracy, rejected pseudo label examples, and failure cases before making any performance claim.
 
@@ -229,6 +229,21 @@ Wentong Li et al.
 Huang et al.
 \newblock OpenRSD: Towards Open-prompts for Object Detection in Remote Sensing Images.
 \newblock In \emph{ICCV}, 2025.
+
+\bibitem{remoteclip2023}
+Delong Chen et al.
+\newblock RemoteCLIP: A Vision Language Foundation Model for Remote Sensing.
+\newblock arXiv:2306.11029, 2023.
+
+\bibitem{skyscript2023}
+Zhecheng Wang et al.
+\newblock SkyScript: A Large and Semantically Diverse Vision-Language Dataset for Remote Sensing.
+\newblock arXiv:2312.12856, 2023.
+
+\bibitem{georsclip2023}
+Zilun Zhang et al.
+\newblock GeoRSCLIP: A Remote Sensing Vision-Language Model.
+\newblock arXiv:2306.11300, 2023.
 
 \bibitem{rsmpod2026}
 RS-MPOD authors.

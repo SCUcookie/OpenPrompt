@@ -1,33 +1,43 @@
 # Complete Experiment Plan For Paper Indicators
 
-Date: 2026-05-26
+Date: 2026-06-06
 
-Goal: move from small sanity experiments to paper-facing GeoNexus-RSD results.
-The paper tables should close around DOTA-style oriented detection mAP,
-class-wise AP, prompt robustness, pseudo-label quality, and efficiency.
+Goal: build paper-facing GeoNexus-RSD evidence around DOTA2 as the primary
+benchmark, DIOR-R as required cross-dataset validation, and FAIR1M as optional
+fine-grained stretch evidence. DOTA v1.5 GeoNexus results are now
+diagnostic/archive-only and must not be used as headline results.
 
-## Current S0 Status
+## Current DOTA2 S0 Status
 
-Use DOTA v1.5 as the controlled first benchmark unless a later note documents a
-dataset switch.
+Use `DOTA2_1024_500/ss_val` as the main benchmark split unless a later note
+documents a stricter official evaluation.
 
-Credible closed-set baselines now exist:
+Completed closed-set baselines to archive:
 
-- RoI Transformer 3x: completed 36 epochs, best epoch 34
-  `dota/mAP=0.2644`, `AP50=0.2640`.
-- Oriented R-CNN 3x: completed 36 epochs, best epoch 33/34
-  `dota/mAP=0.2620`, `AP50=0.2620`.
-- ReDet pretrained: completed 12 epochs, best/final epoch 12
-  `dota/mAP=0.2382`, `AP50=0.2380`.
-- Oriented R-CNN 12e remains an archived reference at `dota/mAP=0.2561`,
-  `AP50=0.2560`.
+- RoI Transformer valid-PNG recovery: `dota/mAP=0.6088`, `AP50=0.6090`;
+  metric source `docs/experiments/20260603_s0_dota2_roi_trans_validpng_metrics.json`.
+- Oriented R-CNN valid-PNG baseline: `dota/mAP=0.5973`, `AP50=0.5970`;
+  status source `docs/experiments/20260605_dota2_baseline_status.md`.
+- S2ANet valid-PNG baseline: `dota/mAP=0.5869`, `AP50=0.5870`;
+  status source `docs/experiments/20260605_dota2_baseline_status.md`.
+- RTMDet-M valid-PNG baseline: `dota/mAP=0.3312`, `AP50=0.3310`.
 
-Paper-facing baseline choice:
+Active decisions:
 
-- Primary baseline: RoI Transformer 3x epoch 34.
-- Secondary baseline: Oriented R-CNN 3x epoch 33/34; use it if implementation
-  simplicity/stability matters more than the small mAP lead.
-- Comparison baseline: ReDet pretrained epoch 12.
+- Let R3Det-KFIoU finish because it is already late in training.
+- Reassess RTMDet-L after its next validation; if it remains near `0.35`, stop
+  it and free GPU 6.
+- Do not spend more compute on DOTA v1.5 S2/S3/S4 refinements unless the user
+  explicitly requests archive/debug work.
+
+## Benchmark Matrix
+
+| Dataset | Role | First baseline | GeoNexus module | Acceptance |
+| --- | --- | --- | --- | --- |
+| DOTA2 | Primary paper benchmark | RoI Transformer, Oriented R-CNN, S2ANet, R3Det, RTMDet variants | Minimal S1/S2 hierarchy-aware prompt scoring or hierarchy regularization on the strongest stable detector | S1/S2 must beat or clearly complement the strongest closed-set baseline before S3/S4 |
+| DIOR-R | Required cross-dataset validation | Oriented R-CNN or RoI Transformer on `DIOR_R_dota/train_val` and `DIOR_R_dota/test` | Same minimal S1/S2 module used on DOTA2 | Loader/config smoke reaches validation before full training |
+| FAIR1M | Optional fine-grained stretch | Use only after DOTA2 and DIOR-R are stable | Hierarchy-focused S1/S2 evidence | Supports fine-grained hierarchy claims, not first cross-dataset proof |
+| DOTA v1.5 | Archive/debug only | Existing RoI Transformer/ORCNN/ReDet records | Existing S1/S2/S3 diagnostics only | Do not use as headline paper table evidence |
 
 ## Required Paper Tables
 
@@ -35,25 +45,28 @@ Paper-facing baseline choice:
 
 Rows:
 
-- Oriented R-CNN closed-set baseline.
-- RoI Transformer closed-set baseline.
-- ReDet, only if pretrained or clearly marked scratch.
-- GeoNexus-RSD S1-S4 on the selected detector.
+- Strong closed-set oriented detectors on DOTA2.
+- GeoNexus-RSD S1/S2 on the selected DOTA2 detector.
+- DIOR-R closed-set baseline.
+- DIOR-R GeoNexus-RSD S1/S2 using the same module.
+- FAIR1M rows only if compute allows stable fine-grained evidence.
 
 Columns:
 
-- detector, prompt/VLM setting, dataset split, mAP/AP50, per-class AP summary,
-  FPS or images/s, GPU memory, checkpoint.
+- dataset version and split, detector, prompt/VLM setting, config, checkpoint,
+  metric source, mAP/AP50, per-class AP summary, inference speed, and peak GPU
+  memory.
 
 ### Core Ablation
 
-Keep the detector, data split, schedule, and evaluator fixed.
+Keep the detector, data split, schedule, evaluator, and VLM backend fixed.
 
 - S0: closed-set detector.
-- S1: flat class-name prompt classifier.
-- S2: hierarchical prompt bank.
-- S3: hierarchy plus scene/context adapter.
-- S4: hierarchy plus context plus VLM-assisted pseudo-label purification.
+- S1: flat or hierarchy-aware prompt scoring with real VLM text embeddings.
+- S2: hierarchy regularization or hierarchical prompt bank.
+- S3: hierarchy plus scene/context adapter, only after S1/S2 are credible.
+- S4: hierarchy/context plus VLM-assisted pseudo-label purification, only after
+  S3 is justified.
 - S5: optional routing only if S2-S4 are stable.
 
 ### Prompt Robustness
@@ -66,13 +79,7 @@ Evaluate with frozen detector weights where possible:
 - full mixed prompts with hierarchy, scene, geometry, confusing, and negative
   cues.
 
-Report overall mAP/AP50 plus fine-grained pairs:
-
-- small-vehicle vs large-vehicle.
-- ship vs harbor.
-- storage-tank vs roundabout.
-- bridge vs road-like background.
-- sports-field subclasses.
+Report overall mAP/AP50 plus fine-grained pairs relevant to each dataset.
 
 ### Pseudo-Label Quality
 
@@ -85,7 +92,7 @@ against ground truth before retraining:
 - full purification score.
 
 Report pseudo-label precision, recall, F1, accepted-label count, and class-wise
-quality. Then run the actual S4 retraining and report final detection mAP.
+quality. Run S4 retraining only after the filtering quality is defensible.
 
 ### Efficiency
 
@@ -100,55 +107,41 @@ Measure on the same GPU type:
 
 ## Run Order
 
-1. S0 is archived in compact JSON/Markdown summaries; keep checkpoints and raw
-   logs outside Git.
-2. Port the strong-baseline MMRotate config wrappers and `tools/test.py`
-   compatibility patch into a tracked transport location, or document them as
-   server-local required files.
-3. Use RoI Transformer 3x epoch 34 as the fixed detector for S1 unless a later
-   note chooses Oriented R-CNN 3x for implementation stability.
-4. Install or configure real VLM dependencies. The active
-   `/data1/anaconda3/envs/zwl_mmrotate/bin/python` currently has `torch` but is
-   missing both `open_clip` and `clip`.
-5. Run `scripts/smoke_vlm_embeddings.py` on all 16 DOTA v1.5 class prompts
-   with a real backend such as RemoteCLIP before launching S1.
-6. Run S1-S3 on DOTA v1.5 with the same split and evaluator.
-7. Generate pseudo labels with the selected teacher, evaluate purification on a
-   heldout labeled subset, then run S4 retraining.
-8. Produce qualitative examples and confusion analysis only after S1-S4 numbers
-   are complete.
+1. Finish DOTA2 R3Det and make the RTMDet-L keep/stop decision.
+2. Archive the DOTA2 baseline table with exact configs, checkpoints, logs, and
+   metric JSON or markdown source for every row.
+3. Choose the strongest stable DOTA2 detector, favoring RoI Transformer unless
+   implementation stability clearly favors Oriented R-CNN.
+4. Port only the minimal GeoNexus S1/S2 module to DOTA2.
+5. Run a DOTA2 GeoNexus smoke and then full run only if the smoke reaches
+   validation without data/config failures.
+6. Stage and smoke DIOR-R via `DIOR_R_dota/train_val` and `DIOR_R_dota/test`.
+7. Run the DIOR-R closed-set baseline.
+8. Run the same minimal DIOR-R GeoNexus module.
+9. Decide whether FAIR1M compute is justified after DOTA2 and DIOR-R are stable.
 
-## Assets To Download Or Stage
+## Assets To Stage
 
 Required:
 
-- DOTA v1.5 train/val images and annotations, already expected under
-  `/data5/2025/ldh/OpenPrompt/DOTA/`.
-- A real VLM checkpoint. Prefer RemoteCLIP first because it is remote-sensing
-  specific and provides Hugging Face checkpoint download instructions in the
-  official repository.
-- OpenAI CLIP or OpenCLIP weights as a natural-image baseline for the prompt
-  robustness table.
+- `DOTA2_1024_500` valid-PNG annotations and exact corrupt-file exclusion list.
+- `DIOR_R_dota/train_val` and `DIOR_R_dota/test`.
+- RemoteCLIP checkpoint already staged at
+  `/data5/2025/ldh/OpenRSD/checkpoints/remoteclip/RemoteCLIP-ViT-B-32.pt`.
+- The selected DOTA2 detector checkpoint and config for S1/S2 initialization.
 
 Recommended:
 
-- SkyCLIP ViT-L/14 weights for a second remote-sensing VLM comparison.
-- ReDet ReResNet-50 ImageNet pretrained checkpoint, so the ReDet run is not
-  compared as scratch against ImageNet-pretrained R50 baselines.
-- MMRotate pretrained detector checkpoints for DOTA v1.0 as reference sanity
-  checks, not as direct DOTA v1.5 results.
+- OpenAI CLIP or OpenCLIP weights as a natural-image VLM comparison.
+- SkyCLIP/SkyScript weights for a second remote-sensing VLM comparison.
+- FAIR1M converted annotations only after DOTA2 and DIOR-R are stable.
 
-Optional if compute and storage allow:
+Public source anchors:
 
-- DOTA v1.0 for cross-version reproducibility.
-- DOTA v2.0 only after DOTA v1.5 S1-S4 is complete.
-- Extra unlabeled DOTA-style tiles for pseudo-label experiments, provided the
-  source and preprocessing are documented.
-
-Public source anchors checked on 2026-05-25:
-
-- DOTA official dataset page: `https://captain-whu.github.io/DOTA/dataset`
-- RemoteCLIP official repository: `https://github.com/ChenDelong1999/RemoteCLIP`
-- SkyCLIP / SkyScript release: `https://github.com/wangzhecheng/SkyScript`
-- SkyCLIP Hugging Face mirror: `https://huggingface.co/BiliSakura/SkyCLIP-ViT-L-14`
-- MMRotate model zoo: `https://mmrotate.readthedocs.io/en/stable/model_zoo.html`
+- RemoteCLIP: `https://arxiv.org/abs/2306.11029`
+- SkyScript/SkyCLIP: `https://arxiv.org/abs/2312.12856`
+- GeoRSCLIP: `https://arxiv.org/abs/2306.11300`
+- OpenRSD: `https://arxiv.org/abs/2503.06146`
+- DOTA: `https://arxiv.org/abs/1711.10398`
+- DIOR: `https://arxiv.org/abs/1909.00133`
+- FAIR1M: `https://arxiv.org/abs/2103.05569`
