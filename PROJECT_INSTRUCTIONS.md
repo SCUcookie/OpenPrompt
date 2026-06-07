@@ -232,6 +232,69 @@ Current diagnosis:
   `libpng`, `CRC`, `NoneType`, `KeyboardInterrupt`, or early exit signature.
   It was stopped by research pivot on 2026-06-06 at about epoch 3; preserve the
   partial log/checkpoint artifacts and do not relaunch as paper-path evidence.
+- 2026-06-07 DOTA2 secondary update: R3Det-KFIoU valid-PNG bs1 completed epoch
+  12 with `dota/mAP=0.5633`, `dota/AP50=0.5630`. Checkpoint:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_r3det_kfiou_validpng_bs1_20260603/epoch_12.pth`;
+  metric log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_r3det_kfiou_validpng_bs1_20260603/20260605_100954/20260605_100954.log`.
+  RTMDet-L remains active on GPU 6, currently epoch 11; latest validation is
+  epoch 8 `dota/mAP=0.3521`, `dota/AP50=0.3520`.
+- 2026-06-07 DIOR-R update: the Oriented R-CNN R50 baseline completed epoch 12
+  but is invalid evidence. Epoch 4/8/12 validation stayed `0.0000/0.0000`, and
+  training hit `loss: nan` from epoch 2 onward. Preserve the checkpoint/logs,
+  but do not cite it as DIOR-R baseline evidence until the NaN cause is fixed.
+- 2026-06-07 DIOR-R diagnostic update: the ORCNN R50 low-LR diagnostic
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_orcnn_r50_nan_diag_lr2p5e4_2e_20260607`
+  also failed as evidence. It first hit NaN at `2026-06-07 10:28:33 +0800`,
+  `Epoch(train) [1][650/5862]`, `lr=2.5000e-04`, with `grad_norm: nan` and
+  `loss: nan`; final epoch-2 validation at `2026-06-07 11:07:21 +0800` was
+  `dota/mAP=0.0000`, `dota/AP50=0.0000`, with all classes at `dets=0`.
+  Checkpoints `epoch_1.pth` and `epoch_2.pth` plus launch log
+  `launch_20260607_gpu5.log` are preserved. Low LR alone did not fix DIOR-R
+  ORCNN; do not cite it as DIOR-R baseline evidence. Use DIOR-R RoI
+  Transformer S0 next.
+- 2026-06-07 DOTA2 GeoNexus launch update: created DOTA2-specific taxonomy
+  `/data5/2025/ldh/New/assets/hierarchies/dota2_remote_sensing_taxonomy.json`
+  in the exact 18-class DOTA2 config order, including `airport` and `helipad`.
+  Generated RemoteCLIP artifact
+  `/data5/2025/ldh/New/artifacts/generated/remoteclip_vit_b32_dota2_prompt_embeddings.pt`;
+  validation confirmed `class_names` length 18, `embeddings` shape `[18, 512]`,
+  finite values, and L2-normalized vectors.
+- 2026-06-07 launch update: DOTA2 GeoNexus RoI Transformer + RemoteCLIP S1 was
+  launched on GPU 1 in screen
+  `geonexus_dota2_roi_trans_s1_validpng_20260607_gpu1`. Work dir:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_20260607`;
+  config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_20260607/roi-trans-le90_r50_fpn_remoteclip-s1-validpng-20260607_dota2.py`;
+  launch log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_20260607/launch_20260607_gpu1.log`.
+  The run initializes from the completed DOTA2 RoI Transformer valid-PNG
+  checkpoint
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/epoch_12.pth`,
+  trains on `DOTA2_1024_500/train/annfiles_validpng_20260602`, and validates
+  on `DOTA2_1024_500/ss_val/annfiles`. Monitor until startup reaches
+  `Epoch(train) [1][200/... ]` with no `Traceback`, CUDA OOM, `libpng`, `CRC`,
+  `NoneType`, `ValueError`, or prompt class-count mismatch. Compare first
+  validation against DOTA2 RoI Transformer S0 `0.6088/0.6090`; do not launch
+  S2/S3/S4, FAIR1M, or more secondary baselines before S1 validates cleanly.
+- 2026-06-07 DOTA2 RTMDet-L completion: resumed RTMDet-L valid-PNG bs1
+  finished epoch 12 at `2026-06-07 15:04:34 +0800` with
+  `dota/mAP=0.2779`, `dota/AP50=0.2780`; checkpoint
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_rtmdet_l_validpng_bs1_20260603/epoch_12.pth`.
+  This degraded from epoch 8 `0.3521/0.3520`, so do not prioritize RTMDet-L
+  further on DOTA2.
+- 2026-06-07 fill-GPU launch plan: keep active DOTA2 GeoNexus S1 on GPU 1
+  unchanged. Launch a lower-LR S1 replicate on GPU 6 from the same DOTA2 RoI
+  Transformer S0 epoch-12 checkpoint, workdir
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_lr1e4_20260607`,
+  LR `1e-4`, screen
+  `geonexus_dota2_roi_trans_s1_validpng_lr1e4_20260607_gpu6`. Launch DIOR-R
+  Rotated RetinaNet one-stage NaN probe on GPU 5, workdir
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_rotated_retinanet_r50_nan_probe_2e_20260607`,
+  LR `1e-4`, `max_epochs=2`, `val_interval=1`, screen
+  `s0_dior_r_rotated_retinanet_nan_probe_2e_20260607_gpu5`. If the DIOR-R
+  probe hits NaN, stop it and record the first NaN before any more DIOR-R
+  training.
 
 Paper-level claims require:
 
@@ -247,17 +310,18 @@ Run experiments in this order:
 
 1. DOTA2 S0: complete and archive strong closed-set baselines. Completed
    baselines: RoI Transformer `0.6088/0.6090`, Oriented R-CNN
-   `0.5973/0.5970`, S2ANet `0.5869/0.5870`, RTMDet-M `0.3312/0.3310` on
-   `DOTA2_1024_500/ss_val`. Let active R3Det finish because it is already
-   near completion. Reassess RTMDet-L after its next validation; if it remains
-   near `0.35`, stop it and free GPU 6.
+   `0.5973/0.5970`, S2ANet `0.5869/0.5870`, R3Det-KFIoU `0.5633/0.5630`,
+   and RTMDet-M `0.3312/0.3310` on `DOTA2_1024_500/ss_val`. Reassess
+   RTMDet-L after its epoch-12 validation; if it remains near `0.35`, stop it
+   and free GPU 6.
 2. DOTA2 GeoNexus S1/S2: port only the strongest defensible module first:
    hierarchy-aware prompt scoring or hierarchy regularization on the strongest
    stable DOTA2 detector. Do not run S3/S4 until DOTA2 S1/S2 beats or clearly
    complements the strongest closed-set baseline.
-3. DIOR-R S0: run an Oriented R-CNN or RoI Transformer baseline using local
-   `DIOR_R_dota/train_val` and `DIOR_R_dota/test`, with a smoke validation
-   before full training.
+3. DIOR-R S0: run RoI Transformer using local `DIOR_R_dota/train_val` and
+   `DIOR_R_dota/test`, with a smoke validation before full training. ORCNN is
+   invalid as current DIOR-R evidence after the epoch-12 NaN run and the
+   low-LR NaN diagnostic.
 4. DIOR-R GeoNexus S1/S2: repeat the same minimal GeoNexus module used on
    DOTA2, without changing the paper story between datasets.
 5. FAIR1M: stretch evidence after DOTA2 and DIOR-R are stable. Use it for
@@ -386,21 +450,48 @@ refinements unless the user explicitly asks for archive/debug work.
 
 ## Active Server Runs
 
-- DOTA2 R3Det-KFIoU baseline remains active on GPU 5 in screen
-  `s0_dota2_r3det_kfiou_validpng_bs1_resume_20260605_gpu5`; let it finish
-  and archive the final metric source.
-- DOTA2 RTMDet-L baseline remains active on GPU 6 in screen
-  `s0_dota2_rtmdet_l_validpng_bs1_resume_20260606_gpu6`; reassess after the
-  next validation and stop it if it stays near `0.35`.
-- DIOR-R Oriented R-CNN R50 baseline is active on GPU 1 in screen
-  `s0_dior_orcnn_r50_20260606_gpu1`. Workdir:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_orcnn_r50_20260606`; config:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_orcnn_r50_20260606/G02_Baselines_Data2_DIOR_R_M5_ORCNN_R50.py`;
+- DOTA2 RTMDet-L baseline completed on GPU 6. Final epoch 12:
+  `dota/mAP=0.2779`, `dota/AP50=0.2780`; epoch 8 was stronger at
+  `0.3521/0.3520`, so RTMDet-L should not be prioritized further.
+- DOTA2 GeoNexus RoI Transformer + RemoteCLIP S1 is active on GPU 1 in screen
+  `geonexus_dota2_roi_trans_s1_validpng_20260607_gpu1`. Workdir:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_20260607`;
   launch log:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_orcnn_r50_20260606/launch_20260606_gpu1.log`.
-  Startup acceptance passed at epoch 1 `[100/5862]` with no `Traceback`, CUDA
-  OOM, `libpng`, `CRC`, `NoneType`, or early-exit signature.
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_20260607/launch_20260607_gpu1.log`.
+- DOTA2 GeoNexus RoI Transformer + RemoteCLIP S1 low-LR replicate is prepared
+  for GPU 6 in screen
+  `geonexus_dota2_roi_trans_s1_validpng_lr1e4_20260607_gpu6`. Workdir:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_lr1e4_20260607`;
+  config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_lr1e4_20260607/roi-trans-le90_r50_fpn_remoteclip-s1-validpng-lr1e4-20260607_dota2.py`.
+- DIOR-R Rotated RetinaNet one-stage NaN probe is prepared for GPU 5 in
+  screen `s0_dior_r_rotated_retinanet_nan_probe_2e_20260607_gpu5`. Workdir:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_rotated_retinanet_r50_nan_probe_2e_20260607`;
+  config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_rotated_retinanet_r50_nan_probe_2e_20260607/G02_Baselines_Data2_DIOR_R_M1_RtnNetOBB_nan_probe_2e_20260607.py`.
 - Result monitor `s0_result_log_monitor_20260603` remains active.
 - No active GeoNexus DOTA v1.5 training screen should exist after the
   2026-06-06 pivot. GPU 1 was freed after stopping
   `geonexus_s2_hierarchy_refine_s2e4_lr5e5_20260606_gpu1`.
+- No DIOR-R detector training screen is active after the failed RoI Transformer
+  attempt; GPU 5 is idle.
+
+## Recent Stopped Runs
+
+- DIOR-R RoI Transformer S0 was launched on GPU 5 in screen
+  `s0_dior_r_roi_trans_r50_20260607_gpu5`, but was stopped after a NaN.
+  Workdir:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_roi_trans_r50_20260607`;
+  config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_roi_trans_r50_20260607/G02_Baselines_Data2_DIOR_R_M2_RoITrans_20260607.py`;
+  launch log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_roi_trans_r50_20260607/launch_20260607_gpu5.log`.
+  Preflight passed with three GPU-5 idle polls at `14 MiB`, `0%`; startup
+  passed at `2026-06-07 11:21:15 +0800` by reaching
+  `Epoch(train) [1][200/5862]` with finite early loss/grad values. Acceptance
+  failed at `2026-06-07 11:30:25 +0800`, `Epoch(train) [1][3375/5862]`,
+  `lr=2.5000e-03`, with `grad_norm: nan`, `loss: nan`, and NaN RPN/cascade
+  losses. No checkpoint was written; GPU 5 returned idle. Because both ORCNN
+  and RoI Transformer hit NaN on DIOR-R, treat this as a DIOR-R
+  detector/data/box-coder path issue and diagnose inputs/box conversion/loss
+  targets before launching another DIOR-R detector unchanged.
