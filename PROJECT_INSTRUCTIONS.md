@@ -6,6 +6,16 @@ Paper-first rule: if the research direction, claim, experiment sequence, or
 submission target changes, update the canonical manuscript and this file before
 changing code, configs, or secondary docs.
 
+Literature-first advisor rule: before changing the research route, adding a new
+module, making a paper-positioning claim, or proposing a submission argument,
+search recent primary sources for OpenRSD-citing or adjacent remote-sensing
+open-vocabulary detection work. Prioritize arXiv/e-print pages, OpenReview, CVF
+open access, AAAI/OJS, IEEE/JSTARS/IJCV official pages, and official project
+pages. Blogs and repositories are discovery aids only. Record source date,
+venue/status, relation to OpenRSD/GeoNexus, math principle, reusable idea, and
+route impact in `docs/literature/20260607_openrsd_related_recent_papers.md`
+or its successor before changing experiments.
+
 ## Research Direction
 
 Project name: GeoNexus-RSD.
@@ -44,6 +54,16 @@ sensing imagery.
   baseline on `DIOR_R_dota/train_val` and `DIOR_R_dota/test`; then repeat the
   same minimal GeoNexus module on DIOR-R. FAIR1M is stretch evidence for
   fine-grained hierarchy claims, not the first cross-dataset proof.
+- 2026-06-07 route gate: both DOTA2 GeoNexus S1 candidates must reach first
+  validation cleanly and be compared against DOTA2 RoI Transformer S0
+  `dota/mAP=0.6088`, `dota/AP50=0.6090` before S2 is launched. Launch S2 only
+  from the better clean S1 checkpoint. Keep S3/S4, pseudo-label purification,
+  and routing paused until DOTA2 S1/S2 and DIOR-R numeric stability are
+  resolved.
+- 2026-06-07 DIOR-R gate: after ORCNN/RoITrans NaN and RetinaNet `loss=inf`,
+  DIOR-R detector training is blocked. The next DIOR-R work is diagnosis of
+  data records, rotated-box conversion, class mapping, and loss targets, not
+  another unchanged detector launch.
 
 Core modules:
 
@@ -295,6 +315,12 @@ Current diagnosis:
   `s0_dior_r_rotated_retinanet_nan_probe_2e_20260607_gpu5`. If the DIOR-R
   probe hits NaN, stop it and record the first NaN before any more DIOR-R
   training.
+- 2026-06-07 literature update: the living tracker
+  `docs/literature/20260607_openrsd_related_recent_papers.md` records recent
+  OpenRSD-adjacent and RS-OVD sources including OpenRSD, RS-MPOD, DisDop,
+  SOAR, VK-Det, OTA-Det, InstructSAM, OS-W2S, CastDet, LAE, CoseDet, SCORE,
+  and FLAME. Future agents must read and refresh this tracker before proposing
+  route changes, paper claims, S3/S4, pseudo-labeling, or new prompt modules.
 
 Paper-level claims require:
 
@@ -311,17 +337,18 @@ Run experiments in this order:
 1. DOTA2 S0: complete and archive strong closed-set baselines. Completed
    baselines: RoI Transformer `0.6088/0.6090`, Oriented R-CNN
    `0.5973/0.5970`, S2ANet `0.5869/0.5870`, R3Det-KFIoU `0.5633/0.5630`,
-   and RTMDet-M `0.3312/0.3310` on `DOTA2_1024_500/ss_val`. Reassess
-   RTMDet-L after its epoch-12 validation; if it remains near `0.35`, stop it
-   and free GPU 6.
+   RTMDet-M `0.3312/0.3310`, and RTMDet-L final `0.2779/0.2780` on
+   `DOTA2_1024_500/ss_val`. RTMDet-L is completed and deprioritized.
 2. DOTA2 GeoNexus S1/S2: port only the strongest defensible module first:
    hierarchy-aware prompt scoring or hierarchy regularization on the strongest
-   stable DOTA2 detector. Do not run S3/S4 until DOTA2 S1/S2 beats or clearly
-   complements the strongest closed-set baseline.
-3. DIOR-R S0: run RoI Transformer using local `DIOR_R_dota/train_val` and
-   `DIOR_R_dota/test`, with a smoke validation before full training. ORCNN is
-   invalid as current DIOR-R evidence after the epoch-12 NaN run and the
-   low-LR NaN diagnostic.
+   stable DOTA2 detector. Wait for both DOTA2 S1 runs to produce
+   first-validation evidence, compare them with S0 `0.6088/0.6090`, and launch
+   S2 only from the better clean S1 checkpoint. Do not run S3/S4 until DOTA2
+   S1/S2 and the DIOR-R path are stable.
+3. DIOR-R S0: blocked for unchanged detector training. ORCNN, RoI Transformer,
+   and RetinaNet have produced invalid non-finite evidence. Diagnose
+   `DIOR_R_dota/train_val` and `DIOR_R_dota/test` data, rotated boxes, class
+   mapping, and loss targets before relaunching any DIOR-R detector.
 4. DIOR-R GeoNexus S1/S2: repeat the same minimal GeoNexus module used on
    DOTA2, without changing the paper story between datasets.
 5. FAIR1M: stretch evidence after DOTA2 and DIOR-R are stable. Use it for
@@ -363,12 +390,16 @@ central.
 Before any paper-facing claim is added:
 
 - identify which experiment record supports it
+- identify whether the support is paper-facing evidence, archive/debug
+  evidence, or future inspiration
 - link the config and command used to produce it
 - record the exact dataset version and split, especially distinguishing
   DOTA v1.0, DOTA v1.5, DOTA2, DIOR-R, and FAIR1M
 - record whether embeddings are hash fallback or real VLM embeddings
 - record whether metrics are from scaffold evaluation or accepted DOTA-style
   evaluation
+- read and, if needed, refresh the recent-paper tracker before making
+  literature or route claims
 
 ## Local And Server Workflow
 
@@ -426,10 +457,14 @@ When starting a new coding session, give the agent this instruction:
 
 Read `PROJECT_INSTRUCTIONS.md`, then inspect the current Git status. Preserve
 unrelated user changes. Continue the GeoNexus-RSD DOTA2-first JSTARS path:
-do not make unsupported performance claims, keep routing/compression secondary,
-maintain the local/server GitHub workflow, treat DOTA v1.5 as archive-only
-diagnostic evidence, make DOTA2 the primary benchmark, make DIOR-R the required
-cross-dataset validation, and update the canonical manuscript before code/docs
+read `docs/literature/20260607_openrsd_related_recent_papers.md` before
+proposing new modules or route changes; search recent primary sources when the
+user asks for planning, route changes, or paper claims; distinguish
+paper-facing evidence, archive/debug evidence, and future inspiration; do not
+make unsupported performance claims; keep routing/compression secondary;
+maintain the local/server GitHub workflow; treat DOTA v1.5 as archive-only
+diagnostic evidence; make DOTA2 the primary benchmark; make DIOR-R the required
+cross-dataset validation; and update the canonical manuscript before code/docs
 when the research direction changes.
 
 For active experiment monitoring, every pass must check `screen -ls`,
@@ -458,17 +493,39 @@ refinements unless the user explicitly asks for archive/debug work.
   `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_20260607`;
   launch log:
   `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_20260607/launch_20260607_gpu1.log`.
-- DOTA2 GeoNexus RoI Transformer + RemoteCLIP S1 low-LR replicate is prepared
-  for GPU 6 in screen
+- DOTA2 GeoNexus RoI Transformer + RemoteCLIP S1 low-LR replicate is active
+  on GPU 6 in screen
   `geonexus_dota2_roi_trans_s1_validpng_lr1e4_20260607_gpu6`. Workdir:
   `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_lr1e4_20260607`;
   config:
-  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_lr1e4_20260607/roi-trans-le90_r50_fpn_remoteclip-s1-validpng-lr1e4-20260607_dota2.py`.
-- DIOR-R Rotated RetinaNet one-stage NaN probe is prepared for GPU 5 in
-  screen `s0_dior_r_rotated_retinanet_nan_probe_2e_20260607_gpu5`. Workdir:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_rotated_retinanet_r50_nan_probe_2e_20260607`;
-  config:
-  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_rotated_retinanet_r50_nan_probe_2e_20260607/G02_Baselines_Data2_DIOR_R_M1_RtnNetOBB_nan_probe_2e_20260607.py`.
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_lr1e4_20260607/roi-trans-le90_r50_fpn_remoteclip-s1-validpng-lr1e4-20260607_dota2.py`;
+  launch log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_lr1e4_20260607/launch_20260607_gpu6.log`.
+  It is a hedge for the active GPU-1 S1 run, changes only optimizer LR to
+  `1e-4` plus workdir/log identity, and should be compared against DOTA2 RoI
+  Transformer S0 `dota/mAP=0.6088`, `dota/AP50=0.6090` after first validation.
+- 2026-06-07 DIOR-R one-stage probe result: Rotated RetinaNet was launched on
+  GPU 5 in screen `s0_dior_r_rotated_retinanet_nan_probe_2e_20260607_gpu5`
+  after three idle polls, reached startup acceptance at
+  `2026-06-07 15:41:44 +0800`, `Epoch(train) [1][200/5862]`, with
+  `grad_norm=1.0693` and `loss=2.1723`, then hit first non-finite loss at
+  `2026-06-07 15:43:59 +0800`, `Epoch(train) [1][1200/5862]`,
+  `lr=1.0000e-04`, `grad_norm=1.3637`, `loss=inf`, `loss_cls=1.2532`,
+  `loss_bbox=inf`. The screen was stopped and GPU 5 returned idle. Preserve
+  workdir
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_rotated_retinanet_r50_nan_probe_2e_20260607`
+  and launch log
+  `/data5/2025/ldh/OpenRSD/work_dirs/s0_dior_r_rotated_retinanet_r50_nan_probe_2e_20260607/launch_20260607_gpu5.log`.
+  Do not launch more DIOR-R detector training until DIOR-R data, rotated-box
+  conversion, and loss targets are diagnosed.
+- 2026-06-07 operational route: keep the active GPU-1 DOTA2 S1 run unchanged,
+  launch the low-LR DOTA2 S1 replicate only after GPU 6 passes three idle
+  polls, and launch the DIOR-R RetinaNet probe only after GPU 5 passes three
+  idle polls. Use full `nvidia-smi` snapshots if query polling fails; failed
+  driver reads reset the idle counter. Do not launch DOTA2 S2 until both DOTA2
+  S1 candidates have first-validation evidence; choose the better clean S1
+  checkpoint. Keep S3/S4 paused until DOTA2 S1/S2 and the DIOR-R path are
+  stable. Treat DOTA v1.5 as archive-only.
 - Result monitor `s0_result_log_monitor_20260603` remains active.
 - No active GeoNexus DOTA v1.5 training screen should exist after the
   2026-06-06 pivot. GPU 1 was freed after stopping

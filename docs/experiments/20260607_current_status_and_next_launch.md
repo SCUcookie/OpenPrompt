@@ -2,6 +2,11 @@
 
 This note records the DOTA2-first paper-path state after the 2026-06-06 pivot.
 
+Literature/planning context: before route changes or paper claims, read and
+refresh `docs/literature/20260607_openrsd_related_recent_papers.md`. Treat
+recent OpenRSD-adjacent papers as advisor evidence, not permission to launch
+new modules without passing the recorded experiment gates.
+
 ## Completed Or Invalid Runs
 
 - DOTA2 R3Det-KFIoU valid-PNG bs1 completed epoch 12 with
@@ -27,6 +32,10 @@ This note records the DOTA2-first paper-path state after the 2026-06-06 pivot.
   `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_rtmdet_l_validpng_bs1_20260603/epoch_12.pth`.
   The final metric degraded from epoch 8 `0.3521/0.3520`; do not prioritize
   RTMDet-L further.
+- The recent-paper tracker was added at
+  `docs/literature/20260607_openrsd_related_recent_papers.md`. It covers
+  OpenRSD, RS-MPOD, DisDop, SOAR, VK-Det, OTA-Det, InstructSAM, OS-W2S,
+  CastDet, LAE, CoseDet, SCORE, and FLAME as route-planning context.
 
 ## Live GPU State
 
@@ -145,7 +154,7 @@ checkpoint was written. Treat the DIOR-R failure as a detector/data/box-coder
 path issue, not an ORCNN-specific instability. Do not launch another DIOR-R
 detector unchanged.
 
-## Prepared Fill-GPU Runs
+## Fill-GPU Launch Results
 
 ### DOTA2 GeoNexus S1 Low-LR Replicate
 
@@ -158,17 +167,29 @@ detector unchanged.
 - Change from active S1: optimizer LR `1e-4` and workdir/log identity only.
 - Initialization:
   `/data5/2025/ldh/OpenRSD/work_dirs/s0_dota2_1024_500_roi_trans_rebuild_20260602_validpng_restart/epoch_12.pth`
+- Launch log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_lr1e4_20260607/launch_20260607_gpu6.log`
 
 Command:
 
 ```bash
 cd /data5/2025/ldh/OpenRSD
-CUDA_VISIBLE_DEVICES=6 MPLCONFIGDIR=/tmp/geonexus_dota2_s1_lr1e4_20260607 \
+screen -dmS geonexus_dota2_roi_trans_s1_validpng_lr1e4_20260607_gpu6 bash -lc \
+'CUDA_VISIBLE_DEVICES=6 MPLCONFIGDIR=/tmp/geonexus_dota2_s1_lr1e4_20260607 \
   /data1/anaconda3/envs/zwl_mmrotate/bin/python tools/bootstrap_run.py \
   tools/train.py \
   work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_lr1e4_20260607/roi-trans-le90_r50_fpn_remoteclip-s1-validpng-lr1e4-20260607_dota2.py \
-  --work-dir work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_lr1e4_20260607
+  --work-dir work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_lr1e4_20260607 \
+  2>&1 | tee work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_lr1e4_20260607/launch_20260607_gpu6.log'
 ```
+
+Launch status at `2026-06-07 15:41 +0800`: three full `nvidia-smi` snapshots
+passed the idle gate for GPU 6 (`14 MiB`, `0%` each), the screen launched
+detached, and `nvidia-smi` showed PID `674585` on physical GPU 6. As of
+`2026-06-07 15:44 +0800`, the run was still loading the 170,831 valid-PNG
+training annotations before iteration logging; GPU 6 held about `1937 MiB`,
+and no failure signature had appeared. Startup acceptance remains pending until
+the log reaches `Epoch(train) [1][200/39007]`.
 
 ### DIOR-R Rotated RetinaNet One-Stage NaN Probe
 
@@ -186,11 +207,13 @@ Command:
 
 ```bash
 cd /data5/2025/ldh/OpenRSD
-CUDA_VISIBLE_DEVICES=5 MPLCONFIGDIR=/tmp/dior_r_retinanet_nan_probe_2e_20260607 \
+screen -dmS s0_dior_r_rotated_retinanet_nan_probe_2e_20260607_gpu5 bash -lc \
+'CUDA_VISIBLE_DEVICES=5 MPLCONFIGDIR=/tmp/dior_r_retinanet_nan_probe_2e_20260607 \
   /data1/anaconda3/envs/zwl_mmrotate/bin/python tools/bootstrap_run.py \
   tools/train.py \
   work_dirs/s0_dior_r_rotated_retinanet_r50_nan_probe_2e_20260607/G02_Baselines_Data2_DIOR_R_M1_RtnNetOBB_nan_probe_2e_20260607.py \
-  --work-dir work_dirs/s0_dior_r_rotated_retinanet_r50_nan_probe_2e_20260607
+  --work-dir work_dirs/s0_dior_r_rotated_retinanet_r50_nan_probe_2e_20260607 \
+  2>&1 | tee work_dirs/s0_dior_r_rotated_retinanet_r50_nan_probe_2e_20260607/launch_20260607_gpu5.log'
 ```
 
 Startup acceptance for both runs: reach `Epoch(train) [1][200/...]` with no
@@ -198,3 +221,41 @@ Startup acceptance for both runs: reach `Epoch(train) [1][200/...]` with no
 class-count mismatch, `loss: nan`, or `grad_norm: nan`. If the DIOR-R
 RetinaNet probe hits NaN, stop it and record the first NaN timestamp, epoch,
 iteration, LR, and loss fields before any additional DIOR-R training.
+
+Launch status at `2026-06-07 15:22 +0800`: both configs dry-parsed
+successfully, and a full `nvidia-smi` snapshot showed GPU 5 and GPU 6 at
+`14 MiB`, `0%`. The launches were not started because the required three
+consecutive idle polls did not pass: repeated
+`nvidia-smi --query-gpu=... -i 5,6` polls failed with
+`NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver`.
+Restart the three-poll idle gate from zero before launching these screens.
+
+Launch result at `2026-06-07 15:41 +0800`: three full `nvidia-smi` snapshots
+passed the idle gate for GPU 5 (`14 MiB`, `0%` each), the screen launched
+detached, and `nvidia-smi` showed PID `674739` on physical GPU 5. Startup
+acceptance passed at `2026-06-07 15:41:44 +0800`, `Epoch(train) [1][200/5862]`,
+with `lr=5.9920e-05`, `grad_norm=1.0693`, `loss=2.1723`,
+`loss_cls=1.1908`, and `loss_bbox=0.9815`.
+
+Numeric-stability acceptance failed at `2026-06-07 15:43:59 +0800`,
+`Epoch(train) [1][1200/5862]`, `lr=1.0000e-04`, with `grad_norm=1.3637`,
+`loss=inf`, `loss_cls=1.2532`, and `loss_bbox=inf`. The screen was stopped
+immediately after detection; GPU 5 returned to `14 MiB`, `0%`. Treat this like
+the earlier DIOR-R NaN failures for launch gating: do not launch more DIOR-R
+detector training until DIOR-R data, rotated-box conversion, and loss targets
+are diagnosed.
+
+## Next Route Gates
+
+1. Monitor both DOTA2 S1 runs until first validation. Classify each result as
+   paper-facing evidence, archive/debug evidence, or failure/diagnostic
+   evidence.
+2. Compare both clean S1 first validations against DOTA2 RoI Transformer S0
+   `dota/mAP=0.6088`, `dota/AP50=0.6090`.
+3. Launch DOTA2 S2 only from the better clean S1 checkpoint. Do not launch S2
+   from an incomplete, failed, or numerically unstable S1 run.
+4. Keep S3/S4, pseudo-labeling, FAIR1M, and routing paused until DOTA2 S1/S2
+   and DIOR-R numeric stability are resolved.
+5. For DIOR-R, diagnose data records, rotated-box conversion, class mapping,
+   and loss targets before any detector relaunch. ORCNN, RoI Transformer, and
+   RetinaNet are all invalid as current DIOR-R evidence.

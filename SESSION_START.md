@@ -23,6 +23,9 @@ Read /data5/2025/ldh/OpenPrompt/SESSION_START.md and start working from it.
   finish the main experiments and begin paper writing within 1 month.
 - Do not spend the month on broad re-planning.
 - Do not drift into a large new framework or agent-heavy story.
+- Before planning route changes, paper claims, or new modules, read and update
+  the living literature tracker:
+  `docs/literature/20260607_openrsd_related_recent_papers.md`.
 
 ## Current Status
 
@@ -50,6 +53,20 @@ Read /data5/2025/ldh/OpenPrompt/SESSION_START.md and start working from it.
 - Strong-baseline preparation should proceed in parallel using `docs/setup/strong_baseline_checklist.md`.
 - The detector sweep order is Oriented R-CNN -> RoI Transformer -> ReDet; with 7 visible RTX 4090s, the first wave can be started in parallel as separate jobs once the detector environment is ready, with ReDet using distributed training.
 - The anchor-repair run is archived in `docs/experiments/20260524_dota_v15_anchor_repair_quick_test.md`.
+- 2026-06-07 route update: the paper path is DOTA2 first, DIOR-R second, and
+  FAIR1M only after both are stable. DOTA v1.5 GeoNexus evidence is
+  archive/debug evidence, not headline paper evidence.
+- 2026-06-07 DOTA2 gate: wait for both active DOTA2 GeoNexus S1 candidates to
+  reach first validation and compare them against RoI Transformer S0
+  `dota/mAP=0.6088`, `dota/AP50=0.6090`. Launch S2 only from the better clean
+  S1 checkpoint. Keep S3/S4, pseudo-labeling, and routing paused until DOTA2
+  S1/S2 and DIOR-R numeric stability are resolved.
+- 2026-06-07 DIOR-R gate: detector training is blocked after ORCNN/RoITrans
+  NaN and RetinaNet `loss=inf`. The next DIOR-R task is diagnosing data,
+  rotated-box conversion, class mapping, and loss targets, not launching
+  another unchanged detector.
+- 2026-06-07 RTMDet-L status: completed and deprioritized after epoch-12
+  `dota/mAP=0.2779`, `dota/AP50=0.2780`.
 
 ## Main Decision
 
@@ -117,6 +134,10 @@ Recommended order:
 4. `+ hierarchy-consistent pseudo-label score`
 
 Only add routing if the first three stages already show signal.
+
+Current 2026-06-07 override: for the DOTA2-first paper route, do not start
+S2 until both S1 candidates validate; do not start S3/S4 or pseudo-labeling
+until DOTA2 S1/S2 and DIOR-R diagnosis are stable.
 
 ### Priority 3: Start paper-facing evidence collection early
 
@@ -284,21 +305,30 @@ When continuing this project:
 
 1. Read this file first.
 2. Audit the current repo state before making claims.
-3. Prefer execution over brainstorming.
-4. Ask only the minimal missing questions that block valid work.
-5. Update Markdown records inside `OpenPrompt` so the repo stays self-contained.
-6. Treat baseline reproduction as higher priority than novelty.
-7. Keep the paper scope small enough to start writing within 1 month.
+3. Read the living literature tracker before proposing new modules or route
+   changes.
+4. Search recent primary sources when the user asks for planning, route
+   changes, or paper claims.
+5. Distinguish paper-facing evidence, archive/debug evidence, and future
+   inspiration.
+6. Prefer execution over brainstorming.
+7. Ask only the minimal missing questions that block valid work.
+8. Update Markdown records inside `OpenPrompt` so the repo stays self-contained.
+9. Treat baseline reproduction as higher priority than novelty.
+10. Keep the paper scope small enough to start writing within 1 month.
 
 ## Default Experiment Sequence
 
 Use this order unless there is a clear reason not to:
 
-1. `dota_v1_baseline_repro` or `dota_v15_baseline_repro` depending on the staged server asset
-2. `+ hierarchy`
-3. `+ scene adapter`
-4. `+ pseudo-label consistency`
-5. `+ routing` only if time remains and gains already exist
+1. DOTA2 S1 first-validation comparison against RoI Transformer S0
+   `0.6088/0.6090`
+2. DOTA2 S2 from the better clean S1 checkpoint
+3. DIOR-R data/box/loss-target diagnosis before any detector relaunch
+4. DIOR-R S1/S2 only after numeric stability is fixed
+5. S3/S4 and pseudo-label consistency only after the DOTA2 S1/S2 and DIOR-R
+   gates pass
+6. routing only if earlier modules already show value
 
 ## Default Writing Story
 
@@ -322,16 +352,18 @@ Read /data5/2025/ldh/OpenPrompt/SESSION_START.md first and treat it as the singl
 
 Then:
 1. Audit the current repo state and recent experiment artifacts.
-2. Continue from the highest-priority unfinished item.
-3. Avoid broad re-planning unless the current path is clearly blocked.
-4. Keep the scope aligned with a 1-month deadline for finishing experiments and starting paper writing.
-5. Update Markdown notes in /data5/2025/ldh/OpenPrompt when you learn something important.
+2. Read /data5/2025/ldh/OpenPrompt/docs/literature/20260607_openrsd_related_recent_papers.md before proposing route changes or new modules.
+3. Search recent primary sources when planning, changing route, or making paper claims.
+4. Continue from the highest-priority unfinished item.
+5. Avoid broad re-planning unless the current path is clearly blocked.
+6. Keep the scope aligned with a 1-month deadline for finishing experiments and starting paper writing.
+7. Update Markdown notes in /data5/2025/ldh/OpenPrompt when you learn something important.
 
 Default priority order:
-- tiled baseline credibility
-- hierarchy ablation
-- scene-context ablation
-- pseudo-label consistency ablation
+- DOTA2 S1 first-validation comparison against RoI Transformer S0 0.6088/0.6090
+- DOTA2 S2 from the better clean S1 checkpoint
+- DIOR-R data/box/loss-target diagnosis before detector relaunch
+- S3/S4 and pseudo-labeling only after DOTA2 S1/S2 and DIOR-R gates pass
 - routing only if earlier modules already show value
 
 Use OpenRSD only as a reference implementation, not as the main development repo.
