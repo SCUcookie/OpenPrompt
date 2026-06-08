@@ -1,0 +1,5 @@
+Run,Failure signature,Evidence status,Next action
+ORCNN R50 initial,accepted startup; later unstable/invalid,Not cited,Inspect DIOR-R records and rotated boxes
+ORCNN R50 low-LR diagnostic,grad_norm/loss NaN; final validation 0 dets,Invalid,Check class mapping and loss targets
+RoI Transformer R50,loss_rpn and cascade losses NaN before epoch-1 validation,Invalid,Diagnose data/box-coder path before relaunch
+RetinaNet prior diagnostic,loss=inf noted in project route gate,Invalid,Do not relaunch unchanged detector

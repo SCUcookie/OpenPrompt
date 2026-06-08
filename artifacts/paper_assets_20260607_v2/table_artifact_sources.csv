@@ -1,0 +1,18 @@
+Artifact,Number or claim,Source
+RoI Transformer R50,0.6088 / 0.6090,docs/experiments/20260603_s0_dota2_roi_trans_validpng_metrics.json
+Oriented R-CNN R50,0.5973 / 0.5970,docs/experiments/20260605_dota2_baseline_status.md
+S2ANet,0.5869 / 0.5870,docs/experiments/20260605_dota2_baseline_status.md
+R3Det-KFIoU,0.5633 / 0.5630,docs/experiments/20260605_dota2_baseline_status.md
+OpenRSD epoch 12,0.4202 / 0.4200,docs/experiments/20260602_opensrd_dota2_epoch12_ssval_metrics.json
+RTMDet-M,0.3312 / 0.3310,docs/experiments/20260605_dota2_baseline_status.md
+RTMDet-L,Pending / Pending,docs/experiments/20260605_dota2_baseline_status.md
+S0 RoITrans,0.6088 / 0.6090,20260603_s0_dota2_roi_trans_validpng_metrics.json
+S1 prompt,0.3800 / 0.3800,20260605_geonexus_s1_retry2_metrics.json
+S2 hierarchy,0.3858 / 0.3860,20260605_geonexus_s2_rerun_s1e32_metrics.json
+S3 scene,0.3827 / 0.3830,20260605_geonexus_s3_rerun_s2e4_metrics.json
+S3 identity,0.3806 / 0.3810,20260605_geonexus_s3_identity_rerun_s2e4_metrics.json
+S3 off,0.3772 / 0.3770,20260606_geonexus_s3_adapter_off_rerun_s2e4_metrics.json
+S2 refine,0.3804 / 0.3800,20260606_geonexus_s2_refine_s2e4_lr1e4_metrics.json
+DOTA2 S1/S2,Pending / Pending,PROJECT_INSTRUCTIONS.md route gate
+DIOR-R NaN diagnosis,invalid; do not cite,docs/experiments/20260607_dior_orcnn_nan_diag_and_roi_trans_launch.md
+Route gate,DOTA2 before DIOR-R before FAIR1M,PROJECT_INSTRUCTIONS.md

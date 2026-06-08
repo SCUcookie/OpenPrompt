@@ -1,0 +1,8 @@
+Detector,Dataset,Status,mAP,AP50,Note
+RoI Transformer R50,DOTA2 ss_val,Complete,0.6088,0.6090,S0 gate; valid-PNG recovery
+Oriented R-CNN R50,DOTA2 ss_val,Complete,0.5973,0.5970,Secondary baseline
+S2ANet,DOTA2 ss_val,Complete,0.5869,0.5870,Secondary baseline
+R3Det-KFIoU,DOTA2 ss_val,Complete,0.5633,0.5630,Secondary baseline
+OpenRSD epoch 12,DOTA2 ss_val,Reference,0.4202,0.4200,Completed OpenRSD checkpoint; not GeoNexus
+RTMDet-M,DOTA2 ss_val,Complete,0.3312,0.3310,Low secondary baseline
+RTMDet-L,DOTA2 ss_val,Active/Pending,Pending,Pending,Epoch-12 metric pending in local status

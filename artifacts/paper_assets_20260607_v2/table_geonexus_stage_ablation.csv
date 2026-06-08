@@ -1,0 +1,11 @@
+Stage,Dataset role,Best mAP,Best AP50,Status
+S0 RoITrans,DOTA2 formal,0.6088,0.6090,Measured
+S1 prompt,DOTA v1.5 diagnostic,0.3800,0.3800,Measured
+S2 hierarchy,DOTA v1.5 diagnostic,0.3858,0.3860,Measured
+S3 scene,DOTA v1.5 diagnostic,0.3827,0.3830,Measured
+S3 identity,DOTA v1.5 diagnostic,0.3806,0.3810,Measured
+S3 off,DOTA v1.5 diagnostic,0.3772,0.3770,Measured
+S2 refine,DOTA v1.5 diagnostic,0.3804,0.3800,Measured
+DOTA2 S1/S2,DOTA2 pending,Pending,Pending,Pending
+DIOR-R S0,cross-dataset required,Pending,Pending,Blocked by NaN diagnosis
+FAIR1M,stretch evidence,TBD,TBD,Paused
