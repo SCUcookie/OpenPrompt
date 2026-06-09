@@ -1,0 +1,169 @@
+{
+  "data_root": "/data5/2025/ldh/OpenRSD/data/DIOR_R_dota",
+  "class_order_reference": [
+    "airplane",
+    "airport",
+    "baseballfield",
+    "basketballcourt",
+    "bridge",
+    "chimney",
+    "dam",
+    "Expressway-Service-area",
+    "Expressway-toll-station",
+    "golffield",
+    "groundtrackfield",
+    "harbor",
+    "overpass",
+    "ship",
+    "stadium",
+    "storagetank",
+    "tenniscourt",
+    "trainstation",
+    "vehicle",
+    "windmill"
+  ],
+  "config_checks": [
+    {
+      "config": "/data5/2025/ldh/OpenRSD/M_configs/G02_Baselines/Data2_DIOR_R/G02_Baselines_Data2_DIOR_R_M2_RoITrans.py",
+      "exists": true,
+      "class_names": [
+        "airplane",
+        "airport",
+        "baseballfield",
+        "basketballcourt",
+        "bridge",
+        "chimney",
+        "dam",
+        "Expressway-Service-area",
+        "Expressway-toll-station",
+        "golffield",
+        "groundtrackfield",
+        "harbor",
+        "overpass",
+        "ship",
+        "stadium",
+        "storagetank",
+        "tenniscourt",
+        "trainstation",
+        "vehicle",
+        "windmill"
+      ],
+      "matches_dior_r_order": true
+    },
+    {
+      "config": "/data5/2025/ldh/OpenRSD/M_configs/G02_Baselines/Data2_DIOR_R/G02_Baselines_Data2_DIOR_R_M5_ORCNN_R50.py",
+      "exists": true,
+      "class_names": [
+        "airplane",
+        "airport",
+        "baseballfield",
+        "basketballcourt",
+        "bridge",
+        "chimney",
+        "dam",
+        "Expressway-Service-area",
+        "Expressway-toll-station",
+        "golffield",
+        "groundtrackfield",
+        "harbor",
+        "overpass",
+        "ship",
+        "stadium",
+        "storagetank",
+        "tenniscourt",
+        "trainstation",
+        "vehicle",
+        "windmill"
+      ],
+      "matches_dior_r_order": true
+    }
+  ],
+  "splits": [
+    {
+      "split": "train_val",
+      "image_dir": "/data5/2025/ldh/OpenRSD/data/DIOR_R_dota/train_val/images",
+      "label_dir": "/data5/2025/ldh/OpenRSD/data/DIOR_R_dota/train_val/labelTxt",
+      "num_images_checked": 3,
+      "num_label_files_checked": 3,
+      "num_objects": 6,
+      "image_decode_bad": [],
+      "num_image_decode_bad": 0,
+      "top_image_shapes": [
+        {
+          "width": 800,
+          "height": 800,
+          "count": 3
+        }
+      ],
+      "class_counts": {
+        "airplane": 0,
+        "airport": 0,
+        "baseballfield": 0,
+        "basketballcourt": 0,
+        "bridge": 0,
+        "chimney": 0,
+        "dam": 0,
+        "Expressway-Service-area": 0,
+        "Expressway-toll-station": 1,
+        "golffield": 1,
+        "groundtrackfield": 0,
+        "harbor": 0,
+        "overpass": 0,
+        "ship": 0,
+        "stadium": 0,
+        "storagetank": 0,
+        "tenniscourt": 0,
+        "trainstation": 1,
+        "vehicle": 3,
+        "windmill": 0
+      },
+      "unknown_class_counts": {},
+      "num_bad_label_files": 0,
+      "bad_label_files": [],
+      "first_bad_conversion": null
+    },
+    {
+      "split": "test",
+      "image_dir": "/data5/2025/ldh/OpenRSD/data/DIOR_R_dota/test/images",
+      "label_dir": "/data5/2025/ldh/OpenRSD/data/DIOR_R_dota/test/labelTxt",
+      "num_images_checked": 3,
+      "num_label_files_checked": 3,
+      "num_objects": 37,
+      "image_decode_bad": [],
+      "num_image_decode_bad": 0,
+      "top_image_shapes": [
+        {
+          "width": 800,
+          "height": 800,
+          "count": 3
+        }
+      ],
+      "class_counts": {
+        "airplane": 25,
+        "airport": 0,
+        "baseballfield": 0,
+        "basketballcourt": 0,
+        "bridge": 2,
+        "chimney": 3,
+        "dam": 0,
+        "Expressway-Service-area": 0,
+        "Expressway-toll-station": 0,
+        "golffield": 0,
+        "groundtrackfield": 0,
+        "harbor": 0,
+        "overpass": 0,
+        "ship": 1,
+        "stadium": 0,
+        "storagetank": 0,
+        "tenniscourt": 0,
+        "trainstation": 0,
+        "vehicle": 6,
+        "windmill": 0
+      },
+      "unknown_class_counts": {},
+      "num_bad_label_files": 0,
+      "bad_label_files": [],
+      "first_bad_conversion": null
+    }
+  ]
+}

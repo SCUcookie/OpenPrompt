@@ -602,3 +602,50 @@ refinements unless the user explicitly asks for archive/debug work.
   and RoI Transformer hit NaN on DIOR-R, treat this as a DIOR-R
   detector/data/box-coder path issue and diagnose inputs/box conversion/loss
   targets before launching another DIOR-R detector unchanged.
+
+## 2026-06-09 DOTA2 S2 Status And DIOR-R Policy
+
+- As of `2026-06-09 09:37 CST`, the target of three concurrent DOTA2 S2 jobs
+  is already met. Do not launch another detector training run while GPUs 0, 1,
+  and 6 remain occupied.
+- Active screens:
+  `geonexus_dota2_roi_trans_s2_hierarchy_reg_s1e12_lr1e4_20260608_gpu0`
+  (PID `2711973` on GPU 0),
+  `geonexus_dota2_roi_trans_s2_hierarchy_reg_s1e12_20260608_gpu1`
+  (PID `716070` on GPU 1), and
+  `geonexus_dota2_roi_trans_s2_hierarchy_reg_s1e12_hw1e2_20260608_gpu6`
+  (PID `2711971` on GPU 6).
+- Completed DOTA2 S1 metrics on `DOTA2_1024_500/ss_val`: main GPU-1 S1 final
+  `dota/mAP=0.6177`, `dota/AP50=0.6180`; GPU-6 LR `1e-4` final
+  `0.5997/0.6000`; GPU-0 LR `5e-5` final `0.6047/0.6050`.
+- Active DOTA2 S2 interim evidence on `DOTA2_1024_500/ss_val`: main GPU-1 S2
+  epoch 4 `0.6038/0.6040`, epoch 8 `0.5892/0.5890`, currently epoch 12;
+  GPU-0 low-LR S2 epoch 4 `0.6099/0.6100`, currently epoch 8; GPU-6 reduced
+  hierarchy-weight S2 epoch 4 `0.6035/0.6040`, currently epoch 8. The low-LR
+  S2 variant is the best S2 result so far, but it is still below main S1
+  `0.6177/0.6180`.
+- Scoped active-log checks found no training failure signature in the live
+  tails; the broad substring `inf` only matched static config text such as
+  `metainfo`. Continue to watch for `Traceback`, CUDA OOM, `libpng`, `CRC`,
+  `NoneType`, `ValueError`, non-finite losses, and `KeyboardInterrupt`.
+- Keep S3/S4, pseudo-labeling, FAIR1M, and DIOR-R detector training paused.
+  When one GPU frees, use it for DIOR-R diagnostics only. Do not cite the
+  invalid DIOR-R detector runs as DIOR-R baseline evidence.
+- 2026-06-09 completion update: main DOTA2 S2 on GPU 1 finished at
+  `2026-06-09 11:10:06 CST +0800`. Final epoch 12 on
+  `DOTA2_1024_500/ss_val`: `dota/mAP=0.5924431681632996`,
+  `dota/AP50=0.5920`, checkpoint
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_20260608/epoch_12.pth`.
+  This is below main S1 `0.6177/0.6180`; do not launch S3/S4 from this result.
+  GPU 0 low-LR S2 and GPU 6 reduced hierarchy-weight S2 remain active. The
+  completed GPU-1 S2 log reached `Epoch(val) [12][6917/6917]`, and the
+  completed-log failure scan found no `Traceback`, CUDA OOM, `libpng`, `CRC`,
+  `NoneType`, `ValueError`, true non-finite loss/metric, or
+  `KeyboardInterrupt` signature.
+- 2026-06-09 DIOR-R diagnostic launch: after GPU 1 freed, launched diagnostic
+  screen `dior_r_geometry_targets_diag_20260609_gpu1` using
+  `New/scripts/diagnose_dior_r_geometry_and_targets.py --check-dataloader --check-first-loss`.
+  This is diagnostic-only, not detector training. As of `2026-06-09 11:17 CST`,
+  the screen is active with Python PID `2024594`, GPU 1 is Xorg-only, and
+  `New/artifacts/dior_r_diagnostics_20260609_gpu1.log` exists but JSON/Markdown
+  outputs are pending until the full scan and optional checks complete.

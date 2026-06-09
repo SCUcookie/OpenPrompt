@@ -1,0 +1,24 @@
+4  loss: 0.4524  loss_rpn_cls: 0.0063  loss_rpn_bbox: 0.0113  s0.loss_cls: 0.057
+1  s0.acc: 98.9258  s0.loss_bbox: 0.0688  s0.loss_hierarchy: 0.0056  s1.loss_cls
+: 0.0456  s1.acc: 99.4141  s1.loss_bbox: 0.2512  s1.loss_hierarchy: 0.0063
+06/09 15:24:23 - mmengine - INFO - Epoch(train) [10][27250/39007]  lr: 1.0000e-0
+5  eta: 4:34:08  time: 0.1756  data_time: 0.0045  memory: 4161  grad_norm: 4.222
+5  loss: 0.4534  loss_rpn_cls: 0.0086  loss_rpn_bbox: 0.0105  s0.loss_cls: 0.051
+1  s0.acc: 99.4141  s0.loss_bbox: 0.0654  s0.loss_hierarchy: 0.0052  s1.loss_cls
+: 0.0465  s1.acc: 99.2157  s1.loss_bbox: 0.2604  s1.loss_hierarchy: 0.0058
+06/09 15:24:33 - mmengine - INFO - Epoch(train) [10][27300/39007]  lr: 1.0000e-0
+5  eta: 4:33:59  time: 0.2110  data_time: 0.0378  memory: 4366  grad_norm: 4.034
+4  loss: 0.4559  loss_rpn_cls: 0.0076  loss_rpn_bbox: 0.0128  s0.loss_cls: 0.053
+0  s0.acc: 98.4375  s0.loss_bbox: 0.0837  s0.loss_hierarchy: 0.0055  s1.loss_cls
+: 0.0390  s1.acc: 99.5980  s1.loss_bbox: 0.2479  s1.loss_hierarchy: 0.0063
+06/09 15:24:42 - mmengine - INFO - Epoch(train) [10][27350/39007]  lr: 1.0000e-0
+5  eta: 4:33:50  time: 0.1791  data_time: 0.0046  memory: 4219  grad_norm: 4.441
+0  loss: 0.4458  loss_rpn_cls: 0.0082  loss_rpn_bbox: 0.0122  s0.loss_cls: 0.056
+3  s0.acc: 98.3398  s0.loss_bbox: 0.0698  s0.loss_hierarchy: 0.0055  s1.loss_cls
+: 0.0475  s1.acc: 98.6974  s1.loss_bbox: 0.2401  s1.loss_hierarchy: 0.0062
+06/09 15:24:52 - mmengine - INFO - Epoch(train) [10][27400/39007]  lr: 1.0000e-0
+5  eta: 4:33:41  time: 0.1897  data_time: 0.0163  memory: 3248  grad_norm: 4.179
+2  loss: 0.4882  loss_rpn_cls: 0.0103  loss_rpn_bbox: 0.0141  s0.loss_cls: 0.056
+8  s0.acc: 99.0234  s0.loss_bbox: 0.0764  s0.loss_hierarchy: 0.0054  s1.loss_cls
+: 0.0489  s1.acc: 98.6328  s1.loss_bbox: 0.2704  s1.loss_hierarchy: 0.0060
+

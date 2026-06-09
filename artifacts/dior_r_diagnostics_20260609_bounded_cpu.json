@@ -1,0 +1,228 @@
+{
+  "data_root": "/data5/2025/ldh/OpenRSD/data/DIOR_R_dota",
+  "class_order_reference": [
+    "airplane",
+    "airport",
+    "baseballfield",
+    "basketballcourt",
+    "bridge",
+    "chimney",
+    "dam",
+    "Expressway-Service-area",
+    "Expressway-toll-station",
+    "golffield",
+    "groundtrackfield",
+    "harbor",
+    "overpass",
+    "ship",
+    "stadium",
+    "storagetank",
+    "tenniscourt",
+    "trainstation",
+    "vehicle",
+    "windmill"
+  ],
+  "config_checks": [
+    {
+      "config": "/data5/2025/ldh/OpenRSD/M_configs/G02_Baselines/Data2_DIOR_R/G02_Baselines_Data2_DIOR_R_M2_RoITrans.py",
+      "exists": true,
+      "class_names": [
+        "airplane",
+        "airport",
+        "baseballfield",
+        "basketballcourt",
+        "bridge",
+        "chimney",
+        "dam",
+        "Expressway-Service-area",
+        "Expressway-toll-station",
+        "golffield",
+        "groundtrackfield",
+        "harbor",
+        "overpass",
+        "ship",
+        "stadium",
+        "storagetank",
+        "tenniscourt",
+        "trainstation",
+        "vehicle",
+        "windmill"
+      ],
+      "matches_dior_r_order": true
+    },
+    {
+      "config": "/data5/2025/ldh/OpenRSD/M_configs/G02_Baselines/Data2_DIOR_R/G02_Baselines_Data2_DIOR_R_M5_ORCNN_R50.py",
+      "exists": true,
+      "class_names": [
+        "airplane",
+        "airport",
+        "baseballfield",
+        "basketballcourt",
+        "bridge",
+        "chimney",
+        "dam",
+        "Expressway-Service-area",
+        "Expressway-toll-station",
+        "golffield",
+        "groundtrackfield",
+        "harbor",
+        "overpass",
+        "ship",
+        "stadium",
+        "storagetank",
+        "tenniscourt",
+        "trainstation",
+        "vehicle",
+        "windmill"
+      ],
+      "matches_dior_r_order": true
+    }
+  ],
+  "splits": [
+    {
+      "split": "train_val",
+      "image_dir": "/data5/2025/ldh/OpenRSD/data/DIOR_R_dota/train_val/images",
+      "label_dir": "/data5/2025/ldh/OpenRSD/data/DIOR_R_dota/train_val/labelTxt",
+      "num_images_checked": 200,
+      "num_label_files_checked": 200,
+      "num_objects": 1019,
+      "image_decode_bad": [],
+      "num_image_decode_bad": 0,
+      "top_image_shapes": [
+        {
+          "width": 800,
+          "height": 800,
+          "count": 199
+        },
+        {
+          "width": 800,
+          "height": 802,
+          "count": 1
+        }
+      ],
+      "class_counts": {
+        "airplane": 40,
+        "airport": 12,
+        "baseballfield": 46,
+        "basketballcourt": 8,
+        "bridge": 13,
+        "chimney": 6,
+        "dam": 13,
+        "Expressway-Service-area": 23,
+        "Expressway-toll-station": 7,
+        "golffield": 6,
+        "groundtrackfield": 20,
+        "harbor": 44,
+        "overpass": 8,
+        "ship": 434,
+        "stadium": 11,
+        "storagetank": 44,
+        "tenniscourt": 74,
+        "trainstation": 10,
+        "vehicle": 182,
+        "windmill": 18
+      },
+      "unknown_class_counts": {},
+      "num_bad_label_files": 0,
+      "bad_label_files": [],
+      "first_bad_conversion": null
+    },
+    {
+      "split": "test",
+      "image_dir": "/data5/2025/ldh/OpenRSD/data/DIOR_R_dota/test/images",
+      "label_dir": "/data5/2025/ldh/OpenRSD/data/DIOR_R_dota/test/labelTxt",
+      "num_images_checked": 200,
+      "num_label_files_checked": 200,
+      "num_objects": 1782,
+      "image_decode_bad": [],
+      "num_image_decode_bad": 0,
+      "top_image_shapes": [
+        {
+          "width": 800,
+          "height": 800,
+          "count": 200
+        }
+      ],
+      "class_counts": {
+        "airplane": 153,
+        "airport": 14,
+        "baseballfield": 55,
+        "basketballcourt": 52,
+        "bridge": 57,
+        "chimney": 14,
+        "dam": 11,
+        "Expressway-Service-area": 20,
+        "Expressway-toll-station": 9,
+        "golffield": 8,
+        "groundtrackfield": 25,
+        "harbor": 36,
+        "overpass": 34,
+        "ship": 503,
+        "stadium": 13,
+        "storagetank": 332,
+        "tenniscourt": 113,
+        "trainstation": 6,
+        "vehicle": 306,
+        "windmill": 21
+      },
+      "unknown_class_counts": {},
+      "num_bad_label_files": 0,
+      "bad_label_files": [],
+      "first_bad_conversion": null
+    }
+  ],
+  "dataloader_checks": [
+    {
+      "status": "ok",
+      "config": "/data5/2025/ldh/OpenRSD/M_configs/G02_Baselines/Data2_DIOR_R/G02_Baselines_Data2_DIOR_R_M2_RoITrans.py",
+      "samples": [
+        {
+          "index": 0,
+          "img_path": "data/DIOR_R_dota/train_val/images/06865.png",
+          "bbox_shape": [
+            1,
+            5
+          ],
+          "bbox_finite": true,
+          "num_labels": 1
+        },
+        {
+          "index": 1,
+          "img_path": "data/DIOR_R_dota/train_val/images/07632.png",
+          "bbox_shape": [
+            5,
+            5
+          ],
+          "bbox_finite": true,
+          "num_labels": 5
+        }
+      ]
+    },
+    {
+      "status": "ok",
+      "config": "/data5/2025/ldh/OpenRSD/M_configs/G02_Baselines/Data2_DIOR_R/G02_Baselines_Data2_DIOR_R_M5_ORCNN_R50.py",
+      "samples": [
+        {
+          "index": 0,
+          "img_path": "data/DIOR_R_dota/train_val/images/06865.png",
+          "bbox_shape": [
+            1,
+            5
+          ],
+          "bbox_finite": true,
+          "num_labels": 1
+        },
+        {
+          "index": 1,
+          "img_path": "data/DIOR_R_dota/train_val/images/07632.png",
+          "bbox_shape": [
+            5,
+            5
+          ],
+          "bbox_finite": true,
+          "num_labels": 5
+        }
+      ]
+    }
+  ]
+}
