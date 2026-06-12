@@ -60,10 +60,111 @@ sensing imagery.
   while the GPU-0/GPU-6 S1 replicates continue as comparison evidence. Keep
   S3/S4, pseudo-label purification, and routing paused until DOTA2 S2 and
   DIOR-R numeric stability are resolved.
+- 2026-06-09 route gate update: use a stage-gated route, not a full S1-S4
+  pipeline. DOTA2 S1 with RoI Transformer + RemoteCLIP is the current best
+  paper-path module on `DOTA2_1024_500/ss_val`, improving S0
+  `0.6088/0.6090` to `0.6177/0.6180`. Main DOTA2 S2 completed below S1 at
+  `0.5924/0.5920`; live S2 variants have not beaten S1 so far. As of
+  `2026-06-09 19:58 CST`, GPU-6 hierarchy-weight `0.01` S2 is in epoch-12
+  validation, GPU-0 LR `1e-4` S2 is still in epoch-12 training, and GPU-5 LR
+  `5e-5` S2 is still epoch-2 diagnostic training. Do not launch S3/S4,
+  pseudo-labeling, FAIR1M, or additional detector training until DOTA2 S2 is
+  either rescued by final metrics or archived, and DIOR-R has a finite detector
+  baseline.
+- 2026-06-10 route gate update: the S2 hierarchy loss-0 ablation briefly
+  exceeded S1 at epoch 2 (`0.6204/0.6200`) but finished epoch 4 at
+  `0.6179/0.6180`. A controlled loss-0 replication with seed `3407` was
+  launched on GPU 1 in screen
+  `geonexus_dota2_s2_loss0_rep3407_20260610_gpu1`. Workdir:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep3407_20260610`.
+  Startup reached `Epoch(train) [1][200/39007]` with no failure signature.
+  Keep S3/S4, pseudo-labeling, FAIR1M, and DIOR-R detector relaunch paused
+  until this replication's best and final checkpoints are compared separately
+  against S1 `0.6177/0.6180`.
+- 2026-06-10 concurrency update: two additional controlled DOTA2 S2 loss-0
+  replications were launched to maintain three concurrent GeoNexus GPU
+  experiments while keeping the same route gate. Seed `4407` is running on GPU
+  0 in screen `geonexus_dota2_s2_loss0_rep4407_20260610_gpu0`; seed `5407` is
+  running on GPU 2 in screen
+  `geonexus_dota2_s2_loss0_rep5407_20260610_gpu2`. Both configs were copied
+  from `rep3407` and changed only for `randomness.seed` plus `work_dir`.
+  Runtime logs:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep4407_20260610/20260610_210021/20260610_210021.log`
+  and
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep5407_20260610/20260610_210021/20260610_210021.log`.
+  At `2026-06-10 21:05 CST`, both jobs were GPU-resident but still waiting in
+  startup I/O before the `Epoch(train) [1][200/39007]` acceptance point; do
+  not mark them startup-accepted until that line appears and the scoped failure
+  signature scan remains clean.
+- 2026-06-12 DOTA2 S2 loss-0 stabilization update: the three 3-epoch
+  stabilization runs completed. rep6407 finished with epoch metrics
+  `0.620483/0.6200`, `0.618960/0.6190`, and final `0.618167/0.6180`;
+  rep7407 finished with `0.620785/0.6210`, `0.614483/0.6140`, and final
+  `0.618315/0.6180`; rep8407 finished with `0.616526/0.6170`,
+  `0.619625/0.6200`, and final `0.612147/0.6120`. Original four loss-0 runs
+  have best mean `0.620837` (`+0.003137` over S1) and final mean `0.616990`
+  (`-0.000710` below S1). The new three runs have best mean `0.620298`
+  (`+0.002598`) and final mean `0.616209` (`-0.001491`). All seven runs have
+  best mean `0.620606` (`+0.002906`) and final mean `0.616655`
+  (`-0.001045`). Classify this as repeatable early-checkpoint S2 evidence but
+  unstable final-checkpoint S2 evidence; do not cite the final epoch as S2
+  evidence. Keep S3/S4, pseudo-labeling, and FAIR1M paused.
 - 2026-06-07 DIOR-R gate: after ORCNN/RoITrans NaN and RetinaNet `loss=inf`,
   DIOR-R detector training is blocked. The next DIOR-R work is diagnosis of
   data records, rotated-box conversion, class mapping, and loss targets, not
   another unchanged detector launch.
+- 2026-06-09 DIOR-R geometry update: full label geometry scan artifact
+  `New/artifacts/dior_r_diagnostics_20260609_full_geometry.md` covers
+  `11725` train_val label files / `68072` objects and `11738` test label files
+  / `124445` objects using fallback rbox geometry and declared `800x800`
+  bounds. It found 2 bad label files per split with zero-area/invalid-size ship
+  boxes, `1210` train_val and `1322` test qboxes crossing the declared bounds,
+  and 4 test rbox centers outside bounds. Next DIOR-R step is fixing or
+  filtering these records and then running a bounded first-non-finite-loss
+  catcher before any detector relaunch.
+- 2026-06-12 DIOR-R sanitized-label update: sanitized label directories were
+  created at
+  `/data5/2025/ldh/OpenRSD/data/DIOR_R_dota/train_val/labelTxt_sanitized_invalidsize_20260612`
+  and
+  `/data5/2025/ldh/OpenRSD/data/DIOR_R_dota/test/labelTxt_sanitized_invalidsize_20260612`,
+  with scanner-compatible root
+  `/data5/2025/ldh/OpenRSD/data/DIOR_R_dota_sanitized_invalidsize_20260612`.
+  The current raw labels no longer contain the zero-area/invalid-size records
+  reported by the 2026-06-09 artifact, so these sanitized dirs mirror current
+  raw labels and raw `labelTxt` dirs were not modified. Fresh artifacts
+  `New/artifacts/dior_r_diagnostics_20260612_sanitized_invalidsize_geometry.json`
+  and `.md` report `11725` train_val files / `68070` objects and `11738` test
+  files / `124443` objects, with `num_bad_label_files=0` and
+  `invalid_rbox_size=0` for both splits. Next DIOR-R action is bounded
+  `train-step` non-finite diagnostics on sanitized labels only.
+- 2026-06-12 DIOR-R train-step update: `OpenRSD/tools/diagnose_first_nonfinite_loss.py`
+  supports `--mode train-step` and records real `model.train_step` progress,
+  non-finite losses, exceptions, and batch context. Sanitized-label diagnostic
+  configs live under
+  `/data5/2025/ldh/OpenRSD/work_dirs/dior_r_trainstep_diag_20260612/`. ORCNN
+  completed `1000/1000`, RoI Transformer completed `4000/4000`, and Rotated
+  RetinaNet completed `1500/1500` train-step batches with
+  `status=finite_within_limit`; JSON artifacts are
+  `.../orcnn/trainstep_diag_20260612.json`,
+  `.../roi_trans/trainstep_diag_20260612.json`, and
+  `.../retinanet/trainstep_diag_20260612.json`. Completion scans found no
+  `Traceback`, CUDA OOM, `out of memory`, `libpng`, `CRC`, `NoneType`,
+  `ValueError`, true `nan`, or true `inf`.
+- 2026-06-12 DIOR-R S0 smoke update: because all three train-step diagnostics
+  completed finite, the one allowed sanitized DIOR-R RoI Transformer S0 smoke
+  was launched on GPU 3 in screen
+  `dior_r_roi_trans_s0_sanitized_smoke_20260612_gpu3`, PID `3363864`.
+  Workdir:
+  `/data5/2025/ldh/OpenRSD/work_dirs/dior_r_s0_roi_trans_sanitized_smoke_20260612`;
+  config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/dior_r_s0_roi_trans_sanitized_smoke_20260612/dior_r_roi_trans_sanitized_s0_smoke_1e_20260612.py`;
+  launch log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/dior_r_s0_roi_trans_sanitized_smoke_20260612/launch_20260612_gpu3.log`;
+  runtime log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/dior_r_s0_roi_trans_sanitized_smoke_20260612/20260612_153506/20260612_153506.log`.
+  Startup acceptance passed at `Epoch(train) [1][  50/5862]`; keep this as
+  diagnostic evidence only and do not launch further DIOR-R detector runs until
+  its 1-epoch result is archived.
 
 Core modules:
 
@@ -649,3 +750,27 @@ refinements unless the user explicitly asks for archive/debug work.
   the screen is active with Python PID `2024594`, GPU 1 is Xorg-only, and
   `New/artifacts/dior_r_diagnostics_20260609_gpu1.log` exists but JSON/Markdown
   outputs are pending until the full scan and optional checks complete.
+- 2026-06-09 evening live update: as of `2026-06-09 19:23 CST`, GPU-0 low-LR
+  S2 and GPU-6 reduced hierarchy-weight S2 are still running in epoch 12.
+  Their best observed validation metrics are GPU-0 epoch 4 `0.6099/0.6100`
+  and GPU-6 epoch 8 `0.6044/0.6040`, both below S1 `0.6177/0.6180`. GPU-5
+  LR `5e-5` S2 was already launched and is only diagnostic unless it produces
+  a strong epoch-4 validation. The bounded CPU DIOR-R diagnostic completed on
+  200 `train_val` and 200 `test` samples, confirming sampled image decode,
+  label parsing, class order, and dataloader basics, but it is not a full data
+  scan and did not produce a first non-finite batch record. Next DIOR-R work is
+  a full geometry/statistics scan plus a bounded non-finite-loss catcher.
+- 2026-06-09 full DIOR-R label-geometry follow-up: artifact
+  `New/artifacts/dior_r_diagnostics_20260609_full_geometry.md` completed the
+  full label scan with fallback rbox geometry and declared `800x800` bounds.
+  It found four zero-area/invalid-size `ship` records across train/test and
+  four test rbox centers outside declared bounds. Fix/filter those records and
+  then run the bounded non-finite-loss catcher before any detector relaunch.
+- 2026-06-10 DOTA2 S2 loss-0 replication launch: screen
+  `geonexus_dota2_s2_loss0_rep3407_20260610_gpu1`, PID `1559651`, GPU 1.
+  Config:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep3407_20260610/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-ablate-loss0-s1e12-rep3407-20260610_dota2.py`.
+  Log:
+  `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep3407_20260610/20260610_191026/20260610_191026.log`.
+  Startup acceptance passed at `Epoch(train) [1][200/39007]`; metrics are
+  pending until epoch validation completes.

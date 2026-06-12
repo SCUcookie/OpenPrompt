@@ -16,6 +16,8 @@ Use these files:
   purification workflow.
 - `github_server_workflow.md`: local editing, GitHub push/pull, server runs, and
   result synchronization.
+- `ai4s_harness_structure.md`: proposed local AI4S harness for reproducible
+  launch, monitoring, provenance, metric collection, reporting, and diagnosis.
 
 The root `PROJECT_INSTRUCTIONS.md` is the canonical persistent project memory.
 Update it whenever the global research direction or workflow changes.
