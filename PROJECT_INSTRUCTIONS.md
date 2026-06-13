@@ -165,6 +165,16 @@ sensing imagery.
   Startup acceptance passed at `Epoch(train) [1][  50/5862]`; keep this as
   diagnostic evidence only and do not launch further DIOR-R detector runs until
   its 1-epoch result is archived.
+- 2026-06-13 DIOR-R S0 sanitized-long status: the extended sanitized DIOR-R S0
+  runs are finite so far. RoI Transformer is the current leader with epoch 48
+  `dota/mAP=0.6531`, `dota/AP50=0.6530`; ORCNN is secondary with best epoch 28
+  `0.6341/0.6340`; Rotated RetinaNet trails with best epoch 80
+  `0.5686/0.5690` and epoch 84 dipping to `0.5667/0.5670`. ORCNN is still
+  active toward epoch 36, RoI Transformer toward epoch 52, and RetinaNet toward
+  epoch 96. Do not launch DIOR-R GeoNexus S1 until ORCNN and RoI Transformer
+  finish, best and final metrics are archived separately, and completion scans
+  remain clean. Detailed interim record:
+  `New/docs/experiments/20260613_dior_r_s0_sanitized_long_interim.md`.
 
 Core modules:
 

@@ -1,0 +1,93 @@
+{
+  "experiment": "dior_r_geonexus_s1_s0e52_replicas",
+  "date": "2026-06-13",
+  "status": "completed",
+  "source_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/dior_r_s0_roi_trans_sanitized_long_20260612_gpu1/epoch_52.pth",
+  "prompt_artifact": "/data5/2025/ldh/New/artifacts/generated/remoteclip_vit_b32_dior_r_prompt_embeddings.pt",
+  "screen_status_after_completion": {
+    "active_s1_training_screens": 0,
+    "remaining_screens": [
+      "s0_result_log_monitor_20260603"
+    ]
+  },
+  "failure_scan": {
+    "patterns": [
+      "Traceback",
+      "CUDA OOM",
+      "out-of-memory",
+      "libpng",
+      "CRC",
+      "NoneType",
+      "ValueError",
+      "KeyboardInterrupt",
+      "loss: nan",
+      "loss: inf",
+      "grad_norm: nan",
+      "grad_norm: inf"
+    ],
+    "matches": 0,
+    "result": "clean"
+  },
+  "replicas": [
+    {
+      "replica": 0,
+      "seed": 5407,
+      "gpu": 0,
+      "screen": "dior_r_geonexus_s1_s0e52_rep0_20260613_gpu0",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s1_s0e52_rep0_20260613",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s1_s0e52_rep0_20260613/roi-trans-le90_r50_fpn_remoteclip-s1-s0e52-rep0-20260613_dior_r.py",
+      "launch_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s1_s0e52_rep0_20260613/launch_20260613_gpu0.log",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s1_s0e52_rep0_20260613/20260613_112328/20260613_112328.log",
+      "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s1_s0e52_rep0_20260613/epoch_12.pth",
+      "metrics": [
+        {
+          "epoch": 4,
+          "dota_mAP": 0.6515141726,
+          "dota_AP50": 0.652
+        },
+        {
+          "epoch": 8,
+          "dota_mAP": 0.6688991189,
+          "dota_AP50": 0.669
+        },
+        {
+          "epoch": 12,
+          "dota_mAP": 0.6750815511,
+          "dota_AP50": 0.675
+        }
+      ],
+      "best_epoch": 12,
+      "final_epoch": 12
+    },
+    {
+      "replica": 1,
+      "seed": 6407,
+      "gpu": 1,
+      "screen": "dior_r_geonexus_s1_s0e52_rep1_20260613_gpu1",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s1_s0e52_rep1_20260613",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s1_s0e52_rep1_20260613/roi-trans-le90_r50_fpn_remoteclip-s1-s0e52-rep1-20260613_dior_r.py",
+      "launch_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s1_s0e52_rep1_20260613/launch_20260613_gpu1.log",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s1_s0e52_rep1_20260613/20260613_112328/20260613_112328.log",
+      "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s1_s0e52_rep1_20260613/epoch_12.pth",
+      "metrics": [
+        {
+          "epoch": 4,
+          "dota_mAP": 0.657479465,
+          "dota_AP50": 0.657
+        },
+        {
+          "epoch": 8,
+          "dota_mAP": 0.6687465906,
+          "dota_AP50": 0.669
+        },
+        {
+          "epoch": 12,
+          "dota_mAP": 0.6689543724,
+          "dota_AP50": 0.669
+        }
+      ],
+      "best_epoch": 12,
+      "final_epoch": 12
+    }
+  ]
+}

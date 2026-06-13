@@ -1,0 +1,110 @@
+{
+  "archive": "dior_r_s2_unrecorded_artifacts",
+  "snapshot_time": "2026-06-13 15:51:12 CST",
+  "status": "active_runs_archived",
+  "already_recorded_in_new": [
+    "/data5/2025/ldh/New/docs/experiments/20260613_dior_r_geonexus_s1_s0e52_replicas_launch.md",
+    "/data5/2025/ldh/New/docs/experiments/20260613_dior_r_geonexus_s1_s0e52_replicas_metrics.json",
+    "/data5/2025/ldh/New/docs/experiments/20260613_dior_r_geonexus_s2_hierarchy_replicas_launch.md",
+    "/data5/2025/ldh/New/docs/experiments/20260613_dior_r_s0_retinanet_sanitized_long_complete.md"
+  ],
+  "active_screens": [
+    "dior_r_geonexus_s2_s1e12_rep0_20260613_gpu0",
+    "dior_r_geonexus_s2_s1e12_rep1_20260613_gpu1",
+    "dior_r_geonexus_s2_s1e12_rep2_20260613_gpu2",
+    "s0_result_log_monitor_20260603"
+  ],
+  "gpu_snapshot_before_archive": [
+    {
+      "gpu": 0,
+      "memory_mib": 8849,
+      "utilization_percent": 36,
+      "role": "dior_r_s2_rep0"
+    },
+    {
+      "gpu": 1,
+      "memory_mib": 8103,
+      "utilization_percent": 40,
+      "role": "dior_r_s2_rep1"
+    },
+    {
+      "gpu": 2,
+      "memory_mib": 9011,
+      "utilization_percent": 37,
+      "role": "dior_r_s2_rep2"
+    },
+    {
+      "gpu": 4,
+      "memory_mib": 19053,
+      "utilization_percent": 68,
+      "role": "unrelated_existing_activity"
+    }
+  ],
+  "replicas": [
+    {
+      "replica": 0,
+      "gpu": 0,
+      "seed": 7407,
+      "screen": "dior_r_geonexus_s2_s1e12_rep0_20260613_gpu0",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep0_20260613",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep0_20260613/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-s1e12-rep0-20260613_dior_r.py",
+      "launch_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep0_20260613/launch_20260613_gpu0.log",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep0_20260613/20260613_154141/20260613_154141.log",
+      "latest_progress": {
+        "timestamp": "2026/06/13 15:51:06",
+        "epoch": 1,
+        "iteration": 2900,
+        "iterations_per_epoch": 5862,
+        "loss": 0.4504,
+        "grad_norm": 3.9133,
+        "s0_loss_hierarchy": 0.0068,
+        "s1_loss_hierarchy": 0.0074
+      }
+    },
+    {
+      "replica": 1,
+      "gpu": 1,
+      "seed": 8407,
+      "screen": "dior_r_geonexus_s2_s1e12_rep1_20260613_gpu1",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep1_20260613",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep1_20260613/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-s1e12-rep1-20260613_dior_r.py",
+      "launch_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep1_20260613/launch_20260613_gpu1.log",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep1_20260613/20260613_154141/20260613_154141.log",
+      "latest_progress": {
+        "timestamp": "2026/06/13 15:51:10",
+        "epoch": 1,
+        "iteration": 2900,
+        "iterations_per_epoch": 5862,
+        "loss": 0.4777,
+        "grad_norm": 4.0088,
+        "s0_loss_hierarchy": 0.0061,
+        "s1_loss_hierarchy": 0.0073
+      }
+    },
+    {
+      "replica": 2,
+      "gpu": 2,
+      "seed": 9407,
+      "screen": "dior_r_geonexus_s2_s1e12_rep2_20260613_gpu2",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep2_20260613",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep2_20260613/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-s1e12-rep2-20260613_dior_r.py",
+      "launch_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep2_20260613/launch_20260613_gpu2.log",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep2_20260613/20260613_154141/20260613_154141.log",
+      "latest_progress": {
+        "timestamp": "2026/06/13 15:51:12",
+        "epoch": 1,
+        "iteration": 2900,
+        "iterations_per_epoch": 5862,
+        "loss": 0.5317,
+        "grad_norm": 4.4102,
+        "s0_loss_hierarchy": 0.0076,
+        "s1_loss_hierarchy": 0.0079
+      }
+    }
+  ],
+  "failure_scan": {
+    "scope": "all three DIOR-R S2 workdirs",
+    "matches": 0,
+    "result": "clean"
+  }
+}

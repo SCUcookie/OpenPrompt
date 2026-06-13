@@ -1,0 +1,184 @@
+{
+  "classes": [
+    {
+      "name": "airplane",
+      "parent": "aircraft",
+      "synonyms": ["plane", "aircraft", "jet"],
+      "confusing_classes": ["airport", "vehicle", "bridge"],
+      "scene_priors": ["airport", "runway", "airfield"],
+      "geometry": ["high-aspect-ratio", "symmetric", "arbitrary-orientation"],
+      "negative_cues": ["harbor", "residential-area"]
+    },
+    {
+      "name": "airport",
+      "parent": "airfield-infrastructure",
+      "synonyms": ["airfield", "aerodrome", "airport facility"],
+      "confusing_classes": ["airplane", "harbor", "groundtrackfield"],
+      "scene_priors": ["runway", "apron", "terminal", "airfield"],
+      "geometry": ["large-extent", "runway-layout", "structured-facility"],
+      "negative_cues": ["open-sea", "forest", "residential-roof"]
+    },
+    {
+      "name": "baseballfield",
+      "parent": "sports-field",
+      "synonyms": ["baseball field", "baseball diamond", "diamond"],
+      "confusing_classes": ["golffield", "groundtrackfield", "stadium"],
+      "scene_priors": ["school", "sports-complex", "urban-area"],
+      "geometry": ["geometric-layout", "medium-scale", "low-rotation-variance"],
+      "negative_cues": ["harbor", "industrial-area"]
+    },
+    {
+      "name": "basketballcourt",
+      "parent": "sports-field",
+      "synonyms": ["basketball court", "court"],
+      "confusing_classes": ["tenniscourt", "stadium", "groundtrackfield"],
+      "scene_priors": ["school", "sports-complex", "urban-area"],
+      "geometry": ["rectangular", "regular-layout", "medium-scale"],
+      "negative_cues": ["harbor", "industrial-area"]
+    },
+    {
+      "name": "bridge",
+      "parent": "transportation-infrastructure",
+      "synonyms": ["viaduct", "river bridge"],
+      "confusing_classes": ["overpass", "dam", "ship"],
+      "scene_priors": ["river", "road", "urban-area"],
+      "geometry": ["long-thin", "high-aspect-ratio", "crossing-structure"],
+      "negative_cues": ["airport", "open-sea"]
+    },
+    {
+      "name": "chimney",
+      "parent": "industrial-facility",
+      "synonyms": ["smokestack", "industrial chimney", "stack"],
+      "confusing_classes": ["windmill", "storagetank", "vehicle"],
+      "scene_priors": ["factory", "industrial-area", "power-plant"],
+      "geometry": ["tall-structure", "compact", "shadow-casting"],
+      "negative_cues": ["runway", "sports-field"]
+    },
+    {
+      "name": "dam",
+      "parent": "water-infrastructure",
+      "synonyms": ["hydroelectric dam", "barrier dam"],
+      "confusing_classes": ["bridge", "overpass", "harbor"],
+      "scene_priors": ["river", "reservoir", "mountain-waterway"],
+      "geometry": ["linear-barrier", "large-extent", "water-adjacent"],
+      "negative_cues": ["airport", "stadium"]
+    },
+    {
+      "name": "Expressway-Service-area",
+      "parent": "transportation-infrastructure",
+      "synonyms": ["expressway service area", "highway service area", "rest area"],
+      "confusing_classes": ["Expressway-toll-station", "airport", "trainstation"],
+      "scene_priors": ["expressway", "parking-lot", "roadside"],
+      "geometry": ["road-connected", "compound-layout", "medium-to-large-scale"],
+      "negative_cues": ["harbor", "sports-field"]
+    },
+    {
+      "name": "Expressway-toll-station",
+      "parent": "transportation-infrastructure",
+      "synonyms": ["expressway toll station", "toll plaza", "highway toll gate"],
+      "confusing_classes": ["Expressway-Service-area", "overpass", "trainstation"],
+      "scene_priors": ["expressway", "road-junction", "traffic-corridor"],
+      "geometry": ["linear-booths", "road-connected", "regular-layout"],
+      "negative_cues": ["harbor", "sports-field"]
+    },
+    {
+      "name": "golffield",
+      "parent": "sports-field",
+      "synonyms": ["golf field", "golf course", "fairway"],
+      "confusing_classes": ["baseballfield", "groundtrackfield", "stadium"],
+      "scene_priors": ["recreation-area", "grassland", "suburban-area"],
+      "geometry": ["large-extent", "irregular-layout", "green-surface"],
+      "negative_cues": ["industrial-area", "harbor"]
+    },
+    {
+      "name": "groundtrackfield",
+      "parent": "sports-field",
+      "synonyms": ["ground track field", "running track", "track field"],
+      "confusing_classes": ["stadium", "baseballfield", "golffield"],
+      "scene_priors": ["school", "sports-complex", "urban-area"],
+      "geometry": ["oval-layout", "large-extent", "regular-shape"],
+      "negative_cues": ["harbor", "industrial-area"]
+    },
+    {
+      "name": "harbor",
+      "parent": "industrial-facility",
+      "synonyms": ["port", "dockyard", "waterfront harbor"],
+      "confusing_classes": ["ship", "bridge", "dam"],
+      "scene_priors": ["coastline", "waterfront", "industrial-area"],
+      "geometry": ["large-extent", "complex-layout", "water-adjacent"],
+      "negative_cues": ["runway", "forest"]
+    },
+    {
+      "name": "overpass",
+      "parent": "transportation-infrastructure",
+      "synonyms": ["road overpass", "flyover", "viaduct"],
+      "confusing_classes": ["bridge", "Expressway-toll-station", "dam"],
+      "scene_priors": ["road", "urban-area", "traffic-junction"],
+      "geometry": ["long-thin", "road-connected", "crossing-structure"],
+      "negative_cues": ["open-sea", "sports-field"]
+    },
+    {
+      "name": "ship",
+      "parent": "vessel",
+      "synonyms": ["boat", "cargo ship", "vessel"],
+      "confusing_classes": ["harbor", "bridge", "vehicle"],
+      "scene_priors": ["harbor", "coastline", "dock", "river"],
+      "geometry": ["elongated", "arbitrary-orientation", "medium-scale"],
+      "negative_cues": ["parking-lot", "residential-roof"]
+    },
+    {
+      "name": "stadium",
+      "parent": "sports-field",
+      "synonyms": ["sports stadium", "arena"],
+      "confusing_classes": ["groundtrackfield", "baseballfield", "basketballcourt"],
+      "scene_priors": ["sports-complex", "urban-area", "school"],
+      "geometry": ["large-extent", "oval-or-rectangular", "tiered-structure"],
+      "negative_cues": ["harbor", "industrial-area"]
+    },
+    {
+      "name": "storagetank",
+      "parent": "industrial-facility",
+      "synonyms": ["storage tank", "oil tank", "cylindrical storage"],
+      "confusing_classes": ["chimney", "ship", "windmill"],
+      "scene_priors": ["industrial-area", "refinery", "port"],
+      "geometry": ["round-shape", "compact", "medium-scale"],
+      "negative_cues": ["runway", "bridge"]
+    },
+    {
+      "name": "tenniscourt",
+      "parent": "sports-field",
+      "synonyms": ["tennis court", "court"],
+      "confusing_classes": ["basketballcourt", "baseballfield", "stadium"],
+      "scene_priors": ["school", "sports-complex", "urban-area"],
+      "geometry": ["rectangular", "regular-layout", "medium-scale"],
+      "negative_cues": ["harbor", "industrial-area"]
+    },
+    {
+      "name": "trainstation",
+      "parent": "transportation-infrastructure",
+      "synonyms": ["train station", "railway station", "rail station"],
+      "confusing_classes": ["Expressway-Service-area", "Expressway-toll-station", "airport"],
+      "scene_priors": ["railway", "urban-area", "transport-hub"],
+      "geometry": ["linear-platforms", "compound-layout", "rail-connected"],
+      "negative_cues": ["open-water", "sports-field"]
+    },
+    {
+      "name": "vehicle",
+      "parent": "vehicle",
+      "synonyms": ["car", "truck", "road vehicle"],
+      "confusing_classes": ["ship", "airplane", "chimney"],
+      "scene_priors": ["road", "parking-lot", "industrial-area"],
+      "geometry": ["tiny-footprint", "elongated", "dense-cluster"],
+      "negative_cues": ["runway", "water"]
+    },
+    {
+      "name": "windmill",
+      "parent": "energy-infrastructure",
+      "synonyms": ["wind turbine", "windmill", "turbine"],
+      "confusing_classes": ["chimney", "storagetank", "airplane"],
+      "scene_priors": ["wind-farm", "open-field", "ridge"],
+      "geometry": ["radial-blades", "compact-hub", "shadow-casting"],
+      "negative_cues": ["harbor", "sports-field"]
+    }
+  ]
+}
