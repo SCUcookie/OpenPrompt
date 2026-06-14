@@ -1,0 +1,400 @@
+{
+  "main": {
+    "dota2": {
+      "s0_roi_trans": 0.6088,
+      "s1": 0.6176869869232178,
+      "s2_loss0_best_mean": 0.6206056986536298,
+      "s2_loss0_final_mean": 0.6166554774556842
+    },
+    "dior_r": {
+      "s0_roi_trans_final": 0.654401421546936,
+      "s1_final_mean": 0.67201796175,
+      "s2_best_mean": 0.6883728106666667,
+      "s2_final_mean": 0.6852748989999999
+    }
+  },
+  "dota2_s2_runs": [
+    {
+      "name": "loss-0",
+      "source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_20260610/20260610_100253/vis_data/scalars.json",
+      "points": [
+        {
+          "epoch": 1,
+          "map": 0.6175594925880432,
+          "ap50": 0.618
+        },
+        {
+          "epoch": 2,
+          "map": 0.6203737258911133,
+          "ap50": 0.62
+        },
+        {
+          "epoch": 3,
+          "map": 0.6187403202056885,
+          "ap50": 0.619
+        },
+        {
+          "epoch": 4,
+          "map": 0.617885410785675,
+          "ap50": 0.618
+        }
+      ],
+      "best_epoch": 2,
+      "best_map": 0.6203737258911133,
+      "final_epoch": 4,
+      "final_map": 0.617885410785675
+    },
+    {
+      "name": "rep3407",
+      "source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep3407_20260610/20260610_191026/vis_data/scalars.json",
+      "points": [
+        {
+          "epoch": 1,
+          "map": 0.6211206912994385,
+          "ap50": 0.621
+        },
+        {
+          "epoch": 2,
+          "map": 0.6171610355377197,
+          "ap50": 0.617
+        },
+        {
+          "epoch": 3,
+          "map": 0.6120461225509644,
+          "ap50": 0.612
+        },
+        {
+          "epoch": 4,
+          "map": 0.6202991008758545,
+          "ap50": 0.62
+        }
+      ],
+      "best_epoch": 1,
+      "best_map": 0.6211206912994385,
+      "final_epoch": 4,
+      "final_map": 0.6202991008758545
+    },
+    {
+      "name": "rep4407",
+      "source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep4407_20260610/20260610_210021/vis_data/scalars.json",
+      "points": [
+        {
+          "epoch": 1,
+          "map": 0.6151421666145325,
+          "ap50": 0.615
+        },
+        {
+          "epoch": 2,
+          "map": 0.6151411533355713,
+          "ap50": 0.615
+        },
+        {
+          "epoch": 3,
+          "map": 0.6206368803977966,
+          "ap50": 0.621
+        },
+        {
+          "epoch": 4,
+          "map": 0.61478590965271,
+          "ap50": 0.615
+        }
+      ],
+      "best_epoch": 3,
+      "best_map": 0.6206368803977966,
+      "final_epoch": 4,
+      "final_map": 0.61478590965271
+    },
+    {
+      "name": "rep5407",
+      "source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep5407_20260610/20260610_210021/vis_data/scalars.json",
+      "points": [
+        {
+          "epoch": 1,
+          "map": 0.621215283870697,
+          "ap50": 0.621
+        },
+        {
+          "epoch": 2,
+          "map": 0.6202055215835571,
+          "ap50": 0.62
+        },
+        {
+          "epoch": 3,
+          "map": 0.6162388324737549,
+          "ap50": 0.616
+        },
+        {
+          "epoch": 4,
+          "map": 0.614989697933197,
+          "ap50": 0.615
+        }
+      ],
+      "best_epoch": 1,
+      "best_map": 0.621215283870697,
+      "final_epoch": 4,
+      "final_map": 0.614989697933197
+    },
+    {
+      "name": "rep6407",
+      "source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep6407_20260611/20260611_102732/vis_data/scalars.json",
+      "points": [
+        {
+          "epoch": 1,
+          "map": 0.6204828023910522,
+          "ap50": 0.62
+        },
+        {
+          "epoch": 2,
+          "map": 0.6189600229263306,
+          "ap50": 0.619
+        },
+        {
+          "epoch": 3,
+          "map": 0.6181671023368835,
+          "ap50": 0.618
+        }
+      ],
+      "best_epoch": 1,
+      "best_map": 0.6204828023910522,
+      "final_epoch": 3,
+      "final_map": 0.6181671023368835
+    },
+    {
+      "name": "rep7407",
+      "source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep7407_20260611/20260611_102732/vis_data/scalars.json",
+      "points": [
+        {
+          "epoch": 1,
+          "map": 0.6207854747772217,
+          "ap50": 0.621
+        },
+        {
+          "epoch": 2,
+          "map": 0.614483118057251,
+          "ap50": 0.614
+        },
+        {
+          "epoch": 3,
+          "map": 0.6183145642280579,
+          "ap50": 0.618
+        }
+      ],
+      "best_epoch": 1,
+      "best_map": 0.6207854747772217,
+      "final_epoch": 3,
+      "final_map": 0.6183145642280579
+    },
+    {
+      "name": "rep8407",
+      "source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep8407_20260611/20260611_102732/vis_data/scalars.json",
+      "points": [
+        {
+          "epoch": 1,
+          "map": 0.6165264248847961,
+          "ap50": 0.617
+        },
+        {
+          "epoch": 2,
+          "map": 0.6196250319480896,
+          "ap50": 0.62
+        },
+        {
+          "epoch": 3,
+          "map": 0.6121465563774109,
+          "ap50": 0.612
+        }
+      ],
+      "best_epoch": 2,
+      "best_map": 0.6196250319480896,
+      "final_epoch": 3,
+      "final_map": 0.6121465563774109
+    }
+  ],
+  "dior_s1_finals": [
+    0.6750815511,
+    0.6689543724
+  ],
+  "dior_s2_runs": [
+    {
+      "name": "rep0",
+      "seed": 7407,
+      "source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep0_20260613/20260613_154141/vis_data/scalars.json",
+      "points": [
+        {
+          "epoch": 4,
+          "map": 0.6802198291,
+          "ap50": 0.68
+        },
+        {
+          "epoch": 8,
+          "map": 0.6878044605,
+          "ap50": 0.688
+        },
+        {
+          "epoch": 12,
+          "map": 0.6857557297,
+          "ap50": 0.686
+        }
+      ],
+      "best_epoch": 8,
+      "best_map": 0.6878044605,
+      "final_epoch": 12,
+      "final_map": 0.6857557297
+    },
+    {
+      "name": "rep1",
+      "seed": 8407,
+      "source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep1_20260613/20260613_154141/vis_data/scalars.json",
+      "points": [
+        {
+          "epoch": 4,
+          "map": 0.6810527444,
+          "ap50": 0.681
+        },
+        {
+          "epoch": 8,
+          "map": 0.6905243397,
+          "ap50": 0.691
+        },
+        {
+          "epoch": 12,
+          "map": 0.6832793355,
+          "ap50": 0.683
+        }
+      ],
+      "best_epoch": 8,
+      "best_map": 0.6905243397,
+      "final_epoch": 12,
+      "final_map": 0.6832793355
+    },
+    {
+      "name": "rep2",
+      "seed": 9407,
+      "source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep2_20260613/20260613_154141/vis_data/scalars.json",
+      "points": [
+        {
+          "epoch": 4,
+          "map": 0.6833080649,
+          "ap50": 0.683
+        },
+        {
+          "epoch": 8,
+          "map": 0.6865741014,
+          "ap50": 0.687
+        },
+        {
+          "epoch": 12,
+          "map": 0.6867896318,
+          "ap50": 0.687
+        }
+      ],
+      "best_epoch": 12,
+      "best_map": 0.6867896318,
+      "final_epoch": 12,
+      "final_map": 0.6867896318
+    }
+  ],
+  "detector_dota2": [
+    {
+      "detector": "RoI Transformer",
+      "mAP": 0.6088,
+      "AP50": 0.609,
+      "source": "/data5/2025/ldh/New/docs/experiments/20260603_s0_dota2_roi_trans_validpng_metrics.json"
+    },
+    {
+      "detector": "Oriented R-CNN",
+      "mAP": 0.5973,
+      "AP50": 0.597,
+      "source": "/data5/2025/ldh/New/docs/experiments/20260605_dota2_baseline_status.md"
+    },
+    {
+      "detector": "S2ANet",
+      "mAP": 0.5869,
+      "AP50": 0.587,
+      "source": "/data5/2025/ldh/New/docs/experiments/20260605_dota2_baseline_status.md"
+    },
+    {
+      "detector": "R3Det-KFIoU",
+      "mAP": 0.5633,
+      "AP50": 0.563,
+      "source": "/data5/2025/ldh/New/docs/experiments/20260607_current_status_and_next_launch.md"
+    },
+    {
+      "detector": "RTMDet-M",
+      "mAP": 0.3312,
+      "AP50": 0.331,
+      "source": "/data5/2025/ldh/New/docs/experiments/20260605_dota2_baseline_status.md"
+    },
+    {
+      "detector": "RTMDet-L",
+      "mAP": 0.2779,
+      "AP50": 0.278,
+      "source": "/data5/2025/ldh/New/docs/experiments/20260607_current_status_and_next_launch.md"
+    },
+    {
+      "detector": "OpenRSD reference",
+      "mAP": 0.4202,
+      "AP50": 0.42,
+      "source": "/data5/2025/ldh/New/docs/experiments/20260602_opensrd_dota2_epoch12_ssval_metrics.json"
+    }
+  ],
+  "detector_dior": [
+    {
+      "detector": "RoI Transformer",
+      "best_epoch": 52,
+      "best_mAP": 0.654401421546936,
+      "best_AP50": 0.654,
+      "final_epoch": 52,
+      "final_mAP": 0.654401421546936,
+      "final_AP50": 0.654,
+      "source": "/data5/2025/ldh/OpenRSD/work_dirs/dior_r_s0_roi_trans_sanitized_long_20260612_gpu1/20260612_232047/vis_data/scalars.json"
+    },
+    {
+      "detector": "Oriented R-CNN",
+      "best_epoch": 28,
+      "best_mAP": 0.6341341733932495,
+      "best_AP50": 0.634,
+      "final_epoch": 36,
+      "final_mAP": 0.6321372985839844,
+      "final_AP50": 0.632,
+      "source": "dior_r_s0_orcnn_sanitized_long_20260612_gpu0 scalars"
+    },
+    {
+      "detector": "Rotated RetinaNet",
+      "best_epoch": 96,
+      "best_mAP": 0.5694328546524048,
+      "best_AP50": 0.569,
+      "final_epoch": 96,
+      "final_mAP": 0.5694328546524048,
+      "final_AP50": 0.569,
+      "source": "dior_r_s0_retinanet_sanitized_long_20260612_gpu2 scalars"
+    }
+  ],
+  "dota15": [
+    [
+      "S0 RoITrans",
+      0.2644,
+      0.2612
+    ],
+    [
+      "S1",
+      0.37997525930404663,
+      0.37929123640060425
+    ],
+    [
+      "S2",
+      0.3858095109462738,
+      0.378351092338562
+    ],
+    [
+      "S3",
+      0.3827,
+      0.3756
+    ]
+  ],
+  "sources": {
+    "dota2_s1": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s1_validpng_20260607/20260607_101146/vis_data/scalars.json",
+    "dior_s0": "/data5/2025/ldh/OpenRSD/work_dirs/dior_r_s0_roi_trans_sanitized_long_20260612_gpu1/20260612_232047/vis_data/scalars.json",
+    "dior_s2_archive": "/data5/2025/ldh/New/docs/experiments/20260614_dior_r_geonexus_s2_replicas_complete.json"
+  }
+}

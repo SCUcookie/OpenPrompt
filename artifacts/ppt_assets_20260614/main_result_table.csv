@@ -1,0 +1,9 @@
+dataset,stage,mAP
+dota2,s0_roi_trans,0.608800
+dota2,s1,0.617687
+dota2,s2_loss0_best_mean,0.620606
+dota2,s2_loss0_final_mean,0.616655
+dior_r,s0_roi_trans_final,0.654401
+dior_r,s1_final_mean,0.672018
+dior_r,s2_best_mean,0.688373
+dior_r,s2_final_mean,0.685275

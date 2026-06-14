@@ -1,0 +1,100 @@
+{
+  "experiment": "dior_r_geonexus_s2_hierarchy_replicas",
+  "date": "2026-06-14",
+  "status": "completed",
+  "dataset": "DIOR_R_dota/test",
+  "protocol": "sanitized DIOR_R_dota train_val/test labels, MMRotate DOTAMetric mAP at IoU 0.5",
+  "source_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s1_s0e52_rep0_20260613/epoch_12.pth",
+  "prompt_artifact": "/data5/2025/ldh/New/artifacts/generated/remoteclip_vit_b32_dior_r_s2_hierarchy_prompt_embeddings.pt",
+  "screen_status_after_completion": {
+    "active_s2_training_screens": 0,
+    "remaining_screens": [
+      "s0_result_log_monitor_20260603"
+    ]
+  },
+  "failure_scan": {
+    "scope": "all three DIOR-R S2 workdirs",
+    "patterns": [
+      "Traceback",
+      "CUDA OOM",
+      "out-of-memory",
+      "libpng",
+      "CRC",
+      "NoneType",
+      "ValueError",
+      "KeyboardInterrupt",
+      "loss: nan",
+      "loss: inf",
+      "grad_norm: nan",
+      "grad_norm: inf"
+    ],
+    "matches": 0,
+    "result": "clean"
+  },
+  "replicas": [
+    {
+      "replica": 0,
+      "seed": 7407,
+      "gpu": 0,
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep0_20260613",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep0_20260613/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-s1e12-rep0-20260613_dior_r.py",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep0_20260613/20260613_154141/20260613_154141.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep0_20260613/20260613_154141/vis_data/scalars.json",
+      "metrics": [
+        {"epoch": 4, "dota_mAP": 0.6802198291, "dota_AP50": 0.680},
+        {"epoch": 8, "dota_mAP": 0.6878044605, "dota_AP50": 0.688},
+        {"epoch": 12, "dota_mAP": 0.6857557297, "dota_AP50": 0.686}
+      ],
+      "best_epoch": 8,
+      "best_mAP": 0.6878044605,
+      "final_epoch": 12,
+      "final_mAP": 0.6857557297
+    },
+    {
+      "replica": 1,
+      "seed": 8407,
+      "gpu": 1,
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep1_20260613",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep1_20260613/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-s1e12-rep1-20260613_dior_r.py",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep1_20260613/20260613_154141/20260613_154141.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep1_20260613/20260613_154141/vis_data/scalars.json",
+      "metrics": [
+        {"epoch": 4, "dota_mAP": 0.6810527444, "dota_AP50": 0.681},
+        {"epoch": 8, "dota_mAP": 0.6905243397, "dota_AP50": 0.691},
+        {"epoch": 12, "dota_mAP": 0.6832793355, "dota_AP50": 0.683}
+      ],
+      "best_epoch": 8,
+      "best_mAP": 0.6905243397,
+      "final_epoch": 12,
+      "final_mAP": 0.6832793355
+    },
+    {
+      "replica": 2,
+      "seed": 9407,
+      "gpu": 2,
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep2_20260613",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep2_20260613/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-s1e12-rep2-20260613_dior_r.py",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep2_20260613/20260613_154141/20260613_154141.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep2_20260613/20260613_154141/vis_data/scalars.json",
+      "metrics": [
+        {"epoch": 4, "dota_mAP": 0.6833080649, "dota_AP50": 0.683},
+        {"epoch": 8, "dota_mAP": 0.6865741014, "dota_AP50": 0.687},
+        {"epoch": 12, "dota_mAP": 0.6867896318, "dota_AP50": 0.687}
+      ],
+      "best_epoch": 12,
+      "best_mAP": 0.6867896318,
+      "final_epoch": 12,
+      "final_mAP": 0.6867896318
+    }
+  ],
+  "aggregates": {
+    "best_mean_mAP": 0.6883728107,
+    "best_mean_mAP_rounded4": 0.6884,
+    "final_mean_mAP": 0.6852748990,
+    "final_mean_mAP_rounded4": 0.6853,
+    "best_replica": 1,
+    "best_replica_epoch": 8,
+    "best_replica_mAP": 0.6905243397
+  },
+  "decision": "DIOR-R S2 is positive over S0 and S1. Use best and final means separately; both support the DIOR-R stage progression, with best-checkpoint S2 strongest."
+}
