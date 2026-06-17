@@ -182,10 +182,27 @@ def normalize_status(raw: object, text: str = "") -> tuple[str, str]:
         return "diagnostic", "not_paper_evidence"
     if "archive" in raw_text or "superseded" in raw_text:
         return "completed", "archive_only"
+    if "negative-to-neutral" in hay or "negative_to_neutral" in hay:
+        return "completed", "negative_to_neutral"
+    if re.search(r"\bneutral\b", hay):
+        return "completed", "neutral"
     if "completed" in raw_text or "complete" in raw_text:
         return "completed", "positive"
     if "failed" in raw_text or "failure" in raw_text:
         return "failed", "not_paper_evidence"
+    clean_failure_scan = (
+        "no matches" in hay
+        or "failure scan result: clean" in hay
+        or '"result": "clean"' in hay
+        or "result: clean" in hay
+    )
+    if clean_failure_scan and (
+        "completed" in hay
+        or "complete" in hay
+        or "no active" in hay
+        or "cleanly" in hay
+    ):
+        return "completed", "positive"
     if "cuda oom" in hay or "out-of-memory" in hay or "out of memory" in hay:
         return "failed", "oom"
     if re.search(r"\bnan\b|\binf\b", hay):
@@ -209,9 +226,13 @@ def normalize_status(raw: object, text: str = "") -> tuple[str, str]:
 
 def infer_stage(text: str) -> str:
     lower = text.lower()
+    stage_hits: list[tuple[int, str]] = []
     for stage in ("s0", "s1", "s2", "s3", "s4"):
-        if re.search(rf"\b{stage}\b|_{stage}_|-{stage}-", lower):
-            return stage.upper()
+        match = re.search(rf"\b{stage}\b|_{stage}_|-{stage}-", lower)
+        if match:
+            stage_hits.append((match.start(), stage.upper()))
+    if stage_hits:
+        return min(stage_hits)[1]
     if "detector" in lower or "baseline" in lower:
         return "S0 detector"
     return ""
@@ -556,6 +577,58 @@ def collect_formal_records(records: list[ResultRecord]) -> None:
             outcome="below_baseline",
         )
 
+    s3_dota2_path = rel("docs/experiments/20260616_dota2_s3_scene_adapter_loss0_best_complete.json")
+    if s3_dota2_path.exists():
+        s3_dota2 = load_json(s3_dota2_path)
+        for rep in s3_dota2["replicas"]:
+            final_metric = next(m for m in rep["metrics"] if m["epoch"] == rep["final_epoch"])
+            best_metric = next(m for m in rep["metrics"] if m["epoch"] == rep["best_epoch"])
+            add(
+                records,
+                date="2026-06-16",
+                dataset_group="DOTA2 formal",
+                dataset_split="DOTA2_1024_500/ss_val",
+                protocol="valid-PNG formal",
+                experiment=f"S3 scene adapter rep{rep['replica']}",
+                stage="S3",
+                detector="RoI Transformer",
+                status="completed",
+                outcome="negative_to_neutral",
+                best_epoch=int(rep["best_epoch"]),
+                best_map=float(rep["best_mAP"]),
+                best_ap50=float(best_metric.get("dota_AP50")) if "dota_AP50" in best_metric else None,
+                final_epoch=int(rep["final_epoch"]),
+                final_map=float(rep["final_mAP"]),
+                final_ap50=float(final_metric.get("dota_AP50")) if "dota_AP50" in final_metric else None,
+                source_file=rep.get("metric_source", source(s3_dota2_path)),
+                work_dir=rep.get("work_dir", ""),
+                notes=f"seed {rep.get('seed')}; scene-adapter replica from loss-0 best checkpoint",
+            )
+        dota2_s3_best_mean = mean(float(rep["best_mAP"]) for rep in s3_dota2["replicas"])
+        dota2_s3_final_mean = mean(float(rep["final_mAP"]) for rep in s3_dota2["replicas"])
+        assert_close("DOTA2 S3 best mean", dota2_s3_best_mean, 0.6199)
+        assert_close("DOTA2 S3 final mean", dota2_s3_final_mean, 0.6151)
+        if len(s3_dota2["replicas"]) != 3:
+            raise AssertionError(
+                f"DOTA2 S3 archive should contain 3 replicas, got {len(s3_dota2['replicas'])}")
+        add(
+            records,
+            date="2026-06-16",
+            dataset_group="DOTA2 formal",
+            dataset_split="DOTA2_1024_500/ss_val",
+            protocol="valid-PNG formal",
+            experiment="S3 scene adapter mean",
+            stage="S3 aggregate",
+            detector="RoI Transformer",
+            status="completed",
+            outcome="negative_to_neutral",
+            best_map=dota2_s3_best_mean,
+            final_map=dota2_s3_final_mean,
+            n_replicas=len(s3_dota2["replicas"]),
+            source_file=source(s3_dota2_path),
+            notes="three-replica best/final mean; below DOTA2 S2 loss-0 best and final means",
+        )
+
     s0_dior_path = OPENRSD / "work_dirs/dior_r_s0_roi_trans_sanitized_long_20260612_gpu1/20260612_232047/vis_data/scalars.json"
     s0_dior_best, s0_dior_final = summarize_points(load_scalar_points(s0_dior_path))
     assert_close("DIOR-R S0 final", s0_dior_final.map, 0.6544)
@@ -685,8 +758,11 @@ def collect_formal_records(records: list[ResultRecord]) -> None:
         )
     dior_s2_best_mean = mean(float(rep["best_mAP"]) for rep in s2_dior["replicas"])
     dior_s2_final_mean = mean(float(rep["final_mAP"]) for rep in s2_dior["replicas"])
-    assert_close("DIOR-R S2 best mean", dior_s2_best_mean, 0.6884)
-    assert_close("DIOR-R S2 final mean", dior_s2_final_mean, 0.6853)
+    assert_close("DIOR-R S2 best mean", dior_s2_best_mean, 0.6887)
+    assert_close("DIOR-R S2 final mean", dior_s2_final_mean, 0.6856)
+    if len(s2_dior["replicas"]) != 6:
+        raise AssertionError(
+            f"DIOR-R S2 archive should contain 6 replicas, got {len(s2_dior['replicas'])}")
     add(
         records,
         date="2026-06-14",
@@ -702,8 +778,164 @@ def collect_formal_records(records: list[ResultRecord]) -> None:
         final_map=dior_s2_final_mean,
         n_replicas=len(s2_dior["replicas"]),
         source_file=source(s2_dior_path),
-        notes="three-replica best/final mean",
+        notes="six-replica best/final mean; best single rep4 epoch 12",
     )
+
+    s3_dior_path = rel("docs/experiments/20260615_dior_r_geonexus_s3_scene_adapter_replicas_complete.json")
+    if s3_dior_path.exists():
+        s3_dior = load_json(s3_dior_path)
+        for rep in s3_dior["replicas"]:
+            final_metric = next(m for m in rep["metrics"] if m["epoch"] == rep["final_epoch"])
+            best_metric = next(m for m in rep["metrics"] if m["epoch"] == rep["best_epoch"])
+            add(
+                records,
+                date="2026-06-15",
+                dataset_group="DIOR-R formal",
+                dataset_split="DIOR_R_dota/test",
+                protocol="sanitized DIOR-R formal",
+                experiment=f"S3 scene adapter rep{rep['replica']}",
+                stage="S3",
+                detector="RoI Transformer",
+                status="completed",
+                outcome="positive_best_checkpoint_final_tied",
+                best_epoch=int(rep["best_epoch"]),
+                best_map=float(rep["best_mAP"]),
+                best_ap50=float(best_metric.get("dota_AP50")) if "dota_AP50" in best_metric else None,
+                final_epoch=int(rep["final_epoch"]),
+                final_map=float(rep["final_mAP"]),
+                final_ap50=float(final_metric.get("dota_AP50")) if "dota_AP50" in final_metric else None,
+                source_file=rep.get("metric_source", source(s3_dior_path)),
+                work_dir=rep.get("work_dir", ""),
+                notes=f"seed {rep.get('seed')}; scene-adapter replica",
+            )
+        dior_s3_best_mean = mean(float(rep["best_mAP"]) for rep in s3_dior["replicas"])
+        dior_s3_final_mean = mean(float(rep["final_mAP"]) for rep in s3_dior["replicas"])
+        assert_close("DIOR-R S3 best mean", dior_s3_best_mean, 0.6979)
+        assert_close("DIOR-R S3 final mean", dior_s3_final_mean, 0.6859)
+        if len(s3_dior["replicas"]) != 3:
+            raise AssertionError(
+                f"DIOR-R S3 archive should contain 3 replicas, got {len(s3_dior['replicas'])}")
+        add(
+            records,
+            date="2026-06-15",
+            dataset_group="DIOR-R formal",
+            dataset_split="DIOR_R_dota/test",
+            protocol="sanitized DIOR-R formal",
+            experiment="S3 scene adapter mean",
+            stage="S3 aggregate",
+            detector="RoI Transformer",
+            status="completed",
+            outcome="positive_best_checkpoint_final_tied",
+            best_map=dior_s3_best_mean,
+            final_map=dior_s3_final_mean,
+            n_replicas=len(s3_dior["replicas"]),
+            source_file=source(s3_dior_path),
+            notes="three-replica best/final mean; best single rep0 epoch 8",
+        )
+
+    s3_stability_path = rel("docs/experiments/20260615_dior_r_s3_epoch8_lr5e5_stability_complete.json")
+    if s3_stability_path.exists():
+        s3_stability = load_json(s3_stability_path)
+        for rep in s3_stability["replicas"]:
+            final_metric = next(m for m in rep["metrics"] if m["epoch"] == rep["final_epoch"])
+            best_metric = next(m for m in rep["metrics"] if m["epoch"] == rep["best_epoch"])
+            add(
+                records,
+                date="2026-06-15",
+                dataset_group="DIOR-R formal",
+                dataset_split="DIOR_R_dota/test",
+                protocol="sanitized DIOR-R formal",
+                experiment=f"S3 epoch-8 LR5e-5 stability rep{rep['replica']}",
+                stage="S3 stability",
+                detector="RoI Transformer",
+                status="completed",
+                outcome="final_stability_improved_best_lower",
+                best_epoch=int(rep["best_epoch"]),
+                best_map=float(rep["best_mAP"]),
+                best_ap50=float(best_metric.get("dota_AP50")) if "dota_AP50" in best_metric else None,
+                final_epoch=int(rep["final_epoch"]),
+                final_map=float(rep["final_mAP"]),
+                final_ap50=float(final_metric.get("dota_AP50")) if "dota_AP50" in final_metric else None,
+                source_file=source(s3_stability_path),
+                work_dir=rep.get("work_dir", ""),
+                notes="LR5e-5 continuation from original S3 epoch-8 checkpoint",
+            )
+        stability_best_mean = mean(float(rep["best_mAP"]) for rep in s3_stability["replicas"])
+        stability_final_mean = mean(float(rep["final_mAP"]) for rep in s3_stability["replicas"])
+        assert_close("DIOR-R S3 epoch-8 LR5e-5 stability best mean", stability_best_mean, 0.6922)
+        assert_close("DIOR-R S3 epoch-8 LR5e-5 stability final mean", stability_final_mean, 0.6903)
+        if len(s3_stability["replicas"]) != 3:
+            raise AssertionError(
+                f"DIOR-R S3 stability archive should contain 3 replicas, got {len(s3_stability['replicas'])}")
+        add(
+            records,
+            date="2026-06-15",
+            dataset_group="DIOR-R formal",
+            dataset_split="DIOR_R_dota/test",
+            protocol="sanitized DIOR-R formal",
+            experiment="S3 epoch-8 LR5e-5 stability mean",
+            stage="S3 stability aggregate",
+            detector="RoI Transformer",
+            status="completed",
+            outcome="final_stability_improved_best_lower",
+            best_map=stability_best_mean,
+            final_map=stability_final_mean,
+            n_replicas=len(s3_stability["replicas"]),
+            source_file=source(s3_stability_path),
+            notes="lower than original S3 best mean 0.6979; final mean improves over original S3 final 0.6859 and S2 final 0.6856",
+        )
+
+    s3_annealed_path = rel("docs/experiments/20260616_dior_r_s3_stability_e4_lr2p5e5_complete.json")
+    if s3_annealed_path.exists():
+        s3_annealed = load_json(s3_annealed_path)
+        for rep in s3_annealed["replicas"]:
+            final_metric = next(m for m in rep["metrics"] if m["epoch"] == rep["final_epoch"])
+            best_metric = next(m for m in rep["metrics"] if m["epoch"] == rep["best_epoch"])
+            add(
+                records,
+                date="2026-06-16",
+                dataset_group="DIOR-R formal",
+                dataset_split="DIOR_R_dota/test",
+                protocol="sanitized DIOR-R formal",
+                experiment=f"S3 stability e4 LR2.5e-5 rep{rep['replica']}",
+                stage="S3 stability",
+                detector="RoI Transformer",
+                status="completed",
+                outcome="neutral",
+                best_epoch=int(rep["best_epoch"]),
+                best_map=float(rep["best_mAP"]),
+                best_ap50=float(best_metric.get("dota_AP50")) if "dota_AP50" in best_metric else None,
+                final_epoch=int(rep["final_epoch"]),
+                final_map=float(rep["final_mAP"]),
+                final_ap50=float(final_metric.get("dota_AP50")) if "dota_AP50" in final_metric else None,
+                source_file=source(s3_annealed_path),
+                work_dir=rep.get("work_dir", ""),
+                notes="LR2.5e-5 continuation from LR5e-5 stability epoch-4 checkpoint",
+            )
+        annealed_best_mean = mean(float(rep["best_mAP"]) for rep in s3_annealed["replicas"])
+        annealed_final_mean = mean(float(rep["final_mAP"]) for rep in s3_annealed["replicas"])
+        assert_close("DIOR-R S3 stability e4 LR2.5e-5 best mean", annealed_best_mean, 0.6908)
+        assert_close("DIOR-R S3 stability e4 LR2.5e-5 final mean", annealed_final_mean, 0.6892)
+        if len(s3_annealed["replicas"]) != 3:
+            raise AssertionError(
+                f"DIOR-R S3 annealed stability archive should contain 3 replicas, got {len(s3_annealed['replicas'])}")
+        add(
+            records,
+            date="2026-06-16",
+            dataset_group="DIOR-R formal",
+            dataset_split="DIOR_R_dota/test",
+            protocol="sanitized DIOR-R formal",
+            experiment="S3 stability e4 LR2.5e-5 mean",
+            stage="S3 stability aggregate",
+            detector="RoI Transformer",
+            status="completed",
+            outcome="neutral",
+            best_map=annealed_best_mean,
+            final_map=annealed_final_mean,
+            n_replicas=len(s3_annealed["replicas"]),
+            source_file=source(s3_annealed_path),
+            notes="neutral final-stability follow-up; final mean above S2 final 0.6856 but below useful threshold 0.6903",
+        )
 
 
 def add_json_metric_rows(records: list[ResultRecord]) -> None:

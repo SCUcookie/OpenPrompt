@@ -127,7 +127,7 @@ The ablation will compare fixed fusion, learned soft fusion, and Gumbel based ro
 
 \subsection{Datasets and Evaluation Metrics}
 
-The primary evaluation will use DOTA2 style rotated object detection. Images are split into manageable tiles, and annotations are converted to oriented boxes. DIOR-R is the required second dataset for cross-dataset validation, using the local \texttt{DIOR\_R\_dota/train\_val} and \texttt{DIOR\_R\_dota/test} splits. FAIR1M is reserved for a later fine-grained hierarchy study if DOTA2 and DIOR-R are stable. The method should be evaluated under standard supervised training and under a semi supervised extension where additional unlabeled or weakly labeled tiles are purified before use. The same prompt bank should be evaluated across datasets and prompt variants to measure vocabulary robustness.
+The primary evaluation uses DOTA2 style rotated object detection. Images are split into manageable tiles, and annotations are converted to oriented boxes. DIOR-R is the required second dataset for cross-dataset validation, using the local \texttt{DIOR\_R\_dota/train\_val} and \texttt{DIOR\_R\_dota/test} splits. Current measured evidence covers supervised S0, hierarchy S1, hierarchy regularization S2, and a DIOR-R scene-adapter S3 ablation. FAIR1M and semi supervised pseudo-label training remain paused until the DOTA2 and DIOR-R supervised evidence is fully analyzed. The same prompt bank should be evaluated across datasets and prompt variants to measure vocabulary robustness.
 
 The main metrics are rotated mean average precision, class wise AP, and confusion statistics for fine grained categories. Because prompt methods are sensitive to wording, we also plan a prompt robustness evaluation that compares exact class labels, alias prompts, parent level prompts, and mixed prompt sets. Runtime and memory should be reported because prompt banks and purification can introduce nontrivial overhead.
 
@@ -138,7 +138,7 @@ The comparison experiments should separate conventional oriented detection, open
 \begin{table}[t]
 \centering
 \small
-\caption{Comparison settings to run before submission. DOTA2 is the primary benchmark and DIOR-R is the required cross-dataset validation. The final manuscript should replace this protocol table with measured rotated mAP and class wise AP.}
+\caption{Comparison settings for the paper-facing evaluation. DOTA2 is the primary benchmark and DIOR-R is the required cross-dataset validation. Completed S0--S3 measurements should be reported separately from paused pseudo-label and optional routing stages.}
 \begin{tabular}{lll}
 \toprule
 Group & Method setting & Purpose \\
@@ -161,16 +161,16 @@ The first baseline is the local OpenPrompt and OpenRSD style detector without th
 \begin{table}[t]
 \centering
 \small
-\caption{Planned experimental stages for the proposed method. The entries describe the evaluation purpose of each stage instead of reporting completed results.}
+\caption{Experimental stages for the proposed method. S0--S3 have measured DOTA2 or DIOR-R evidence; pseudo-label and optional routing claims remain future work until corresponding experiments are completed.}
 \begin{tabular}{lll}
 \toprule
 Stage & Added component & Evaluation focus \\
 \midrule
 S0 & Oriented detector baseline & Rotated mAP and class wise AP \\
 S1 & Hierarchical prompt bank & Prompt robustness and fine grained confusion \\
-S2 & Scene context adapter & Small object AP and context sensitive classes \\
-S3 & Purified pseudo labels & Pseudo label precision and semi supervised gain \\
-S4 & Optional routing & Branch usage and cost accuracy tradeoff \\
+S2 & Hierarchy regularization & Stability across best and final checkpoints \\
+S3 & Scene context adapter & Context-sensitive gain and final-checkpoint stability \\
+S4 & Purified pseudo labels or optional routing & Paused future evidence \\
 \bottomrule
 \end{tabular}
 \label{tab:ablation}
@@ -178,7 +178,7 @@ S4 & Optional routing & Branch usage and cost accuracy tradeoff \\
 
 \subsection{Required Final Analyses}
 
-The final experiment section should report prompt robustness, pseudo label quality, and efficiency with measured values. Prompt robustness should compare exact class names, alias prompts, parent level prompts, and mixed prompt sets. Pseudo label quality should compare teacher only predictions, hierarchy filtering, vision language filtering, and the full purification score on a held out labeled subset. Efficiency should report parameters, memory, and latency per tile for the baseline, prompt bank, context adapter, and optional routing. These analyses should appear only after the corresponding experiments have been completed. The formal tables should prioritize DOTA2 and DIOR-R; DOTA v1.0 or DOTA v1.5 numbers may appear only as clearly marked archive diagnostics.
+The final experiment section should report prompt robustness, checkpoint stability, and efficiency with measured values. Prompt robustness should compare exact class names, alias prompts, parent level prompts, and mixed prompt sets. For the current evidence package, checkpoint stability is important: DOTA2 S2 is repeatably positive at the best checkpoint but slightly below S1 at the final checkpoint, while DIOR-R S3 is strong at the best checkpoint but roughly tied with S2 at the final checkpoint. Pseudo-label quality should appear only after pseudo-label experiments are actually completed. Efficiency should report parameters, memory, and latency per tile for the baseline, prompt bank, context adapter, and any later optional module. The formal tables should prioritize DOTA2 and DIOR-R; DOTA v1.0 or DOTA v1.5 numbers may appear only as clearly marked archive diagnostics.
 
 \subsection{Analysis Plan}
 
@@ -188,15 +188,15 @@ Failure analysis should focus on class pairs that are naturally confusing in aer
 
 \subsection{Current Implementation Status}
 
-The current repository implements the data loading, prompt bank, lightweight detector scaffold, DOTA style validation path, and an anchored box decoding repair path. The reduced tiled DOTA v1.0 and DOTA v1.5 scaffold runs, as well as the later DOTA v1.5 GeoNexus S1/S2/S3 diagnostics, are archive-only evidence for implementation behavior. They must not be presented as the paper's main performance evidence. The immediate experimental priority is to finish the DOTA2 closed-set baseline table, port the most defensible hierarchy-aware prompt scoring or hierarchy regularization module to the strongest stable DOTA2 detector, and then reproduce that minimal module on DIOR-R after a clean DIOR-R baseline smoke.
+The current repository implements the data loading, prompt bank, DOTA style validation path, hierarchy regularization, and scene-adapter ablations on top of the OpenRSD/MMRotate detector route. The reduced tiled DOTA v1.0 and DOTA v1.5 scaffold runs, as well as the later DOTA v1.5 GeoNexus S1/S2/S3 diagnostics, are archive-only evidence for implementation behavior. They must not be presented as the paper's main performance evidence.
 
-Current DOTA2 closed-set evidence includes RoI Transformer, Oriented R-CNN, S2ANet, and RTMDet-M baselines, with R3Det and RTMDet-L still under monitoring. GeoNexus S3/S4 should not be advanced until the DOTA2 S1/S2 module beats or clearly complements the strongest closed-set baseline. A standard oriented detector such as RoI Transformer or Oriented R-CNN should also be used for the first DIOR-R baseline before launching the matching GeoNexus variant.
+Current DOTA2 evidence on \texttt{DOTA2\_1024\_500/ss\_val} is modest but repeatable: RoI Transformer S0 is 0.6088 mAP, S1 is 0.6177, and S2 loss-0 has a seven-replica best mean of 0.6206 with a final mean of 0.6167. Current DIOR-R evidence on sanitized \texttt{DIOR\_R\_dota/test} is stronger: RoI Transformer S0 final is 0.6544, S1 final mean is 0.6720, S2 best/final means are 0.6887/0.6856, and S3 scene-adapter best/final means are 0.6979/0.6859. These numbers support hierarchy and context-adapter ablations when best and final checkpoints are reported separately. They do not yet support completed pseudo-label, FAIR1M, S4, or submission-positioning claims.
 
 \section{Summary}
 
 We presented a short method paper for vision language guided hierarchical prompt learning in remote sensing object detection. The proposed GeoNexus RSD direction updates an OpenPrompt and OpenRSD based plan into a detection centered study built around taxonomy aware semantics, scene context adaptation, and pseudo label purification. DOTA2 rotated detection is the main benchmark, DIOR-R is the required cross-dataset validation, and FAIR1M is optional fine-grained evidence. Optional routing remains a lightweight extension rather than the core claim. Any final claim must identify the exact dataset version, split, checkpoint, config, and evaluation protocol.
 
-This work is still limited by the absence of completed benchmark results. Therefore, the paper should be read as a method and experiment design document rather than an empirical performance report. Another limitation is that vision language based filtering may reject correct but rare aerial objects if the external model lacks remote sensing knowledge. The final version should report measured accuracy, rejected pseudo label examples, and failure cases before making any performance claim.
+This work is still limited by checkpoint sensitivity and by the absence of completed pseudo-label and FAIR1M evidence. Therefore, the paper should present the completed DOTA2 and DIOR-R measurements cautiously, separating best-checkpoint gains from final-checkpoint behavior. Another limitation is that vision language based filtering may reject correct but rare aerial objects if the external model lacks remote sensing knowledge; this claim remains prospective until pseudo-label experiments are completed.
 
 \begin{thebibliography}{15}
 

@@ -13,7 +13,7 @@
     ]
   },
   "failure_scan": {
-    "scope": "all three DIOR-R S2 workdirs",
+    "scope": "all six DIOR-R S2 workdirs",
     "patterns": [
       "Traceback",
       "CUDA OOM",
@@ -85,16 +85,70 @@
       "best_mAP": 0.6867896318,
       "final_epoch": 12,
       "final_mAP": 0.6867896318
+    },
+    {
+      "replica": 3,
+      "seed": 10407,
+      "gpu": 0,
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep3_20260614",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep3_20260614/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-s1e12-rep3-20260614_dior_r.py",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep3_20260614/20260614_111933/20260614_111933.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep3_20260614/20260614_111933/vis_data/scalars.json",
+      "metrics": [
+        {"epoch": 4, "dota_mAP": 0.6804548502, "dota_AP50": 0.680},
+        {"epoch": 8, "dota_mAP": 0.6872650385, "dota_AP50": 0.687},
+        {"epoch": 12, "dota_mAP": 0.6807501912, "dota_AP50": 0.681}
+      ],
+      "best_epoch": 8,
+      "best_mAP": 0.6872650385,
+      "final_epoch": 12,
+      "final_mAP": 0.6807501912
+    },
+    {
+      "replica": 4,
+      "seed": 11407,
+      "gpu": 1,
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep4_20260614",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep4_20260614/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-s1e12-rep4-20260614_dior_r.py",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep4_20260614/20260614_111933/20260614_111933.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep4_20260614/20260614_111933/vis_data/scalars.json",
+      "metrics": [
+        {"epoch": 4, "dota_mAP": 0.6826058626, "dota_AP50": 0.683},
+        {"epoch": 8, "dota_mAP": 0.6884286404, "dota_AP50": 0.688},
+        {"epoch": 12, "dota_mAP": 0.6914003491, "dota_AP50": 0.691}
+      ],
+      "best_epoch": 12,
+      "best_mAP": 0.6914003491,
+      "final_epoch": 12,
+      "final_mAP": 0.6914003491
+    },
+    {
+      "replica": 5,
+      "seed": 12407,
+      "gpu": 2,
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep5_20260614",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep5_20260614/roi-trans-le90_r50_fpn_remoteclip-s2-hierarchy-reg-s1e12-rep5-20260614_dior_r.py",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep5_20260614/20260614_111934/20260614_111934.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep5_20260614/20260614_111934/vis_data/scalars.json",
+      "metrics": [
+        {"epoch": 4, "dota_mAP": 0.6787174940, "dota_AP50": 0.679},
+        {"epoch": 8, "dota_mAP": 0.6882398725, "dota_AP50": 0.688},
+        {"epoch": 12, "dota_mAP": 0.6857093573, "dota_AP50": 0.686}
+      ],
+      "best_epoch": 8,
+      "best_mAP": 0.6882398725,
+      "final_epoch": 12,
+      "final_mAP": 0.6857093573
     }
   ],
   "aggregates": {
-    "best_mean_mAP": 0.6883728107,
-    "best_mean_mAP_rounded4": 0.6884,
-    "final_mean_mAP": 0.6852748990,
-    "final_mean_mAP_rounded4": 0.6853,
-    "best_replica": 1,
-    "best_replica_epoch": 8,
-    "best_replica_mAP": 0.6905243397
+    "best_mean_mAP": 0.6886706153,
+    "best_mean_mAP_rounded4": 0.6887,
+    "final_mean_mAP": 0.6856140991,
+    "final_mean_mAP_rounded4": 0.6856,
+    "best_replica": 4,
+    "best_replica_epoch": 12,
+    "best_replica_mAP": 0.6914003491
   },
-  "decision": "DIOR-R S2 is positive over S0 and S1. Use best and final means separately; both support the DIOR-R stage progression, with best-checkpoint S2 strongest."
+  "decision": "DIOR-R S2 is positive over S0 and S1 across six replicas. Use rep4 epoch 12 as the strongest S2 checkpoint for the S3 scene-adapter launch."
 }

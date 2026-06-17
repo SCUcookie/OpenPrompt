@@ -1,0 +1,82 @@
+{
+  "experiment": "dior_r_s3_epoch8_lr5e5_stability",
+  "date": "2026-06-15",
+  "status": "completed",
+  "dataset": "DIOR_R_dota/test",
+  "protocol": "sanitized DIOR_R_dota train_val/test labels, MMRotate DOTAMetric mAP at IoU 0.5",
+  "source": "S3 epoch-8 LR5e-5 stability continuation",
+  "failure_scan": {
+    "scope": "three DIOR-R S3 epoch-8 LR5e-5 stability workdirs",
+    "patterns": [
+      "Traceback",
+      "OOM",
+      "libpng",
+      "CRC",
+      "NoneType",
+      "ValueError",
+      "KeyboardInterrupt",
+      "loss/grad_norm nan/inf"
+    ],
+    "matches": 0,
+    "result": "clean"
+  },
+  "replicas": [
+    {
+      "replica": 0,
+      "source": "S3 epoch-8 LR5e-5",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_epoch8_lr5e5_stability_rep0_20260615",
+      "metrics": [
+        {"epoch": 1, "dota_mAP": 0.693571},
+        {"epoch": 2, "dota_mAP": 0.697102},
+        {"epoch": 3, "dota_mAP": 0.691667},
+        {"epoch": 4, "dota_mAP": 0.691846}
+      ],
+      "best_epoch": 2,
+      "best_mAP": 0.697102,
+      "final_epoch": 4,
+      "final_mAP": 0.691846
+    },
+    {
+      "replica": 1,
+      "source": "S3 epoch-8 LR5e-5",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_epoch8_lr5e5_stability_rep1_20260615",
+      "metrics": [
+        {"epoch": 1, "dota_mAP": 0.687566},
+        {"epoch": 2, "dota_mAP": 0.686475},
+        {"epoch": 3, "dota_mAP": 0.687118},
+        {"epoch": 4, "dota_mAP": 0.687152}
+      ],
+      "best_epoch": 1,
+      "best_mAP": 0.687566,
+      "final_epoch": 4,
+      "final_mAP": 0.687152
+    },
+    {
+      "replica": 2,
+      "source": "S3 epoch-8 LR5e-5",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_epoch8_lr5e5_stability_rep2_20260615",
+      "metrics": [
+        {"epoch": 1, "dota_mAP": 0.690737},
+        {"epoch": 2, "dota_mAP": 0.685418},
+        {"epoch": 3, "dota_mAP": 0.687939},
+        {"epoch": 4, "dota_mAP": 0.691912}
+      ],
+      "best_epoch": 4,
+      "best_mAP": 0.691912,
+      "final_epoch": 4,
+      "final_mAP": 0.691912
+    }
+  ],
+  "aggregates": {
+    "best_mean_mAP": 0.6921933333,
+    "best_mean_mAP_rounded6": 0.692193,
+    "final_mean_mAP": 0.6903033333,
+    "final_mean_mAP_rounded6": 0.690303
+  },
+  "comparisons": {
+    "original_s3_best_mean": 0.6979,
+    "original_s3_final_mean": 0.6859,
+    "s2_final_mean": 0.6856
+  },
+  "interpretation": "Lower than original S3 best mean 0.6979, but improves final stability over original S3 final 0.6859 and S2 final 0.6856."
+}

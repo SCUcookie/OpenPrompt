@@ -1,0 +1,127 @@
+{
+  "experiment": "dior_r_geonexus_s3_scene_adapter_replicas",
+  "date": "2026-06-15",
+  "status": "completed",
+  "dataset": "DIOR_R_dota/test",
+  "protocol": "sanitized DIOR_R_dota train_val/test labels, MMRotate DOTAMetric mAP at IoU 0.5",
+  "source_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s2_hierarchy_reg_s1e12_rep4_20260614/epoch_12.pth",
+  "source_checkpoint_metric": {
+    "stage": "S2",
+    "replica": 4,
+    "epoch": 12,
+    "dota_mAP": 0.6914003491
+  },
+  "prompt_artifact": "/data5/2025/ldh/New/artifacts/generated/remoteclip_vit_b32_dior_r_s2_hierarchy_prompt_embeddings.pt",
+  "screen_status_after_completion": {
+    "active_s3_training_screens": 0,
+    "remaining_screens": [
+      "s0_result_log_monitor_20260603"
+    ]
+  },
+  "gpu_status_after_completion": {
+    "gpu_memory_used_mib": {
+      "0": 14,
+      "1": 14,
+      "2": 14,
+      "3": 14,
+      "4": 14,
+      "5": 14,
+      "6": 14
+    },
+    "gpu_utilization_percent": {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0
+    }
+  },
+  "failure_scan": {
+    "scope": "all three DIOR-R S3 scene-adapter workdirs",
+    "patterns": [
+      "Traceback",
+      "CUDA OOM",
+      "out-of-memory",
+      "out of memory",
+      "libpng",
+      "CRC",
+      "NoneType",
+      "ValueError",
+      "KeyboardInterrupt",
+      "loss: nan",
+      "loss: inf",
+      "grad_norm: nan",
+      "grad_norm: inf"
+    ],
+    "matches": 0,
+    "result": "clean"
+  },
+  "replicas": [
+    {
+      "replica": 0,
+      "seed": 13407,
+      "gpu": 0,
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_s2e12_rep0_20260614",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_s2e12_rep0_20260614/roi-trans-le90_r50_fpn_remoteclip-s3-scene-adapter-s2e12-rep0-20260614_dior_r.py",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_s2e12_rep0_20260614/20260614_161203/20260614_161203.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_s2e12_rep0_20260614/20260614_161203/vis_data/scalars.json",
+      "metrics": [
+        {"epoch": 4, "dota_mAP": 0.6940331459, "dota_AP50": 0.694},
+        {"epoch": 8, "dota_mAP": 0.6991876364, "dota_AP50": 0.699},
+        {"epoch": 12, "dota_mAP": 0.6793321371, "dota_AP50": 0.679}
+      ],
+      "best_epoch": 8,
+      "best_mAP": 0.6991876364,
+      "final_epoch": 12,
+      "final_mAP": 0.6793321371
+    },
+    {
+      "replica": 1,
+      "seed": 14407,
+      "gpu": 1,
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_s2e12_rep1_20260614",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_s2e12_rep1_20260614/roi-trans-le90_r50_fpn_remoteclip-s3-scene-adapter-s2e12-rep1-20260614_dior_r.py",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_s2e12_rep1_20260614/20260614_161203/20260614_161203.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_s2e12_rep1_20260614/20260614_161203/vis_data/scalars.json",
+      "metrics": [
+        {"epoch": 4, "dota_mAP": 0.6902822256, "dota_AP50": 0.690},
+        {"epoch": 8, "dota_mAP": 0.6989983320, "dota_AP50": 0.699},
+        {"epoch": 12, "dota_mAP": 0.6870833635, "dota_AP50": 0.687}
+      ],
+      "best_epoch": 8,
+      "best_mAP": 0.6989983320,
+      "final_epoch": 12,
+      "final_mAP": 0.6870833635
+    },
+    {
+      "replica": 2,
+      "seed": 15407,
+      "gpu": 2,
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_s2e12_rep2_20260614",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_s2e12_rep2_20260614/roi-trans-le90_r50_fpn_remoteclip-s3-scene-adapter-s2e12-rep2-20260614_dior_r.py",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_s2e12_rep2_20260614/20260614_161203/20260614_161203.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_s2e12_rep2_20260614/20260614_161203/vis_data/scalars.json",
+      "metrics": [
+        {"epoch": 4, "dota_mAP": 0.6927667856, "dota_AP50": 0.693},
+        {"epoch": 8, "dota_mAP": 0.6956289411, "dota_AP50": 0.696},
+        {"epoch": 12, "dota_mAP": 0.6912328601, "dota_AP50": 0.691}
+      ],
+      "best_epoch": 8,
+      "best_mAP": 0.6956289411,
+      "final_epoch": 12,
+      "final_mAP": 0.6912328601
+    }
+  ],
+  "aggregates": {
+    "best_mean_mAP": 0.6979383032,
+    "best_mean_mAP_rounded4": 0.6979,
+    "final_mean_mAP": 0.6858827869,
+    "final_mean_mAP_rounded4": 0.6859,
+    "best_replica": 0,
+    "best_replica_epoch": 8,
+    "best_replica_mAP": 0.6991876364
+  },
+  "interpretation": "DIOR-R S3 gives strong best-checkpoint scene-adapter evidence over S2, but final-checkpoint evidence is only roughly tied with S2. Use best and final means separately."
+}

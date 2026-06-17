@@ -1,0 +1,106 @@
+{
+  "experiment": "dota2_s3_scene_adapter_loss0_best",
+  "date": "2026-06-16",
+  "status": "completed",
+  "dataset": "DOTA2_1024_500/ss_val",
+  "protocol": "valid-PNG DOTA2_1024_500 train/ss_val labels, MMRotate DOTAMetric mAP at IoU 0.5",
+  "source": "DOTA2 S3 scene-adapter replicas launched 2026-06-15 from each replica's strongest DOTA2 S2 loss-0 early checkpoint",
+  "screen_status_after_completion": {
+    "active_s3_training_screens": 0,
+    "remaining_screens": [
+      "s0_result_log_monitor_20260603"
+    ]
+  },
+  "failure_scan": {
+    "scope": "all three DOTA2 S3 scene-adapter workdirs",
+    "patterns": [
+      "Traceback",
+      "OOM",
+      "libpng",
+      "CRC",
+      "NoneType",
+      "ValueError",
+      "KeyboardInterrupt",
+      "loss/grad_norm nan/inf"
+    ],
+    "matches": 0,
+    "result": "clean"
+  },
+  "replicas": [
+    {
+      "replica": 3407,
+      "seed": 93407,
+      "gpu": 0,
+      "source_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep3407_20260610/epoch_1.pth",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s3_scene_adapter_loss0_best_rep3407_20260615",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s3_scene_adapter_loss0_best_rep3407_20260615/roi-trans-le90_r50_fpn_remoteclip-s3-scene-adapter-loss0-best-rep3407-20260615_dota2.py",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s3_scene_adapter_loss0_best_rep3407_20260615/20260615_150453/20260615_150453.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s3_scene_adapter_loss0_best_rep3407_20260615/20260615_150453/vis_data/scalars.json",
+      "metrics": [
+        {"epoch": 1, "dota_mAP": 0.6191143989562988, "dota_AP50": 0.619},
+        {"epoch": 2, "dota_mAP": 0.6214315891265869, "dota_AP50": 0.621},
+        {"epoch": 3, "dota_mAP": 0.614353358745575, "dota_AP50": 0.614},
+        {"epoch": 4, "dota_mAP": 0.6132301092147827, "dota_AP50": 0.613}
+      ],
+      "best_epoch": 2,
+      "best_mAP": 0.6214315891265869,
+      "final_epoch": 4,
+      "final_mAP": 0.6132301092147827
+    },
+    {
+      "replica": 4407,
+      "seed": 94407,
+      "gpu": 1,
+      "source_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep4407_20260610/epoch_3.pth",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s3_scene_adapter_loss0_best_rep4407_20260615",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s3_scene_adapter_loss0_best_rep4407_20260615/roi-trans-le90_r50_fpn_remoteclip-s3-scene-adapter-loss0-best-rep4407-20260615_dota2.py",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s3_scene_adapter_loss0_best_rep4407_20260615/20260615_150453/20260615_150453.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s3_scene_adapter_loss0_best_rep4407_20260615/20260615_150453/vis_data/scalars.json",
+      "metrics": [
+        {"epoch": 1, "dota_mAP": 0.6175747513771057, "dota_AP50": 0.618},
+        {"epoch": 2, "dota_mAP": 0.6173363924026489, "dota_AP50": 0.617},
+        {"epoch": 3, "dota_mAP": 0.6159054040908813, "dota_AP50": 0.616},
+        {"epoch": 4, "dota_mAP": 0.6153845191001892, "dota_AP50": 0.615}
+      ],
+      "best_epoch": 1,
+      "best_mAP": 0.6175747513771057,
+      "final_epoch": 4,
+      "final_mAP": 0.6153845191001892
+    },
+    {
+      "replica": 5407,
+      "seed": 95407,
+      "gpu": 2,
+      "source_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep5407_20260610/epoch_1.pth",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s3_scene_adapter_loss0_best_rep5407_20260615",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s3_scene_adapter_loss0_best_rep5407_20260615/roi-trans-le90_r50_fpn_remoteclip-s3-scene-adapter-loss0-best-rep5407-20260615_dota2.py",
+      "runtime_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s3_scene_adapter_loss0_best_rep5407_20260615/20260615_150453/20260615_150453.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s3_scene_adapter_loss0_best_rep5407_20260615/20260615_150453/vis_data/scalars.json",
+      "metrics": [
+        {"epoch": 1, "dota_mAP": 0.6207771897315979, "dota_AP50": 0.621},
+        {"epoch": 2, "dota_mAP": 0.6203844547271729, "dota_AP50": 0.620},
+        {"epoch": 3, "dota_mAP": 0.6112657189369202, "dota_AP50": 0.611},
+        {"epoch": 4, "dota_mAP": 0.6166196465492249, "dota_AP50": 0.617}
+      ],
+      "best_epoch": 1,
+      "best_mAP": 0.6207771897315979,
+      "final_epoch": 4,
+      "final_mAP": 0.6166196465492249
+    }
+  ],
+  "aggregates": {
+    "best_mean_mAP": 0.6199271768,
+    "best_mean_mAP_rounded4": 0.6199,
+    "final_mean_mAP": 0.6150780916,
+    "final_mean_mAP_rounded4": 0.6151,
+    "best_replica": 3407,
+    "best_replica_epoch": 2,
+    "best_replica_mAP": 0.6214315891265869
+  },
+  "comparisons": {
+    "dota2_s1_final_mAP": 0.6177,
+    "dota2_s2_loss0_best_mean": 0.620606,
+    "dota2_s2_loss0_final_mean": 0.616655
+  },
+  "interpretation": "DOTA2 S3 completed cleanly but is not stronger than S2 loss-0: best mean 0.619927 is below S2 best mean 0.620606, and final mean 0.615078 is below S2 final mean 0.616655. Treat as exploratory/negative-to-neutral DOTA2 S3 evidence."
+}

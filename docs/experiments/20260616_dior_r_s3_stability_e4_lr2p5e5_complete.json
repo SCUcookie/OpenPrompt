@@ -1,0 +1,114 @@
+{
+  "experiment": "dior_r_s3_stability_e4_lr2p5e5",
+  "date": "2026-06-16",
+  "status": "completed",
+  "dataset": "DIOR_R_dota/test",
+  "protocol": "sanitized DIOR_R_dota train_val/test labels, MMRotate DOTAMetric mAP at IoU 0.5",
+  "source": "DIOR-R S3 LR5e-5 stability epoch-4 checkpoint continuation with LR 2.5e-5 for four epochs",
+  "screen_status_after_completion": {
+    "active_training_screens": 0,
+    "remaining_screens": [
+      "s0_result_log_monitor_20260603"
+    ]
+  },
+  "failure_scan": {
+    "scope": "three DIOR-R S3 stability e4 LR2.5e-5 workdirs",
+    "patterns": [
+      "Traceback",
+      "OOM",
+      "libpng",
+      "CRC",
+      "NoneType",
+      "ValueError",
+      "KeyboardInterrupt",
+      "loss/grad_norm nan/inf"
+    ],
+    "matches": 0,
+    "result": "clean"
+  },
+  "replicas": [
+    {
+      "replica": 0,
+      "seed": 13407,
+      "gpu": 0,
+      "source_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_epoch8_lr5e5_stability_rep0_20260615/epoch_4.pth",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_e4_lr2p5e5_rep0_20260616",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_e4_lr2p5e5_rep0_20260616/roi-trans-le90_r50_fpn_remoteclip-s3-scene-adapter-stability-e4-lr2p5e5-rep0-20260616_dior_r.py",
+      "launch_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_e4_lr2p5e5_rep0_20260616/launch_20260616_gpu0.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_e4_lr2p5e5_rep0_20260616/20260616_101046/vis_data/scalars.json",
+      "exit_code": 0,
+      "metrics": [
+        {"epoch": 1, "dota_mAP": 0.6910120248794556, "dota_AP50": 0.691},
+        {"epoch": 2, "dota_mAP": 0.689341127872467, "dota_AP50": 0.689},
+        {"epoch": 3, "dota_mAP": 0.6950206160545349, "dota_AP50": 0.695},
+        {"epoch": 4, "dota_mAP": 0.6923807859420776, "dota_AP50": 0.692}
+      ],
+      "best_epoch": 3,
+      "best_mAP": 0.6950206160545349,
+      "final_epoch": 4,
+      "final_mAP": 0.6923807859420776
+    },
+    {
+      "replica": 1,
+      "seed": 14407,
+      "gpu": 1,
+      "source_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_epoch8_lr5e5_stability_rep1_20260615/epoch_4.pth",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_e4_lr2p5e5_rep1_20260616",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_e4_lr2p5e5_rep1_20260616/roi-trans-le90_r50_fpn_remoteclip-s3-scene-adapter-stability-e4-lr2p5e5-rep1-20260616_dior_r.py",
+      "launch_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_e4_lr2p5e5_rep1_20260616/launch_20260616_gpu1.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_e4_lr2p5e5_rep1_20260616/20260616_101046/vis_data/scalars.json",
+      "exit_code": 0,
+      "metrics": [
+        {"epoch": 1, "dota_mAP": 0.6868385672569275, "dota_AP50": 0.687},
+        {"epoch": 2, "dota_mAP": 0.6869837641716003, "dota_AP50": 0.687},
+        {"epoch": 3, "dota_mAP": 0.6872035264968872, "dota_AP50": 0.687},
+        {"epoch": 4, "dota_mAP": 0.6871313452720642, "dota_AP50": 0.687}
+      ],
+      "best_epoch": 3,
+      "best_mAP": 0.6872035264968872,
+      "final_epoch": 4,
+      "final_mAP": 0.6871313452720642
+    },
+    {
+      "replica": 2,
+      "seed": 15407,
+      "gpu": 2,
+      "source_checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_epoch8_lr5e5_stability_rep2_20260615/epoch_4.pth",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_e4_lr2p5e5_rep2_20260616",
+      "config": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_e4_lr2p5e5_rep2_20260616/roi-trans-le90_r50_fpn_remoteclip-s3-scene-adapter-stability-e4-lr2p5e5-rep2-20260616_dior_r.py",
+      "launch_log": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_e4_lr2p5e5_rep2_20260616/launch_20260616_gpu2.log",
+      "metric_source": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_e4_lr2p5e5_rep2_20260616/20260616_101046/vis_data/scalars.json",
+      "exit_code": 0,
+      "metrics": [
+        {"epoch": 1, "dota_mAP": 0.6876363158226013, "dota_AP50": 0.688},
+        {"epoch": 2, "dota_mAP": 0.6883355379104614, "dota_AP50": 0.688},
+        {"epoch": 3, "dota_mAP": 0.6902848482131958, "dota_AP50": 0.69},
+        {"epoch": 4, "dota_mAP": 0.6881526708602905, "dota_AP50": 0.688}
+      ],
+      "best_epoch": 3,
+      "best_mAP": 0.6902848482131958,
+      "final_epoch": 4,
+      "final_mAP": 0.6881526708602905
+    }
+  ],
+  "aggregates": {
+    "best_mean_mAP": 0.6908363302548727,
+    "best_mean_mAP_rounded6": 0.690836,
+    "final_mean_mAP": 0.6892216006914774,
+    "final_mean_mAP_rounded6": 0.689222,
+    "best_replica": 0,
+    "best_replica_epoch": 3,
+    "best_replica_mAP": 0.6950206160545349
+  },
+  "comparisons": {
+    "previous_lr5e5_stability_best_mean": 0.692193,
+    "previous_lr5e5_stability_final_mean": 0.690303,
+    "original_s3_best_mean": 0.6979,
+    "original_s3_final_mean": 0.6859,
+    "s2_final_mean": 0.6856,
+    "strong_final_stability_threshold": 0.6922,
+    "useful_final_stability_threshold": 0.6903
+  },
+  "decision": "neutral",
+  "interpretation": "Final mean 0.689222 is above DIOR-R S2 final mean 0.6856 but below the useful final-stability threshold 0.6903. Archive without automatic extension; keep S4, pseudo-labeling, FAIR1M, routing, and DOTA2 follow-ups paused unless a separate route decision is made."
+}
