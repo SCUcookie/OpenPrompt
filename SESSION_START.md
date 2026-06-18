@@ -8,6 +8,26 @@ If you open a new session, the only instruction you need is:
 Read /data5/2025/ldh/OpenPrompt/SESSION_START.md and start working from it.
 ```
 
+## Startup Protocol
+
+Prefer `New/` as the project memory root for current agent startup state.
+Start with `New/AGENTS.md`, then read only the top operational sections of
+`New/PROJECT_INSTRUCTIONS.md` plus the latest dated experiment note relevant to
+the task. Do not load or summarize the full history unless the task requires
+route evidence or provenance.
+
+Use concise, status-first workflows. For experiment status, report screen names,
+GPU residency, latest log marker, scoped failure-scan result, and next action.
+
+GPU checks from the normal sandbox can be misleading because host `/dev/nvidia*`
+may be hidden. Use approved or escalated host access for real GPU process checks
+and launches. The standard checks are:
+
+```bash
+nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv,noheader
+ps -p PID1,PID2,PID3 -o pid,ppid,user,cmd --forest
+```
+
 ## Project Identity
 
 - Main research repo: `/data5/2025/ldh/OpenPrompt`

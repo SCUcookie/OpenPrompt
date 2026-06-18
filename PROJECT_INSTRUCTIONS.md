@@ -6,6 +6,55 @@ Paper-first rule: if the research direction, claim, experiment sequence, or
 submission target changes, update the canonical manuscript and this file before
 changing code, configs, or secondary docs.
 
+## Token-Saving Startup Protocol
+
+For a fresh agent session, do not load the full project history by default.
+Read only `AGENTS.md`, these top operational sections of
+`PROJECT_INSTRUCTIONS.md`, and the latest dated experiment note relevant to the
+current task. Load older route history only when route evidence, provenance, or
+paper claims require it.
+
+Use tight, path-scoped commands. Prefer `rg`/`find`/`grep` filters over broad
+repo scans, and avoid searching datasets, checkpoints, logs, binary artifacts,
+or large generated workdirs unless the task explicitly targets them.
+
+For experiment status checks, report only the screen names, GPU residency,
+latest log marker, scoped failure-scan result, and next action. Do not paste or
+summarize the full historical record unless explicitly asked.
+
+When context grows large, compact aggressively into the current goal, active
+runs, exact paths, exact commands, and unresolved blockers.
+
+## Command/GPU Failure Playbook
+
+Normal sandbox execution may not see host GPU devices. In that mode,
+`/dev/nvidia*` can be invisible, `nvidia-smi` can fail, and PyTorch may report
+`cuda_available=False` even when GPUs are usable from the host. The fix is to
+use approved or escalated host access for real GPU checks and training launches.
+
+Use this GPU status check:
+
+```bash
+nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv,noheader
+```
+
+Use this process ownership check, replacing the PID list as needed:
+
+```bash
+ps -p PID1,PID2,PID3 -o pid,ppid,user,cmd --forest
+```
+
+Avoid occupied GPUs. If requested GPU IDs are busy, remap jobs to idle GPUs
+instead of forcing the original IDs.
+
+For reruns, do not copy whole completed workdirs with checkpoints and logs.
+Create clean rerun workdirs and copy only the required config files or minimal
+metadata needed for provenance.
+
+Keep searches narrow: scope `rg`, `find`, and `grep` to docs, configs, and code
+paths, and exclude artifacts, datasets, checkpoints, generated logs, and binary
+outputs unless those files are the explicit target.
+
 Literature-first advisor rule: before changing the research route, adding a new
 module, making a paper-positioning claim, or proposing a submission argument,
 search recent primary sources for OpenRSD-citing or adjacent remote-sensing
