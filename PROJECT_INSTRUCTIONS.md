@@ -25,6 +25,18 @@ summarize the full historical record unless explicitly asked.
 When context grows large, compact aggressively into the current goal, active
 runs, exact paths, exact commands, and unresolved blockers.
 
+## Experiment Provenance Rule
+
+Every time a GPU run is started, record the full operation trail: task intent,
+timestamp, screen name, GPU IDs, working directory, config path, source
+checkpoint, exact launch command, log paths, PID/process check, startup marker,
+and any GPU remapping decision.
+
+When asked to record a finished experiment result, align the final record with
+the original launch record. The completion note must reference the first-run
+record and reconcile screen name, GPU assignment, workdir, config, checkpoint
+inputs, final/best metrics, failure scan, and any deviations from launch.
+
 ## Command/GPU Failure Playbook
 
 Normal sandbox execution may not see host GPU devices. In that mode,
@@ -267,6 +279,15 @@ sensing imagery.
   as exploratory/negative-to-neutral evidence. No active training screens
   remain except `s0_result_log_monitor_20260603`; do not launch S4,
   pseudo-labeling, FAIR1M, or route-changing experiments from this result.
+- 2026-06-19 DOTA2 S3 rerun completion status: the 2026-06-18 controlled
+  loss-0-best scene-adapter rerun completed through epoch 4 for all three
+  replicas with a clean scoped failure scan. Rounded per-replica epoch mAPs
+  were rep3407 `0.6189/0.6213/0.6141/0.6130`, rep4407
+  `0.6156/0.6160/0.6160/0.6155`, and rep5407
+  `0.6207/0.6207/0.6133/0.6165`; best mean is `0.6193` and final mean is
+  `0.6150`. This remains exploratory/negative-to-neutral DOTA2 S3 evidence
+  below the useful DOTA2 S2 best/final story. Keep the DOTA2 follow-up
+  training route paused unless explicitly overridden.
 - 2026-06-17 archive and analysis status: archive hygiene for the 2026-06-14
   through 2026-06-16 result package is recorded in
   `docs/experiments/20260617_archive_and_analysis_launch.md`. Three

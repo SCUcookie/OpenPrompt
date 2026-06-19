@@ -19,6 +19,12 @@ route evidence or provenance.
 Use concise, status-first workflows. For experiment status, report screen names,
 GPU residency, latest log marker, scoped failure-scan result, and next action.
 
+Every GPU launch must leave a first-run record with intent, timestamp, screen,
+GPU IDs, workdir, config, source checkpoint, exact launch command, log paths,
+PID/process check, startup marker, and GPU remapping decisions. When recording
+a finished experiment, align the final result back to that first-run record and
+reconcile metrics, checkpoints, failure scan, and any deviations.
+
 GPU checks from the normal sandbox can be misleading because host `/dev/nvidia*`
 may be hidden. Use approved or escalated host access for real GPU process checks
 and launches. The standard checks are:
