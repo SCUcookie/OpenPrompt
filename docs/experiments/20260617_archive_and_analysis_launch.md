@@ -155,6 +155,31 @@ true `inf`.
 
 ## Completion Acceptance
 
-Pending. Each workdir must contain `preds.pkl`, runtime log, and evaluation
-metrics. Final metrics and failure-scan results should be appended here after
-the evaluation jobs complete.
+Completed. Each workdir contains `preds.pkl`, a runtime `.log`, and a JSON
+metric file under `/data5/2025/ldh/OpenRSD/work_dirs/paper_eval_20260617/`.
+
+| Run | Workdir | JSON metrics |
+| --- | --- | --- |
+| S0 RoI Transformer epoch 52 | `dior_r_s0_roi_trans_epoch52` | `dota/mAP=0.654401421546936`, `dota/AP50=0.654` |
+| S2 hierarchy rep4 epoch 12 | `dior_r_s2_rep4_epoch12` | `dota/mAP=0.6914003491401672`, `dota/AP50=0.691` |
+| S3 scene-adapter rep0 epoch 8 | `dior_r_s3_rep0_epoch8` | `dota/mAP=0.6991876363754272`, `dota/AP50=0.699` |
+
+Final artifacts:
+
+- S0: `work_dirs/paper_eval_20260617/dior_r_s0_roi_trans_epoch52/preds.pkl`,
+  `launch_20260617_gpu0.log`,
+  `20260617_092751/20260617_092751.log`, and
+  `20260617_092751/20260617_092751.json`.
+- S2: `work_dirs/paper_eval_20260617/dior_r_s2_rep4_epoch12/preds.pkl`,
+  `launch_20260617_gpu1.log`,
+  `20260617_092757/20260617_092757.log`, and
+  `20260617_092757/20260617_092757.json`.
+- S3: `work_dirs/paper_eval_20260617/dior_r_s3_rep0_epoch8/preds.pkl`,
+  `launch_20260617_gpu2.log`,
+  `20260617_092800/20260617_092800.log`, and
+  `20260617_092800/20260617_092800.json`.
+
+Scoped completion failure scan across all launch and runtime logs was clean for
+`Traceback`, CUDA OOM, `out-of-memory`, `out of memory`, `libpng`, `CRC`,
+`NoneType`, `ValueError`, `KeyboardInterrupt`, `loss: nan`, `loss: inf`,
+`grad_norm: nan`, and `grad_norm: inf`.

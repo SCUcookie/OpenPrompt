@@ -296,6 +296,28 @@ sensing imagery.
   qualitative and claim-boundary analysis. This does not change the route
   gate: S4, pseudo-labeling, FAIR1M, routing, DOTA2 follow-ups, and new
   training remain paused unless a separate route decision is made.
+- 2026-06-20 paper-eval archive status: the DOTA2 paper-evaluation 3-GPU note
+  `docs/experiments/20260620_dota2_paper_eval_3gpu_complete.md` is complete
+  and preserved. Metrics are S0 epoch 12 `0.608833/0.6090`, S1 epoch 12
+  `0.617687/0.6180`, and S2 loss-0 rep3407 epoch 1 `0.621121/0.6210`. This
+  was analysis-only work and did not reopen S4, pseudo-labeling, FAIR1M, or a
+  route change.
+- 2026-06-21 DOTA2 S3 long12 completion status: the June 20
+  3-replica long12 scene-adapter pack on GPUs 1/2/3 completed cleanly and is
+  archived in
+  `docs/experiments/20260620_dota2_s3_scene_adapter_long12_override_launch.md`.
+  All screens exited and GPUs are free. Final epoch-12 metrics are rep3407
+  `0.6122/0.6120` (exact best `0.6216441989/0.622`, final
+  `0.6122340560/0.612`), rep4407 `0.6150/0.6150` (exact best
+  `0.6176995635/0.618`, final `0.6150146723/0.615`), and rep5407
+  `0.6118/0.6120` (exact best `0.6214531064/0.621`, final
+  `0.6118243933/0.612`). Final mean mAP is about `0.6130`. Classify this pack
+  as negative-to-neutral DOTA2 S3 evidence.
+- 2026-06-21 DOTA2 S3 confirmation launch: the next launched work is the
+  2026-06-21 3-GPU confirmation pack from DOTA2 S2 loss-0 reps
+  6407/7407/8407 on GPUs 1/2/3, launched from clean workdirs with 6 epochs.
+  Record its operation trail in
+  `docs/experiments/20260621_dota2_s3_confirm6_rep6407_7407_8407_launch.md`.
 - 2026-06-16 DIOR-R S3 final-stability follow-up: three annealed stability
   continuations from the LR5e-5 stability `epoch_4.pth` checkpoints completed
   cleanly on GPUs 0, 1, and 2. LR was `2.5e-5` for 4 epochs with validation
@@ -913,3 +935,15 @@ refinements unless the user explicitly asks for archive/debug work.
   `/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dota2/roi_trans_remoteclip_s2_hierarchy_ablate_loss0_s1e12_rep3407_20260610/20260610_191026/20260610_191026.log`.
   Startup acceptance passed at `Epoch(train) [1][200/39007]`; metrics are
   pending until epoch validation completes.
+
+## 2026-06-20 Paper-Eval Status
+
+- The 2026-06-17 DIOR-R paper-eval pack completed cleanly under
+  `/data5/2025/ldh/OpenRSD/work_dirs/paper_eval_20260617/`: S0 epoch52
+  `dota/mAP=0.654401421546936`, `dota/AP50=0.654`; S2 rep4 epoch12
+  `0.6914003491401672/0.691`; S3 rep0 epoch8 `0.6991876363754272/0.699`.
+  Each run produced `preds.pkl`, a runtime log, and a JSON metric file; scoped
+  failure scans were clean.
+- Today work is analysis-only DOTA2 paper evaluation on existing checkpoints.
+  Keep S4, pseudo-labeling, FAIR1M, routing changes, and all new training
+  paused unless explicitly overridden.
