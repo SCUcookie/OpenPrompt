@@ -258,6 +258,15 @@ sensing imagery.
   after completion. The next work package is paper/result analysis and archive
   hygiene, not launching a new route. Keep pseudo-labeling, FAIR1M, S4, and
   submission-positioning claims paused until a separate route decision.
+- 2026-06-23 archive and route status: the missing DOTA2 S3 long-12 override
+  completion and continue13 completion records were archived. Long-12 finished
+  with best mean `0.6203` and final epoch-12 mean `0.6130`; continue13
+  finished with primary epoch-12 mean `0.6137` and final epoch-13 mean
+  `0.6128`. Both are clean negative-to-neutral DOTA2 S3 evidence and remain
+  below the useful DOTA2 S1/S2 story. Today's only new training route is a
+  DIOR-R S3 long-stability confirmation continuation from the 2026-06-16
+  annealed stability epoch-4 checkpoints. Keep DOTA2 follow-up training, S4,
+  pseudo-labeling, and FAIR1M paused.
 - 2026-06-15 follow-up archive: DIOR-R S3 epoch-8 LR5e-5 stability completed
   cleanly. Stability best mean is `0.692193` and final mean is `0.690303`.
   This is lower than original S3 best mean `0.6979`, but improves final
@@ -318,6 +327,16 @@ sensing imagery.
   6407/7407/8407 on GPUs 1/2/3, launched from clean workdirs with 6 epochs.
   Record its operation trail in
   `docs/experiments/20260621_dota2_s3_confirm6_rep6407_7407_8407_launch.md`.
+- 2026-06-22 DOTA2 S3 confirm6/continue13 status: the 2026-06-21 confirm6
+  pack completed cleanly and is archived in
+  `docs/experiments/20260622_dota2_s3_confirm6_complete.md`. Final rounded
+  mAPs are rep6407 `0.6162`, rep7407 `0.6151`, and rep8407 `0.6165`; best
+  mean rounded mAP is `0.6193`, final mean rounded mAP is `0.6159`. A
+  conservative continuation from the three epoch-6 checkpoints to epoch 13 was
+  launched on GPUs 1/2/3 and recorded in
+  `docs/experiments/20260622_dota2_s3_continue13_launch.md`. Epoch 12 is the
+  primary comparable result; epoch 13 is a stability/occupancy tail. This does
+  not reopen S4, pseudo-labeling, FAIR1M, or route-changing claims.
 - 2026-06-16 DIOR-R S3 final-stability follow-up: three annealed stability
   continuations from the LR5e-5 stability `epoch_4.pth` checkpoints completed
   cleanly on GPUs 0, 1, and 2. LR was `2.5e-5` for 4 epochs with validation
