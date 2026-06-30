@@ -1,0 +1,68 @@
+{
+  "date": "2026-06-29",
+  "experiment": "dior_r_s4_pseudo_agreement_e1_lr1e5",
+  "status": "complete",
+  "launch_record": "New/docs/experiments/20260628_dior_r_s4_pseudolabel_low_lr_from_e1_launch.md",
+  "completion_record": "New/docs/experiments/20260629_dior_r_s4_low_lr_complete.md",
+  "dataset_protocol": {
+    "train_root": "data/DIOR_R_dota_s4_pseudo_agreement_20260627/",
+    "test_split": "DIOR_R_dota/test",
+    "metric": "MMRotate DOTAMetric mAP at IoU 0.5"
+  },
+  "accepted_launch_mode": "tools/bootstrap_run.py tools/train.py",
+  "note": "Initial direct tools/train.py logs contain geonexus_mmrotate import Tracebacks; accepted bootstrap launch and runtime logs completed cleanly.",
+  "replicas": [
+    {
+      "replica": "rep23407",
+      "seed": 23407,
+      "gpu": 0,
+      "work_dir": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_e1_lr1e5_rep23407_20260628",
+      "config": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_e1_lr1e5_rep23407_20260628/roi-trans-le90_r50_fpn_remoteclip-s4-pseudo-agreement-e1-lr1e5-rep23407-20260628_dior_r.py",
+      "source_checkpoint": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_rep23407_20260627/epoch_1.pth",
+      "best_epoch": 2,
+      "best_mAP": 0.6935,
+      "best_AP50": 0.6930,
+      "final_epoch": 8,
+      "final_mAP": 0.6892,
+      "final_AP50": 0.6890
+    },
+    {
+      "replica": "rep24407",
+      "seed": 24407,
+      "gpu": 2,
+      "work_dir": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_e1_lr1e5_rep24407_20260628",
+      "config": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_e1_lr1e5_rep24407_20260628/roi-trans-le90_r50_fpn_remoteclip-s4-pseudo-agreement-e1-lr1e5-rep24407-20260628_dior_r.py",
+      "source_checkpoint": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_rep24407_20260627/epoch_1.pth",
+      "best_epoch": 6,
+      "best_mAP": 0.6966,
+      "best_AP50": 0.6970,
+      "final_epoch": 8,
+      "final_mAP": 0.6963,
+      "final_AP50": 0.6960
+    },
+    {
+      "replica": "rep25407",
+      "seed": 25407,
+      "gpu": 3,
+      "work_dir": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_e1_lr1e5_rep25407_20260628",
+      "config": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_e1_lr1e5_rep25407_20260628/roi-trans-le90_r50_fpn_remoteclip-s4-pseudo-agreement-e1-lr1e5-rep25407-20260628_dior_r.py",
+      "source_checkpoint": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_rep25407_20260627/epoch_1.pth",
+      "best_epoch": 2,
+      "best_mAP": 0.6967,
+      "best_AP50": 0.6970,
+      "final_epoch": 8,
+      "final_mAP": 0.6923,
+      "final_AP50": 0.6920
+    }
+  ],
+  "aggregate": {
+    "best_mean_mAP": 0.6956,
+    "final_mean_mAP": 0.6926,
+    "s4_short_pack_final_mAP": 0.691337,
+    "s4_short_pack_best_mAP": 0.696903,
+    "s3_long60_final_mAP": 0.693014,
+    "original_s3_best_threshold": 0.6979
+  },
+  "decision": "weak stabilization only; not paper-facing S4 superiority",
+  "next_action": "pause further S4 training unless separately approved; use 2026-06-29 for paper-facing evaluation artifacts"
+}

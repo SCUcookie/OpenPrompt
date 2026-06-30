@@ -966,3 +966,106 @@ refinements unless the user explicitly asks for archive/debug work.
 - Today work is analysis-only DOTA2 paper evaluation on existing checkpoints.
   Keep S4, pseudo-labeling, FAIR1M, routing changes, and all new training
   paused unless explicitly overridden.
+
+## 2026-06-24 DIOR-R S3 Route Status
+
+- DIOR-R S3 stability long32 completed cleanly on `2026-06-23 CST`: rep0
+  final `0.6960/0.6960`, rep1 final `0.6897/0.6900`, rep2 final
+  `0.6941/0.6940`; final mean rounded mAP `0.6933`, best mean rounded mAP
+  `0.6965`. Archive:
+  `New/docs/experiments/20260624_dior_r_s3_stability_long32_complete.md`.
+- Approved follow-up is DIOR-R S3 long60 continuation from each long32
+  `epoch_32.pth`. Keep S4, pseudo-labeling, FAIR1M, DOTA2 follow-up training,
+  and route changes paused unless separately approved.
+
+## 2026-06-25 DIOR-R S3 Route Status
+
+- DIOR-R S3 stability long60 completed cleanly on `2026-06-25 CST`: rep0
+  final `0.694532/0.6950` with best epoch 51 `0.698892`, rep1 final
+  `0.688295/0.6880` with best epoch 33 `0.692448`, and rep2 final
+  `0.696215/0.6960` with best epoch 58 `0.698467`. Final mean exact mAP is
+  `0.693014`; best mean exact mAP is `0.696602`. Archive:
+  `New/docs/experiments/20260625_dior_r_s3_stability_long60_complete.md`.
+- Approved follow-up is DIOR-R S3 long88 continuation from each long60
+  `epoch_60.pth`, keeping all three replicas for controlled aggregate
+  stability. Keep S4, pseudo-labeling, FAIR1M, DOTA2 follow-up training, and
+  route changes paused unless separately approved.
+
+## 2026-06-26 DIOR-R S3 Route Status
+
+- DIOR-R S3 stability long88 completed cleanly on `2026-06-26 CST`: rep0
+  final epoch 88 `0.6874858141/0.6870` with best epoch 66
+  `0.6985080242/0.6990`, rep1 final epoch 88 `0.6918782592/0.6920` with best
+  epoch 86 `0.6920918226/0.6920`, and rep2 final epoch 88
+  `0.6982299089/0.6980` with best epoch 86 `0.6985765696/0.6990`. Final mean
+  exact mAP is `0.6925313274`; best mean exact mAP is `0.6963921388`.
+  Archive:
+  `New/docs/experiments/20260626_dior_r_s3_stability_long88_complete.md`.
+- Archive verification found only `s0_result_log_monitor_20260603` remaining
+  in `screen`; original long88 PIDs `1652371`, `1652558`, and `1652680` were
+  absent. GPUs 0-5 were idle, and GPU 6 was occupied by another user/process.
+  The scoped failure scan over long88 launch/runtime logs was clean.
+- Treat long88 as useful stability evidence but not an improvement over long60
+  best mean `0.696602`. Pause further DIOR-R S3 continuation. Keep S4,
+  pseudo-labeling, FAIR1M, DOTA2 follow-up training, route-changing
+  experiments, and new long-continuation launches paused unless separately
+  approved.
+
+## 2026-06-28 DIOR-R S4 Route Status
+
+- DIOR-R S4 pseudo-label short-pack from `2026-06-27` completed cleanly but
+  degraded after epoch 1: best mean `dota/mAP=0.696903` with all three best
+  checkpoints at epoch 1, final epoch-12 mean `dota/mAP=0.691337`. Treat S4
+  as a stabilization test only, not as a new superiority claim. Archive and
+  launch record:
+  `New/docs/experiments/20260628_dior_r_s4_pseudolabel_low_lr_from_e1_launch.md`.
+- Controlled S4 low-LR stabilization runs were launched on `2026-06-28
+  10:15 CST` from each replica's S4 epoch-1 checkpoint with `lr=1e-5`,
+  `max_epochs=8`, `val_interval=1`, `resume=False`, and the same pseudo-label
+  data root `data/DIOR_R_dota_s4_pseudo_agreement_20260627/`. GPU mapping:
+  rep23407 -> GPU 0, rep24407 -> GPU 2, rep25407 -> GPU 3; GPU 1 was avoided
+  because PID `616621` was resident there. Accepted screens:
+  `dior_r_s4_e1_lr1e5_rep23407_20260628_gpu0`,
+  `dior_r_s4_e1_lr1e5_rep24407_20260628_gpu2`, and
+  `dior_r_s4_e1_lr1e5_rep25407_20260628_gpu3`. PIDs: `743669`, `743673`,
+  `743672`. Startup reached `Epoch(train) [1][ 450/5847]` in all three
+  bootstrap logs with a clean scoped failure scan.
+- Completion must report best and final `dota/mAP` plus `dota/AP50` for each
+  replica and aggregate best/final means. Strong S4 evidence requires best mean
+  above original DIOR-R S3 best mean `0.6979` or final mean clearly above S3
+  long60 final mean `0.693014`; stabilization evidence requires final mean
+  above S4 short-pack final mean `0.691337` with clean logs.
+
+## 2026-06-29 DIOR-R S4 Route Status
+
+- DIOR-R S4 low-LR continuation from `2026-06-28` completed through epoch 8
+  for all three replicas. Accepted bootstrap/runtime logs were clean; the
+  preserved direct-launch `tools/train.py` logs contain expected
+  `geonexus_mmrotate` import `Traceback` entries before bootstrap relaunch.
+  Archive:
+  `New/docs/experiments/20260629_dior_r_s4_low_lr_complete.md`.
+- Metrics: rep23407 best epoch 2 `0.6935/0.6930`, final epoch 8
+  `0.6892/0.6890`; rep24407 best epoch 6 `0.6966/0.6970`, final epoch 8
+  `0.6963/0.6960`; rep25407 best epoch 2 `0.6967/0.6970`, final epoch 8
+  `0.6923/0.6920`. Aggregate best mean mAP is `0.6956`; aggregate final mean
+  mAP is `0.6926`.
+- Treat this as weak stabilization only, not paper-facing S4 superiority. The
+  final mean improves over the S4 short-pack final `0.691337` by about
+  `+0.0013`, but remains below S3 long60 final `0.693014`. The best mean
+  remains below S4 short-pack best `0.696903` and original S3 best threshold
+  `0.6979`.
+- Pause further S4 training unless separately approved. Use `2026-06-29` for
+  paper-facing evaluation artifacts on the best low-LR checkpoint from each
+  replica.
+- DIOR-R S4 paper-eval best-checkpoint audit was launched on `2026-06-29
+  09:07 CST` with `tools/bootstrap_run.py tools/test.py --out preds.pkl`.
+  Mapping: rep23407 epoch 2 -> GPU 0, rep24407 epoch 6 -> GPU 2, rep25407
+  epoch 2 -> GPU 3. Startup acceptance passed at `Epoch(test) [ 350/5869]`
+  or later with clean scoped failure scan. Launch record:
+  `New/docs/experiments/20260629_dior_r_s4_paper_eval_best_launch.md`.
+- The paper-eval audit completed at `2026-06-29 09:17 CST`. Each workdir
+  contains `preds.pkl`, a runtime `.log`, and JSON metric file. Metrics match
+  the training-log best-checkpoint values: rep23407 epoch 2 `0.6935/0.6930`,
+  rep24407 epoch 6 `0.6966/0.6970`, rep25407 epoch 2 `0.6967/0.6970`.
+  Final screen state returned to only `s0_result_log_monitor_20260603`, and
+  GPUs 0, 2, and 3 returned to idle.

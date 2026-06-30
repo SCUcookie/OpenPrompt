@@ -1,0 +1,74 @@
+{
+  "experiment": "dior_r_s3_stability_long88",
+  "archive_date": "2026-06-26",
+  "launch_note": "New/docs/experiments/20260625_dior_r_s3_stability_long88_launch.md",
+  "scope": "DIOR-R S3 long-stability continuation from long60 epoch_60 checkpoints",
+  "status": "completed",
+  "dataset_protocol": "sanitized DIOR_R_dota/train_val to DIOR_R_dota/test, MMRotate DOTAMetric mAP at IoU 0.5",
+  "replicas": [
+    {
+      "replica": "rep0",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_long88_rep0_20260625",
+      "final_epoch": 88,
+      "final_map": 0.6874858140945435,
+      "final_ap50": 0.687,
+      "best_map": 0.6985080242156982,
+      "best_epoch": 66,
+      "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_long88_rep0_20260625/epoch_88.pth"
+    },
+    {
+      "replica": "rep1",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_long88_rep1_20260625",
+      "final_epoch": 88,
+      "final_map": 0.6918782591819763,
+      "final_ap50": 0.692,
+      "best_map": 0.6920918226242065,
+      "best_epoch": 86,
+      "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_long88_rep1_20260625/epoch_88.pth"
+    },
+    {
+      "replica": "rep2",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_long88_rep2_20260625",
+      "final_epoch": 88,
+      "final_map": 0.6982299089431763,
+      "final_ap50": 0.698,
+      "best_map": 0.6985765695571899,
+      "best_epoch": 86,
+      "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_long88_rep2_20260625/epoch_88.pth"
+    }
+  ],
+  "aggregates": {
+    "final_mean_exact_map": 0.6925313274065653,
+    "best_mean_exact_map": 0.6963921387990316,
+    "long60_best_mean_exact_map": 0.6966020266215006
+  },
+  "runtime_state": {
+    "remaining_screen": "s0_result_log_monitor_20260603",
+    "completed_launch_pids_absent": [
+      1652371,
+      1652558,
+      1652680
+    ],
+    "gpu_state": "GPUs 0-5 idle; GPU 6 occupied by another user/process"
+  },
+  "failure_scan": {
+    "scope": "launch and runtime logs for all three long88 replicas",
+    "patterns": [
+      "Traceback",
+      "CUDA OOM",
+      "out-of-memory",
+      "out of memory",
+      "libpng",
+      "CRC",
+      "NoneType",
+      "ValueError",
+      "KeyboardInterrupt",
+      "loss: nan",
+      "loss: inf",
+      "grad_norm: nan",
+      "grad_norm: inf"
+    ],
+    "result": "clean"
+  },
+  "decision": "Archive as useful stability evidence, not an improvement over long60 best mean 0.696602; pause further DIOR-R S3 continuation."
+}

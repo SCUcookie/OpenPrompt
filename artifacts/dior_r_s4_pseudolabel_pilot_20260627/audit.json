@@ -1,0 +1,619 @@
+{
+  "gate": {
+    "failure_scan_clean": true,
+    "launch_s4_recommended": true,
+    "no_catastrophic_false_positive_expansion": true,
+    "precision_improves_at_matched_kept_count": true,
+    "usable_recall_without_high_conf_precision_degrade": true
+  },
+  "policies": {
+    "confidence_only": {
+      "class_pair_confusion_top10": [
+        [
+          "groundtrackfield->stadium",
+          33
+        ],
+        [
+          "bridge->overpass",
+          13
+        ],
+        [
+          "vehicle->ship",
+          12
+        ],
+        [
+          "tenniscourt->groundtrackfield",
+          8
+        ],
+        [
+          "overpass->bridge",
+          8
+        ],
+        [
+          "ship->harbor",
+          5
+        ],
+        [
+          "storagetank->vehicle",
+          5
+        ],
+        [
+          "vehicle->storagetank",
+          4
+        ],
+        [
+          "stadium->groundtrackfield",
+          3
+        ],
+        [
+          "baseballfield->basketballcourt",
+          2
+        ]
+      ],
+      "false_positive": 5456,
+      "gt_boxes": 68070,
+      "hierarchy_consistency": 1.0,
+      "kept_boxes": 66260,
+      "matched_confidence_precision": null,
+      "matched_confidence_recall": null,
+      "per_class": {
+        "Expressway-Service-area": {
+          "fp": 76,
+          "gt": 1080,
+          "precision": 0.9332161687170475,
+          "recall": 0.9833333333333333,
+          "tp": 1062
+        },
+        "Expressway-toll-station": {
+          "fp": 47,
+          "gt": 610,
+          "precision": 0.9226973684210527,
+          "recall": 0.919672131147541,
+          "tp": 561
+        },
+        "airplane": {
+          "fp": 29,
+          "gt": 1888,
+          "precision": 0.9841789416257501,
+          "recall": 0.9555084745762712,
+          "tp": 1804
+        },
+        "airport": {
+          "fp": 138,
+          "gt": 662,
+          "precision": 0.7924812030075188,
+          "recall": 0.7960725075528701,
+          "tp": 527
+        },
+        "baseballfield": {
+          "fp": 66,
+          "gt": 2384,
+          "precision": 0.972682119205298,
+          "recall": 0.985738255033557,
+          "tp": 2350
+        },
+        "basketballcourt": {
+          "fp": 53,
+          "gt": 1077,
+          "precision": 0.9513314967860422,
+          "recall": 0.9619312906220984,
+          "tp": 1036
+        },
+        "bridge": {
+          "fp": 243,
+          "gt": 1367,
+          "precision": 0.8160484481453444,
+          "recall": 0.7885881492318947,
+          "tp": 1078
+        },
+        "chimney": {
+          "fp": 12,
+          "gt": 649,
+          "precision": 0.9809825673534073,
+          "recall": 0.9537750385208013,
+          "tp": 619
+        },
+        "dam": {
+          "fp": 175,
+          "gt": 512,
+          "precision": 0.6812386156648452,
+          "recall": 0.73046875,
+          "tp": 374
+        },
+        "golffield": {
+          "fp": 30,
+          "gt": 511,
+          "precision": 0.9424184261036468,
+          "recall": 0.9608610567514677,
+          "tp": 491
+        },
+        "groundtrackfield": {
+          "fp": 204,
+          "gt": 1162,
+          "precision": 0.8483271375464684,
+          "recall": 0.9819277108433735,
+          "tp": 1141
+        },
+        "harbor": {
+          "fp": 428,
+          "gt": 2364,
+          "precision": 0.7954110898661568,
+          "recall": 0.7038917089678511,
+          "tp": 1664
+        },
+        "overpass": {
+          "fp": 164,
+          "gt": 1330,
+          "precision": 0.8740399385560675,
+          "recall": 0.8556390977443609,
+          "tp": 1138
+        },
+        "ship": {
+          "fp": 1116,
+          "gt": 27348,
+          "precision": 0.9576293708948708,
+          "recall": 0.9222977914289894,
+          "tp": 25223
+        },
+        "stadium": {
+          "fp": 16,
+          "gt": 595,
+          "precision": 0.9735537190082645,
+          "recall": 0.9899159663865547,
+          "tp": 589
+        },
+        "storagetank": {
+          "fp": 302,
+          "gt": 3042,
+          "precision": 0.900690562315028,
+          "recall": 0.9003944773175543,
+          "tp": 2739
+        },
+        "tenniscourt": {
+          "fp": 124,
+          "gt": 4898,
+          "precision": 0.9751751751751752,
+          "recall": 0.9944875459371172,
+          "tp": 4871
+        },
+        "trainstation": {
+          "fp": 102,
+          "gt": 501,
+          "precision": 0.8201058201058201,
+          "recall": 0.9281437125748503,
+          "tp": 465
+        },
+        "vehicle": {
+          "fp": 1863,
+          "gt": 13725,
+          "precision": 0.8547368421052631,
+          "recall": 0.7986885245901639,
+          "tp": 10962
+        },
+        "windmill": {
+          "fp": 268,
+          "gt": 2365,
+          "precision": 0.8873002523128679,
+          "recall": 0.8921775898520085,
+          "tp": 2110
+        }
+      },
+      "precision": 0.9176577120434651,
+      "recall": 0.8932569413838696,
+      "scene_consistency_score": 0.9293738843825904,
+      "true_positive": 60804
+    },
+    "hierarchy_scene": {
+      "class_pair_confusion_top10": [
+        [
+          "groundtrackfield->stadium",
+          31
+        ],
+        [
+          "bridge->overpass",
+          13
+        ],
+        [
+          "tenniscourt->groundtrackfield",
+          8
+        ],
+        [
+          "overpass->bridge",
+          8
+        ],
+        [
+          "ship->harbor",
+          5
+        ],
+        [
+          "storagetank->vehicle",
+          5
+        ],
+        [
+          "stadium->groundtrackfield",
+          3
+        ],
+        [
+          "baseballfield->basketballcourt",
+          2
+        ],
+        [
+          "basketballcourt->tenniscourt",
+          1
+        ],
+        [
+          "vehicle->basketballcourt",
+          1
+        ]
+      ],
+      "false_positive": 4414,
+      "gt_boxes": 68070,
+      "hierarchy_consistency": 1.0,
+      "kept_boxes": 61988,
+      "matched_confidence_precision": 0.9555075175840485,
+      "matched_confidence_recall": 0.8701336859115616,
+      "per_class": {
+        "Expressway-Service-area": {
+          "fp": 62,
+          "gt": 1080,
+          "precision": 0.9447907390917186,
+          "recall": 0.9824074074074074,
+          "tp": 1061
+        },
+        "Expressway-toll-station": {
+          "fp": 39,
+          "gt": 610,
+          "precision": 0.9338983050847458,
+          "recall": 0.9032786885245901,
+          "tp": 551
+        },
+        "airplane": {
+          "fp": 24,
+          "gt": 1888,
+          "precision": 0.9854280510018215,
+          "recall": 0.8596398305084746,
+          "tp": 1623
+        },
+        "airport": {
+          "fp": 111,
+          "gt": 662,
+          "precision": 0.7948243992606284,
+          "recall": 0.649546827794562,
+          "tp": 430
+        },
+        "baseballfield": {
+          "fp": 49,
+          "gt": 2384,
+          "precision": 0.9781931464174455,
+          "recall": 0.9219798657718121,
+          "tp": 2198
+        },
+        "basketballcourt": {
+          "fp": 49,
+          "gt": 1077,
+          "precision": 0.9466230936819172,
+          "recall": 0.8068709377901578,
+          "tp": 869
+        },
+        "bridge": {
+          "fp": 130,
+          "gt": 1367,
+          "precision": 0.872173058013766,
+          "recall": 0.6488661302121433,
+          "tp": 887
+        },
+        "chimney": {
+          "fp": 8,
+          "gt": 649,
+          "precision": 0.9825708061002179,
+          "recall": 0.6949152542372882,
+          "tp": 451
+        },
+        "dam": {
+          "fp": 149,
+          "gt": 512,
+          "precision": 0.6876310272536688,
+          "recall": 0.640625,
+          "tp": 328
+        },
+        "golffield": {
+          "fp": 20,
+          "gt": 511,
+          "precision": 0.9581589958158996,
+          "recall": 0.8962818003913894,
+          "tp": 458
+        },
+        "groundtrackfield": {
+          "fp": 156,
+          "gt": 1162,
+          "precision": 0.8708609271523179,
+          "recall": 0.9053356282271945,
+          "tp": 1052
+        },
+        "harbor": {
+          "fp": 417,
+          "gt": 2364,
+          "precision": 0.797474502185527,
+          "recall": 0.694585448392555,
+          "tp": 1642
+        },
+        "overpass": {
+          "fp": 138,
+          "gt": 1330,
+          "precision": 0.8886198547215496,
+          "recall": 0.8278195488721805,
+          "tp": 1101
+        },
+        "ship": {
+          "fp": 1090,
+          "gt": 27348,
+          "precision": 0.9584746085565164,
+          "recall": 0.9199575837355566,
+          "tp": 25159
+        },
+        "stadium": {
+          "fp": 11,
+          "gt": 595,
+          "precision": 0.9801084990958409,
+          "recall": 0.9109243697478991,
+          "tp": 542
+        },
+        "storagetank": {
+          "fp": 216,
+          "gt": 3042,
+          "precision": 0.9237557359689376,
+          "recall": 0.8602892833662065,
+          "tp": 2617
+        },
+        "tenniscourt": {
+          "fp": 111,
+          "gt": 4898,
+          "precision": 0.9759636206149849,
+          "recall": 0.9201714985708452,
+          "tp": 4507
+        },
+        "trainstation": {
+          "fp": 85,
+          "gt": 501,
+          "precision": 0.8374760994263862,
+          "recall": 0.874251497005988,
+          "tp": 438
+        },
+        "vehicle": {
+          "fp": 1286,
+          "gt": 13725,
+          "precision": 0.8813215208564046,
+          "recall": 0.6958105646630237,
+          "tp": 9550
+        },
+        "windmill": {
+          "fp": 263,
+          "gt": 2365,
+          "precision": 0.8891698272229246,
+          "recall": 0.8921775898520085,
+          "tp": 2110
+        }
+      },
+      "precision": 0.9287926695489449,
+      "recall": 0.8458057881592478,
+      "scene_consistency_score": 1.0,
+      "true_positive": 57574
+    },
+    "teacher_agreement_2of3": {
+      "class_pair_confusion_top10": [
+        [
+          "groundtrackfield->stadium",
+          19
+        ],
+        [
+          "vehicle->ship",
+          8
+        ],
+        [
+          "tenniscourt->groundtrackfield",
+          8
+        ],
+        [
+          "bridge->overpass",
+          7
+        ],
+        [
+          "overpass->bridge",
+          6
+        ],
+        [
+          "ship->harbor",
+          5
+        ],
+        [
+          "storagetank->vehicle",
+          5
+        ],
+        [
+          "vehicle->storagetank",
+          4
+        ],
+        [
+          "stadium->groundtrackfield",
+          3
+        ],
+        [
+          "baseballfield->basketballcourt",
+          2
+        ]
+      ],
+      "false_positive": 3595,
+      "gt_boxes": 68070,
+      "hierarchy_consistency": 1.0,
+      "kept_boxes": 64512,
+      "matched_confidence_precision": 0.934508308531746,
+      "matched_confidence_recall": 0.8856618187160277,
+      "per_class": {
+        "Expressway-Service-area": {
+          "fp": 21,
+          "gt": 1080,
+          "precision": 0.9807339449541285,
+          "recall": 0.9898148148148148,
+          "tp": 1069
+        },
+        "Expressway-toll-station": {
+          "fp": 22,
+          "gt": 610,
+          "precision": 0.9625850340136054,
+          "recall": 0.9278688524590164,
+          "tp": 566
+        },
+        "airplane": {
+          "fp": 20,
+          "gt": 1888,
+          "precision": 0.9890650628758885,
+          "recall": 0.958156779661017,
+          "tp": 1809
+        },
+        "airport": {
+          "fp": 101,
+          "gt": 662,
+          "precision": 0.8460365853658537,
+          "recall": 0.8383685800604229,
+          "tp": 555
+        },
+        "baseballfield": {
+          "fp": 40,
+          "gt": 2384,
+          "precision": 0.983249581239531,
+          "recall": 0.9848993288590604,
+          "tp": 2348
+        },
+        "basketballcourt": {
+          "fp": 27,
+          "gt": 1077,
+          "precision": 0.9747899159663865,
+          "recall": 0.9693593314763231,
+          "tp": 1044
+        },
+        "bridge": {
+          "fp": 151,
+          "gt": 1367,
+          "precision": 0.8791032826261009,
+          "recall": 0.803218727139722,
+          "tp": 1098
+        },
+        "chimney": {
+          "fp": 6,
+          "gt": 649,
+          "precision": 0.9904610492845787,
+          "recall": 0.9599383667180277,
+          "tp": 623
+        },
+        "dam": {
+          "fp": 120,
+          "gt": 512,
+          "precision": 0.7705544933078394,
+          "recall": 0.787109375,
+          "tp": 403
+        },
+        "golffield": {
+          "fp": 13,
+          "gt": 511,
+          "precision": 0.974757281553398,
+          "recall": 0.9823874755381604,
+          "tp": 502
+        },
+        "groundtrackfield": {
+          "fp": 117,
+          "gt": 1162,
+          "precision": 0.9066241021548284,
+          "recall": 0.9776247848537005,
+          "tp": 1136
+        },
+        "harbor": {
+          "fp": 338,
+          "gt": 2364,
+          "precision": 0.8351219512195122,
+          "recall": 0.7241962774957699,
+          "tp": 1712
+        },
+        "overpass": {
+          "fp": 102,
+          "gt": 1330,
+          "precision": 0.919175911251981,
+          "recall": 0.8721804511278195,
+          "tp": 1160
+        },
+        "ship": {
+          "fp": 821,
+          "gt": 27348,
+          "precision": 0.9683268392423132,
+          "recall": 0.9178002047681731,
+          "tp": 25100
+        },
+        "stadium": {
+          "fp": 10,
+          "gt": 595,
+          "precision": 0.9833055091819699,
+          "recall": 0.9899159663865547,
+          "tp": 589
+        },
+        "storagetank": {
+          "fp": 146,
+          "gt": 3042,
+          "precision": 0.9494109494109494,
+          "recall": 0.9007232084155161,
+          "tp": 2740
+        },
+        "tenniscourt": {
+          "fp": 70,
+          "gt": 4898,
+          "precision": 0.9858356940509915,
+          "recall": 0.9946917109024092,
+          "tp": 4872
+        },
+        "trainstation": {
+          "fp": 38,
+          "gt": 501,
+          "precision": 0.9256360078277887,
+          "recall": 0.9441117764471058,
+          "tp": 473
+        },
+        "vehicle": {
+          "fp": 1215,
+          "gt": 13725,
+          "precision": 0.9005321326238231,
+          "recall": 0.8014571948998178,
+          "tp": 11000
+        },
+        "windmill": {
+          "fp": 217,
+          "gt": 2365,
+          "precision": 0.9070663811563169,
+          "recall": 0.8955602536997885,
+          "tp": 2118
+        }
+      },
+      "precision": 0.944273933531746,
+      "recall": 0.8949169972087557,
+      "scene_consistency_score": 0.9384912050652785,
+      "true_positive": 60917
+    }
+  },
+  "prediction_paths": {
+    "s3_long60_rep0_e51": "/data5/2025/ldh/New/artifacts/dior_r_s4_pseudolabel_pilot_20260627/predictions/s3_long60_rep0_e51.pkl",
+    "s3_long88_rep2_e88": "/data5/2025/ldh/New/artifacts/dior_r_s4_pseudolabel_pilot_20260627/predictions/s3_long88_rep2_e88.pkl",
+    "s3_original_best_rep0_e8": "/data5/2025/ldh/New/artifacts/dior_r_s4_pseudolabel_pilot_20260627/predictions/s3_original_best_rep0_e8.pkl"
+  },
+  "primary_teacher": "s3_original_best_rep0_e8",
+  "settings": {
+    "context_score": 0.55,
+    "gt_label_dir": "/data5/2025/ldh/OpenRSD/data/DIOR_R_dota_sanitized_invalidsize_20260612/train_val/labelTxt",
+    "iou_thr": 0.5,
+    "output_dir": "/data5/2025/ldh/New/artifacts/dior_r_s4_pseudolabel_pilot_20260627",
+    "policy_score_thr": 0.6,
+    "prediction": [
+      "s3_original_best_rep0_e8=/data5/2025/ldh/New/artifacts/dior_r_s4_pseudolabel_pilot_20260627/predictions/s3_original_best_rep0_e8.pkl",
+      "s3_long60_rep0_e51=/data5/2025/ldh/New/artifacts/dior_r_s4_pseudolabel_pilot_20260627/predictions/s3_long60_rep0_e51.pkl",
+      "s3_long88_rep2_e88=/data5/2025/ldh/New/artifacts/dior_r_s4_pseudolabel_pilot_20260627/predictions/s3_long88_rep2_e88.pkl"
+    ],
+    "primary_teacher": "s3_original_best_rep0_e8",
+    "score_thr": 0.3
+  }
+}

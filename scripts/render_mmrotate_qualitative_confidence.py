@@ -49,6 +49,50 @@ def mean_confidence(result: dict) -> float:
     return float(scores.float().mean())
 
 
+def max_label_count(outputs: list) -> int:
+    max_label = -1
+    for result in outputs:
+        for key in ("gt_instances", "pred_instances"):
+            labels = result[key]["labels"]
+            if len(labels) > 0:
+                max_label = max(max_label, int(labels.max()))
+    return max_label + 1
+
+
+def normalize_palette(palette, min_colors: int):
+    base = []
+    if isinstance(palette, (list, tuple)):
+        base = list(palette)
+
+    generated = [
+        (220, 20, 60),
+        (119, 11, 32),
+        (0, 0, 142),
+        (0, 0, 230),
+        (106, 0, 228),
+        (0, 60, 100),
+        (0, 80, 100),
+        (0, 0, 70),
+        (0, 0, 192),
+        (250, 170, 30),
+        (100, 170, 30),
+        (220, 220, 0),
+        (175, 116, 175),
+        (250, 0, 30),
+        (165, 42, 42),
+        (255, 77, 255),
+        (0, 226, 252),
+        (182, 182, 255),
+        (0, 82, 0),
+        (120, 166, 157),
+    ]
+    index = 0
+    while len(base) < min_colors:
+        base.append(generated[index % len(generated)])
+        index += 1
+    return base
+
+
 def render_sample(visualizer: RotLocalVisualizer, result: dict, out_file: Path,
                   score_thr: float) -> None:
     image = mmcv.imread(result["img_path"], channel_order="rgb")
@@ -80,7 +124,10 @@ def main() -> None:
     cfg.test_dataloader.dataset.test_mode = True
     dataset = DATASETS.build(cfg.test_dataloader.dataset)
     classes = tuple(dataset.metainfo["classes"])
-    palette = dataset.metainfo.get("palette", None)
+    palette = normalize_palette(
+        dataset.metainfo.get("palette", None),
+        max(len(classes), max_label_count(outputs)),
+    )
     visualizer = RotLocalVisualizer()
     visualizer.dataset_meta = {"classes": classes, "palette": palette}
 

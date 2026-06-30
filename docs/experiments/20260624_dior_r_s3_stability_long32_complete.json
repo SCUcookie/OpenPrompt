@@ -1,0 +1,65 @@
+{
+  "experiment": "dior_r_s3_stability_long32",
+  "archive_date": "2026-06-24",
+  "launch_note": "New/docs/experiments/20260623_dior_r_s3_stability_long32_launch.md",
+  "scope": "DIOR-R S3 long-stability continuation from 2026-06-16 annealed stability epoch-4 checkpoints",
+  "status": "completed",
+  "dataset_protocol": "sanitized DIOR_R_dota/train_val to DIOR_R_dota/test, MMRotate DOTAMetric mAP at IoU 0.5",
+  "replicas": [
+    {
+      "replica": "rep0",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_long32_rep0_20260623",
+      "final_epoch": 32,
+      "final_map": 0.6960,
+      "final_ap50": 0.6960,
+      "best_rounded_map": 0.6990,
+      "best_epoch": 28,
+      "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_long32_rep0_20260623/epoch_32.pth"
+    },
+    {
+      "replica": "rep1",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_long32_rep1_20260623",
+      "final_epoch": 32,
+      "final_map": 0.6897,
+      "final_ap50": 0.6900,
+      "best_rounded_map": 0.6921,
+      "best_epoch": 30,
+      "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_long32_rep1_20260623/epoch_32.pth"
+    },
+    {
+      "replica": "rep2",
+      "work_dir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_long32_rep2_20260623",
+      "final_epoch": 32,
+      "final_map": 0.6941,
+      "final_ap50": 0.6940,
+      "best_rounded_map": 0.6984,
+      "best_epoch": 25,
+      "checkpoint": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_dior_r/roi_trans_remoteclip_s3_scene_adapter_stability_long32_rep2_20260623/epoch_32.pth"
+    }
+  ],
+  "aggregates": {
+    "final_mean_rounded_map": 0.6933,
+    "best_mean_rounded_map": 0.6965,
+    "prior_original_s3_best_mean": 0.6979
+  },
+  "failure_scan": {
+    "scope": "launch and runtime logs for all three long32 replicas",
+    "patterns": [
+      "Traceback",
+      "CUDA OOM",
+      "out-of-memory",
+      "out of memory",
+      "libpng",
+      "CRC",
+      "NoneType",
+      "ValueError",
+      "KeyboardInterrupt",
+      "loss: nan",
+      "loss: inf",
+      "grad_norm: nan",
+      "grad_norm: inf"
+    ],
+    "result": "clean"
+  },
+  "decision": "Archive as useful final-stability evidence, not a new best-checkpoint claim; approve long60 continuation from long32 epoch_32.pth checkpoints only."
+}
