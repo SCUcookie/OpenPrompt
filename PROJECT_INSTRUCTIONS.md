@@ -6,6 +6,8 @@ Paper-first rule: if the research direction, claim, experiment sequence, or
 submission target changes, update the canonical manuscript and this file before
 changing code, configs, or secondary docs.
 
+2026-07-06 status: Strip R-CNN-S DIOR-R released-checkpoint protocol eval is archived as blocked because the official/user-provided files do not include a usable full DIOR-R detector checkpoint: `stripnet_s.pth` is backbone/ImageNet-only, `strip_rcnn_s_dota.pth` has DOTA head shape `(16, 1024)`, and `strip_rcnn_s_fair1m.pth` has FAIR1M head shape `(38, 1024)` while DIOR-R requires `(21, 1024)`. Preserve the validated bridge/config staging, but do not launch GPU evaluation, train a replacement, or evaluate mismatched DOTA/FAIR1M/backbone weights; no route change opened.
+
 ## Token-Saving Startup Protocol
 
 For a fresh agent session, do not load the full project history by default.
@@ -1069,3 +1071,35 @@ refinements unless the user explicitly asks for archive/debug work.
   rep24407 epoch 6 `0.6966/0.6970`, rep25407 epoch 2 `0.6967/0.6970`.
   Final screen state returned to only `s0_result_log_monitor_20260603`, and
   GPUs 0, 2, and 3 returned to idle.
+
+## 2026-07-03 DIOR-R Paper-Eval And Comparator Status
+
+- DIOR-R S4 LR5e-6 paper-eval best mean is `0.697272`, still below the S3
+  gate `0.6979`. Treat it as close comparator evidence, not a route-opening
+  result for more S4/S5 training.
+- DOTA2 S2 loss-0 paper-evals reproduced best-checkpoint metrics around
+  `0.621`, consistent with early-checkpoint S2 evidence but not final-epoch
+  stability evidence.
+- OrientedFormer Swin-T DIOR-R protocol eval on bridged sanitized DIOR-R
+  completed cleanly at `dota/mAP=0.688288`, `dota/AP50=0.688`.
+- Strip R-CNN-S DIOR-R released-checkpoint protocol evaluation under
+  `/data5/2025/ldh/strip_rcnn_protocol_eval_20260703` is blocked by missing
+  usable full DIOR-R detector checkpoint, not a launchable next action. Do not
+  open S4/S5/FAIR1M/training routes from this comparator audit.
+- Strip R-CNN staging on `2026-07-03` built the DIOR-R XML bridge with exact
+  expected counts (`11725/68070` train and `11738/124443` test) and passed
+  `print_config.py` under `/data1/anaconda3/envs/lcs_mmrotate0.3`
+  (`mmcv==1.7.2`). The initial advertised Google Drive checkpoint ID timed out
+  twice and left no checkpoint file; later official/user-provided files were
+  inspected and still did not include a usable full DIOR-R detector checkpoint.
+  Do not substitute training or an unverified backbone checkpoint.
+- User-supplied `stripnet_s.pth` was inspected and is only a StripNet-S
+  backbone/ImageNet pretrain: raw `patch_embed*`/`block*` keys, no `neck`,
+  `rpn_head`, `roi_head`, or `bbox_head` weights. Strip R-CNN-S DIOR-R
+  protocol eval remains blocked until a full detector checkpoint is supplied.
+- Additional uploaded `strip_rcnn_s_dota.pth` and `strip_rcnn_s_fair1m.pth`
+  are full detector checkpoints, but not DIOR-R checkpoints. DOTA metadata has
+  15 classes and `fc_cls` shape `(16, 1024)`; FAIR1M metadata has 37 classes
+  and `fc_cls` shape `(38, 1024)`. DIOR-R needs 20 classes plus background
+  (`fc_cls` shape `(21, 1024)`). Do not evaluate these mismatched checkpoints
+  as DIOR-R comparator evidence.

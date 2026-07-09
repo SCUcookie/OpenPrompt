@@ -1,0 +1,65 @@
+{
+  "date": "2026-07-01",
+  "experiment": "dior_r_s4_pseudo_agreement_e1_lr5e6",
+  "status": "complete",
+  "launch_record": "New/docs/experiments/20260630_dior_r_sota_audit_s4_micro_sweep_launch.md",
+  "completion_record": "New/docs/experiments/20260701_dior_r_s4_lr5e6_complete.md",
+  "dataset_protocol": {
+    "train_root": "data/DIOR_R_dota_s4_pseudo_agreement_20260627/",
+    "test_split": "DIOR_R_dota/test",
+    "metric": "MMRotate DOTAMetric mAP at IoU 0.5"
+  },
+  "accepted_launch_mode": "tools/bootstrap_run.py tools/train.py",
+  "replicas": [
+    {
+      "replica": "rep23407",
+      "seed": 23407,
+      "gpu": 0,
+      "work_dir": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_e1_lr5e6_rep23407_20260630",
+      "config": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_e1_lr5e6_rep23407_20260630/roi-trans-le90_r50_fpn_remoteclip-s4-pseudo-agreement-e1-lr5e6-rep23407-20260630_dior_r.py",
+      "source_checkpoint": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_rep23407_20260627/epoch_1.pth",
+      "best_epoch": 6,
+      "best_mAP": 0.6964923739433289,
+      "best_AP50": 0.696,
+      "final_epoch": 6,
+      "final_mAP": 0.6964923739433289,
+      "final_AP50": 0.696
+    },
+    {
+      "replica": "rep24407",
+      "seed": 24407,
+      "gpu": 4,
+      "work_dir": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_e1_lr5e6_rep24407_20260630",
+      "config": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_e1_lr5e6_rep24407_20260630/roi-trans-le90_r50_fpn_remoteclip-s4-pseudo-agreement-e1-lr5e6-rep24407-20260630_dior_r.py",
+      "source_checkpoint": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_rep24407_20260627/epoch_1.pth",
+      "best_epoch": 2,
+      "best_mAP": 0.6969872713088989,
+      "best_AP50": 0.697,
+      "final_epoch": 6,
+      "final_mAP": 0.6926900148391724,
+      "final_AP50": 0.693
+    },
+    {
+      "replica": "rep25407",
+      "seed": 25407,
+      "gpu": 5,
+      "work_dir": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_e1_lr5e6_rep25407_20260630",
+      "config": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_e1_lr5e6_rep25407_20260630/roi-trans-le90_r50_fpn_remoteclip-s4-pseudo-agreement-e1-lr5e6-rep25407-20260630_dior_r.py",
+      "source_checkpoint": "work_dirs/geonexus_dior_r/roi_trans_remoteclip_s4_pseudo_agreement_rep25407_20260627/epoch_1.pth",
+      "best_epoch": 2,
+      "best_mAP": 0.6983358860015869,
+      "best_AP50": 0.698,
+      "final_epoch": 6,
+      "final_mAP": 0.692780613899231,
+      "final_AP50": 0.693
+    }
+  ],
+  "aggregate": {
+    "best_mean_mAP": 0.6972718437512716,
+    "final_mean_mAP": 0.6939876675605774,
+    "s3_mean_gate": 0.6979,
+    "single_run_gate": 0.7000
+  },
+  "decision": "stabilization / negative-to-neutral only; not paper-facing S4 superiority",
+  "next_action": "pause further S4 training; launch evaluation-only paper artifacts for the best checkpoint from each replica"
+}
