@@ -156,3 +156,29 @@ Search scope for updates:
   <https://openreview.net/forum?id=K0idbmzcgc>
 - CastDet arXiv/ECCV/IJCV:
   <https://arxiv.org/abs/2311.11646>
+
+## 2026-07-09 Refresh
+
+Refresh triggered by the DIOR-R S3/S4 evidence closure and the TGRS
+comparator-table update. Search scope: arXiv, official project/repo pages, and
+one supplementary WebSearch check for RSKT-Seg/Pi-Seg segmentation sources.
+Route impact summary is unchanged from 2026-06-07: none of these entries
+justify a new module or route change on their own; the highest-priority
+action is the RiO-DETR watch item below because it is a stronger public
+DIOR-R number than any comparator already in the TGRS manuscript.
+
+| Paper | Source checked | Venue/status | Relation to OpenRSD / GeoNexus | Route impact |
+|---|---:|---|---|---|
+| RiO-DETR: DETR for Real-time Oriented Object Detection | 2026-07-09 | arXiv 2603.09411, 2026-03 | Reports a DOTA-1.0/DIOR-R/FAIR-1M-2.0 real-time oriented detector; a search-engine summary cited DIOR-R AP50 75.73, but the arXiv abstract page itself gives no exact number and states code is not yet released ("Code will be made publicly available"). Materially stronger than any comparator currently in the TGRS manuscript (GeoNexus S3 best mean 69.79, OrientedFormer Swin-T confirmed 68.83). | Watch-only. Do not cite the unconfirmed 75.73 figure as fact; do not add as a comparator row until the exact number is confirmed from the paper/PDF and code/checkpoints are released. Flag in the manuscript's Discussion as an acknowledged stronger recent method so the SOTA-avoidance framing stays defensible. |
+| Do Open-Vocabulary Detectors Transfer to Aerial Imagery? A Comparative Evaluation | 2026-07-09 | arXiv 2601.22164 | Benchmarks existing natural-image open-vocabulary detectors directly on aerial imagery without domain adaptation; likely documents the domain-gap failure mode GeoNexus's real-vocabulary caution is designed to avoid overclaiming. | Useful citation for the "why not claim open-vocabulary" framing already in `PROJECT_INSTRUCTIONS.md`. Read before writing that paragraph in any future paper revision, not before this pass. |
+| Towards Realistic Open-Vocabulary Remote Sensing Segmentation: Benchmark and Baseline (Pi-Seg) | 2026-07-09 | arXiv 2604.15652 | Primary source for the Pi-Seg segmentation-lane target already tracked in `docs/experiments/20260707_coninfer_piseg_seg_smoke_preflight.md`; confirms the OVRSISBenchV2 benchmark this manuscript's segmentation lane depends on. | Segmentation lane only; does not affect the DOTA2/DIOR-R detection route, which stays primary. |
+| RSKT-Seg (open-vocabulary RS segmentation) | 2026-07-09 | arXiv 2509.12040 | Segmentation-lane target. README confirms its OVSISBench dataset and pretrained weights are hosted on Baidu Netdisk (password `USTC`) with a OneDrive mirror; the "datasets" and "pretrained weight" OneDrive links in the README are byte-identical URLs, which looks like a copy-paste error in their README (the same failure pattern independently found in Strip R-CNN's DIOR-R link, see `PROJECT_INSTRUCTIONS.md` 2026-07-06 status) rather than a real mirror of two different resources. | Segmentation lane only. Baidu Netdisk requires a Chinese-network account/client and is not scriptable from this environment; OneDrive folder links have previously hung a `WebFetch` call for 4+ hours in this project (see 2026-07-09 status) — do not retry an automated fetch on `1drv.ms` folder-listing URLs without a strict timeout wrapper. |
+| GiPL: Generative augmented iterative Pseudo-Labeling for Cross-Domain Few-Shot Object Detection | 2026-07-09 | arXiv 2605.29539 | Adjacent pseudo-labeling method for cross-domain few-shot detection; not remote-sensing-specific but structurally relevant to the closed DIOR-R S4 pseudo-label stage (teacher-agreement pooling plus generative augmentation). | Future inspiration only if a redesigned S4 attempt is ever separately approved; does not reopen the current closed S4 route. |
+
+Sources:
+
+- RiO-DETR arXiv: <https://arxiv.org/abs/2603.09411>
+- Do Open-Vocabulary Detectors Transfer to Aerial Imagery? arXiv: <https://arxiv.org/abs/2601.22164>
+- Pi-Seg / OVRSISBenchV2 arXiv: <https://arxiv.org/abs/2604.15652>
+- RSKT-Seg arXiv: <https://arxiv.org/abs/2509.12040>
+- GiPL arXiv: <https://arxiv.org/abs/2605.29539>

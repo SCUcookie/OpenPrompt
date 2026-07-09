@@ -106,7 +106,12 @@ ps -p PID1,PID2,PID3 -o pid,ppid,user,cmd --forest
   `PROJECT_INSTRUCTIONS.md`'s `2026-07-09 local-only status` entry for the
   full list of what was and was not done. The segmentation lane
   (`BRIEF_LIST.md`) stays paused/secondary behind the core DOTA2/DIOR-R route
-  by default.
+  by default. Strip R-CNN-S, LSKNet, and PKINet/PKINet-v2 are now confirmed
+  (not just "blocked pending research") to have no usable DIOR-R checkpoint
+  anywhere; stop re-attempting those specific downloads without new evidence.
+  A background research workflow hung 4+ hours on a `WebFetch` to a OneDrive
+  folder redirect link before being killed manually — avoid unbounded
+  `WebFetch` calls on `1drv.ms` folder URLs in future sessions.
 
 ## Main Decision
 

@@ -35,16 +35,22 @@ TAB_DIR = TGRS_DIR / "tables"
 
 DOCS = ROOT / "docs" / "experiments"
 
-INK = "#111111"
-MUTED = "#555555"
-GRID = "#c9c9c9"
-BLUE = "#1f77b4"
-ORANGE = "#d55e00"
-GREEN = "#009e73"
-PURPLE = "#6a51a3"
-GRAY = "#666666"
-RED = "#b02727"
-LIGHT = "#f4f4f4"
+# Validated categorical palette (dataviz skill, references/palette.md), checked
+# with scripts/validate_palette.js: "#2a78d6,#008300,#4a3aa7,#eb6834,#1baf7a,#e34948"
+# --mode light --pairs all -> ALL CHECKS PASS (worst all-pairs CVD ΔE 11.2,
+# floor-legal because every bar in these figures carries a direct value label).
+INK = "#0b0b0b"
+MUTED = "#52514e"
+GRID = "#e1e0d9"
+BASELINE_GRAY = "#8a8a86"
+BLUE = "#2a78d6"      # S1
+GREEN = "#008300"     # S2 / hierarchy stage
+PURPLE = "#4a3aa7"    # S3 / context-adapter stage
+ORANGE = "#eb6834"    # S4 / closed pseudo-label stage
+AQUA = "#1baf7a"      # our confirmed reproduction of a released checkpoint
+RED = "#e34948"       # blocked / could not evaluate
+GRAY = BASELINE_GRAY  # S0 / neutral reference bars (status role, not categorical)
+LIGHT = "#f4f3ee"
 
 plt.rcParams.update(
     {
@@ -136,10 +142,23 @@ def rel(path: Path) -> str:
         return str(path)
 
 
-def fmt(x: float | str | int) -> str:
+@dataclass(frozen=True)
+class Bold:
+    """Marks a cell as the best value in its comparison for bold-facing in LaTeX."""
+
+    value: float | str | int
+
+
+def fmt(x: float | str | int | Bold) -> str:
+    if isinstance(x, Bold):
+        return fmt(x.value)
     if isinstance(x, float):
         return f"{x:.4f}"
     return str(x)
+
+
+def csv_value(x: object) -> object:
+    return x.value if isinstance(x, Bold) else x
 
 
 def tex_escape(text: str) -> str:
@@ -173,7 +192,7 @@ def write_csv(path: Path, headers: list[str], rows: list[list[object]]) -> None:
     with path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(headers)
-        writer.writerows(rows)
+        writer.writerows([[csv_value(cell) for cell in row] for row in rows])
 
 
 def latex_table(
@@ -206,7 +225,11 @@ def latex_table(
         ]
     )
     for row in rows:
-        body.append(" & ".join(tex_escape(fmt(cell)) for cell in row) + r" \\")
+        cells = []
+        for cell in row:
+            text = tex_escape(fmt(cell))
+            cells.append(rf"\textbf{{{text}}}" if isinstance(cell, Bold) else text)
+        body.append(" & ".join(cells) + r" \\")
     body.extend([r"\bottomrule", r"\end{tabular}"])
     if scale_to_width:
         body.append(r"}")
@@ -511,7 +534,7 @@ def render_comparators(data: dict) -> None:
     rows = data["comparators"]
     fig, ax = plt.subplots(figsize=(7.05, 2.65))
     y = list(range(len(rows)))
-    color_by_kind = {"geonexus": GREEN, "confirmed_run": BLUE, "public_paper": GRAY, "blocked": RED}
+    color_by_kind = {"geonexus": PURPLE, "confirmed_run": AQUA, "public_paper": GRAY, "blocked": RED}
     colors = [color_by_kind[r.kind] for r in rows]
     hatches = ["" if r.kind != "public_paper" else "//" for r in rows]
     bars = ax.barh(y, [r.ap50 for r in rows], color=colors, edgecolor=INK, linewidth=0.35, height=0.58)
@@ -523,10 +546,10 @@ def render_comparators(data: dict) -> None:
     ax.set_xlim(0.60, 0.72)
     for yi, r in zip(y, rows):
         ax.text(r.ap50 + 0.003, yi, f"{r.ap50:.4f}", va="center", fontsize=6.4)
-    ax.axvline(data["s3_dior_best_mean"], color=GREEN, linestyle="--", linewidth=0.7, alpha=0.6)
+    ax.axvline(data["s3_dior_best_mean"], color=PURPLE, linestyle="--", linewidth=0.7, alpha=0.6)
     legend_handles = [
-        plt.Rectangle((0, 0), 1, 1, color=GREEN, label="GeoNexus-RSD (ours)"),
-        plt.Rectangle((0, 0), 1, 1, color=BLUE, label="our reproduction of released checkpoint"),
+        plt.Rectangle((0, 0), 1, 1, color=PURPLE, label="GeoNexus-RSD S3 (ours)"),
+        plt.Rectangle((0, 0), 1, 1, color=AQUA, label="our reproduction of released checkpoint"),
         plt.Rectangle((0, 0), 1, 1, color=GRAY, hatch="//", label="public paper row (protocol not verified identical)"),
         plt.Rectangle((0, 0), 1, 1, color=RED, label="blocked: no usable checkpoint for our eval"),
     ]
@@ -707,6 +730,19 @@ def render_detector_baselines(data: dict) -> None:
     save_figure(fig, "geonexus_tgrs_detector_baselines")
 
 
+def bold_max(rows: list[list[object]], col: int, group_col: int | None = None) -> list[list[object]]:
+    """Wrap the max numeric value in `col` (per `group_col` group, if given) in Bold()."""
+    out = [list(row) for row in rows]
+    groups: dict[object, list[int]] = {}
+    for i, row in enumerate(out):
+        key = row[group_col] if group_col is not None else None
+        groups.setdefault(key, []).append(i)
+    for idxs in groups.values():
+        best_i = max(idxs, key=lambda i: out[i][col])
+        out[best_i][col] = Bold(out[best_i][col])
+    return out
+
+
 def write_tables(data: dict) -> None:
     TAB_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -715,8 +751,8 @@ def write_tables(data: dict) -> None:
     (TAB_DIR / "table_tgrs_main_results.tex").write_text(
         latex_table(
             headers=["Dataset", "Split", "Stage", "Metric", "mAP", "n", "Read"],
-            rows=main_rows,
-            caption="Main GeoNexus-RSD evidence on DOTA-v2.0 ss\\_val and sanitized DIOR-R test. DOTA-v2.0 S2/S3 and DIOR-R S2/S3/S4 report best-checkpoint and final-checkpoint means separately. DIOR-R S3 is the strongest local row; DIOR-R S4 is a closed, negative-to-neutral pseudo-label stabilization attempt.",
+            rows=bold_max(main_rows, col=4, group_col=0),
+            caption="Main GeoNexus-RSD evidence on DOTA-v2.0 ss_val and sanitized DIOR-R test. DOTA-v2.0 S2/S3 and DIOR-R S2/S3/S4 report best-checkpoint and final-checkpoint means separately. DIOR-R S3 is the strongest local row; DIOR-R S4 is a closed, negative-to-neutral pseudo-label stabilization attempt.",
             label="tab:tgrs_main_results",
             widths="@{}p{0.10\\textwidth}p{0.16\\textwidth}p{0.17\\textwidth}p{0.15\\textwidth}cp{0.03\\textwidth}p{0.25\\textwidth}@{}",
             starred=True,
@@ -742,8 +778,8 @@ def write_tables(data: dict) -> None:
     (TAB_DIR / "table_tgrs_dior_r.tex").write_text(
         latex_table(
             headers=["Stage", "Statistic", "mAP", "n", "Source"],
-            rows=dior_rows,
-            caption="Sanitized DIOR-R results on DIOR\\_R\\_dota/test using MMRotate DOTAMetric mAP at IoU 0.5. S3 scene adapter is the strongest local row (best single replica 0.6992). S4 pseudo-label stabilization is a closed, negative-to-neutral route: its best mean 0.6973 remains below the S3 best-mean gate 0.6979.",
+            rows=bold_max(dior_rows, col=2),
+            caption="Sanitized DIOR-R results on DIOR_R_dota/test using MMRotate DOTAMetric mAP at IoU 0.5. S3 scene adapter is the strongest local row (best single replica 0.6992). S4 pseudo-label stabilization is a closed, negative-to-neutral route: its best mean 0.6973 remains below the S3 best-mean gate 0.6979.",
             label="tab:tgrs_dior_r",
             widths="@{}p{0.25\\linewidth}p{0.18\\linewidth}cp{0.05\\linewidth}p{0.36\\linewidth}@{}",
             starred=False,
@@ -757,8 +793,8 @@ def write_tables(data: dict) -> None:
     (TAB_DIR / "table_tgrs_dota2_stability.tex").write_text(
         latex_table(
             headers=["Run", "Best epoch", "Best mAP", "Final epoch", "Final mAP"],
-            rows=[row[:5] for row in dota_rows],
-            caption="DOTA-v2.0 S2 loss-0 stability on DOTA2\\_1024\\_500/ss\\_val. Seven controlled S2 runs have best-checkpoint mean 0.6206, above S1 0.6177, but final-checkpoint mean 0.6167, below S1.",
+            rows=bold_max([row[:5] for row in dota_rows], col=2),
+            caption="DOTA-v2.0 S2 loss-0 stability on DOTA2_1024_500/ss_val. Seven controlled S2 runs have best-checkpoint mean 0.6206, above S1 0.6177, but final-checkpoint mean 0.6167, below S1.",
             label="tab:tgrs_dota2_stability",
             widths="@{}lcccc@{}",
             starred=False,
@@ -776,8 +812,8 @@ def write_tables(data: dict) -> None:
     (TAB_DIR / "table_tgrs_detector_baselines.tex").write_text(
         latex_table(
             headers=["Dataset", "Detector", "mAP", "AP50", "Read"],
-            rows=[r[:5] for r in det_rows],
-            caption="Detector-family baselines used to contextualize the GeoNexus-RSD results. DOTA-v2.0 values use the valid-PNG DOTA2\\_1024\\_500/ss\\_val protocol; DIOR-R values use the sanitized DIOR\\_R\\_dota/test protocol.",
+            rows=bold_max([r[:5] for r in det_rows], col=2, group_col=0),
+            caption="Detector-family baselines used to contextualize the GeoNexus-RSD results. DOTA-v2.0 values use the valid-PNG DOTA2_1024_500/ss_val protocol; DIOR-R values use the sanitized DIOR_R_dota/test protocol.",
             label="tab:tgrs_detector_baselines",
             widths="@{}p{0.14\\textwidth}p{0.22\\textwidth}ccp{0.47\\textwidth}@{}",
             starred=True,
@@ -791,7 +827,7 @@ def write_tables(data: dict) -> None:
     (TAB_DIR / "table_tgrs_sota_comparators.tex").write_text(
         latex_table(
             headers=["Method", "Note", "AP50", "Kind", "Source"],
-            rows=[[r.method, r.dataset_note, r.ap50, r.kind.replace("_", " "), short_source(r.source)] for r in data["comparators"]],
+            rows=bold_max([[r.method, r.dataset_note, r.ap50, r.kind.replace("_", " "), short_source(r.source)] for r in data["comparators"]], col=2),
             caption="DIOR-R comparator context, not a claimed SOTA table. GeoNexus-RSD S3 exceeds the confirmed OrientedFormer Swin-T rerun and the public Strip R-CNN-S and AOPG rows, but exact split/label/evaluator equivalence has not been proven for the public-paper rows, and Strip R-CNN-S could not be independently re-evaluated because no DIOR-R-trained checkpoint was released.",
             label="tab:tgrs_sota_comparators",
             widths="@{}p{0.20\\textwidth}p{0.30\\textwidth}cp{0.14\\textwidth}p{0.20\\textwidth}@{}",
