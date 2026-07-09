@@ -1,0 +1,52 @@
+File: segearth_segmentor.py
+Missing from: https://github.com/Dog-Yang/ConInfer @ ebaddccacce05fe3cc9a79eb401d3a62bff58c6a
+  (imported at eval.py line 4: `import segearth_segmentor, ConInfer_segmentor`)
+
+Source (confirmed real, cloned via git):
+  Repo:   https://github.com/likyoo/SegEarth-OV.git
+  Commit: 3e22a969b32c6d751bdbba64a88a0b670e630f55  (HEAD of main branch as of 2026-07-09)
+  Path:   segearth_segmentor.py (repo root)
+
+Verification performed:
+  1. `git clone --depth 1 https://github.com/Dog-Yang/ConInfer.git` -> HEAD matched the
+     target commit ebaddccacce05fe3cc9a79eb401d3a62bff58c6a exactly.
+     `grep -rn segearth_segmentor` in the clone found only the import statement in
+     eval.py; no segearth_segmentor.py or package exists anywhere in the tree.
+  2. ConInfer's README.md Acknowledgments section credits @likyoo's SegEarth-OV
+     (https://github.com/likyoo/SegEarth-OV) as the base this repo builds on, and its
+     "Datasets" section links dataset_prepare.md instructions to
+     https://github.com/likyoo/SegEarth-OV/blob/main/dataset_prepare.md.
+  3. `git clone --depth 1 https://github.com/likyoo/SegEarth-OV.git` -> HEAD
+     3e22a969b32c6d751bdbba64a88a0b670e630f55, contains segearth_segmentor.py
+     (372 lines, sha256 a47dfaac49e8a284b04b97b7c418507668ab0f5fd4690381ab8568be07f0e179)
+     defining `class SegEarthSegmentation(BaseSegmentor)` registered via
+     `@MODELS.register_module()` (mmseg/mmengine registry pattern).
+  4. Structural comparison: ConInfer's own ConInfer_segmentor.py (present in the
+     ConInfer clone) is a near-identical derivative of segearth_segmentor.py --
+     same imports (mmseg BaseSegmentor/SegDataPreProcessor/PixelData/MODELS,
+     open_clip, BLIP.models.blip_retrieval, gem, simfeatup_dev.upsamplers,
+     prompts.imagenet_template), same class shape, same get_cls_idx() helper,
+     just renamed to ConInferSegmentation with extra imports/logic added.
+     `diff` of import/class/def lines showed only additive changes on the
+     ConInfer side.
+  5. All modules that segearth_segmentor.py imports from
+     (prompts/imagenet_template.py, BLIP/models/blip_retrieval.py, gem/,
+     simfeatup_dev/upsamplers.py, open_clip/) already exist at the same
+     relative paths inside the ConInfer clone, so the file is expected to
+     import cleanly once dropped into the ConInfer repo root (dependencies
+     permitting, e.g. mmseg/mmengine/torch installed per requirements.txt).
+
+Caveat: none of the .py configs actually present in this ConInfer snapshot
+(configs_segov/, configs_ConInfer/, configs_baseline/) reference
+type='SegEarthSegmentation' -- they all use type='ConInferSegmentation'.
+The `import segearth_segmentor` in eval.py therefore looks like a residual
+import carried over from SegEarth-OV's own eval.py (whose argparse
+description string "SegEarth-OV evaluation with MMSeg" is still present
+verbatim in ConInfer's eval.py), rather than something ConInfer's shipped
+configs actively invoke. It still must be importable for `python eval.py`
+to run past the top-level import statement.
+
+Action taken: copied segearth_segmentor.py byte-for-byte (sha256 verified
+identical) from the SegEarth-OV clone to:
+  D:\xijiao\遥感目标检测\New\artifacts\blocked_files_20260709\coninfer_fix\segearth_segmentor.py
+No content was fabricated or modified.

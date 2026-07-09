@@ -1,0 +1,11 @@
+\contentsline {section}{\numberline {1}当前结论}{2}{section.1}%
+\contentsline {section}{\numberline {2}研究目标}{2}{section.2}%
+\contentsline {section}{\numberline {3}方法定义}{2}{section.3}%
+\contentsline {subsection}{\numberline {3.1}层次提示词库}{2}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}场景上下文提示适配}{3}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}伪标签净化}{4}{subsection.3.3}%
+\contentsline {section}{\numberline {4}DOTA2 当前证据}{4}{section.4}%
+\contentsline {section}{\numberline {5}DIOR-R 诊断路线}{4}{section.5}%
+\contentsline {section}{\numberline {6}归档诊断：DOTA v1.5}{5}{section.6}%
+\contentsline {section}{\numberline {7}实验推进顺序}{5}{section.7}%
+\contentsline {section}{\numberline {8}结论}{6}{section.8}%

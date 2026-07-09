@@ -1,0 +1,10 @@
+Stage,Dataset role,Best mAP,Best AP50,Status
+S0 RoITrans,DOTA2 paper route,0.6088,0.6090,Measured
+S1 prompt GPU-1,DOTA2 paper route,0.6177,0.6180,Measured
+S2 hierarchy e4,DOTA2 active,0.6038,0.6040,Measured
+DIOR-R S0,cross-dataset required,Pending,Pending,Pending
+DOTA v1.5 S1,DOTA v1.5 diagnostic,0.3800,0.3800,Measured
+DOTA v1.5 S2,DOTA v1.5 diagnostic,0.3858,0.3860,Measured
+DOTA v1.5 S3,DOTA v1.5 diagnostic,0.3827,0.3830,Measured
+DOTA v1.5 S3 off,DOTA v1.5 diagnostic,0.3772,0.3770,Measured
+FAIR1M,stretch evidence,TBD,TBD,Paused

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cSld><p:spTree>
+    <p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr>
+    <p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="12192000" cy="6858000"/><a:chOff x="0" y="0"/><a:chExt cx="12192000" cy="6858000"/></a:xfrm></p:grpSpPr>
+    
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="2" name="Band 2"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="12191695" cy="411480"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="8C1515"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="3" name="TextBox 3"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="411480" y="475488"/><a:ext cx="8046720" cy="502920"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="2600" b="1"><a:solidFill><a:srgbClr val="8C1515"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Method Key Point: Prompt Bank and Scoring</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="4" name="TextBox 4"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="8778240" y="493776"/><a:ext cx="2743200" cy="320040"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="1000"><a:solidFill><a:srgbClr val="64748B"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>GeoNexus-RSD Progress</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="5" name="TextBox 5"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="438912" y="960120"/><a:ext cx="10607040" cy="320040"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="1400"><a:solidFill><a:srgbClr val="475569"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>S1 uses a hierarchy-oriented prompt bank with RemoteCLIP-based prompt scoring.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="10" name="TextBox 10"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="594360" y="1234440"/><a:ext cx="4983480" cy="4251960"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:ln w="9525"><a:solidFill><a:srgbClr val="CBD5E1"/></a:solidFill></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="2000" b="1"><a:solidFill><a:srgbClr val="8C1515"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Prompt bank</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1700"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Class prompts are organized around fine-grained RS object semantics.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1700"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>RemoteCLIP ViT-B/32 provides normalized prompt embeddings.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1700"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>The DOTA2 S2 prompt artifact validates 18 classes, finite embeddings, and an 18 x 18 relation matrix.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="11" name="TextBox 11"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="5989320" y="1234440"/><a:ext cx="4983480" cy="4251960"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:ln w="9525"><a:solidFill><a:srgbClr val="CBD5E1"/></a:solidFill></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="2000" b="1"><a:solidFill><a:srgbClr val="8C1515"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Detector integration</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1700"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>RoI Transformer remains the detector backbone for controlled comparisons.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1700"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>S1 tests whether prompt scoring improves the DOTA2 detector route.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1700"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Main DOTA2 S1 improves from 0.6088/0.6090 to 0.6177/0.6180.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="980" name="TextBox 980"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="10771632" y="6492240"/><a:ext cx="914400" cy="228600"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="800"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t></a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+  </p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>
+</p:sld>

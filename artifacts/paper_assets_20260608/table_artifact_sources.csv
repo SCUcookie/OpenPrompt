@@ -1,0 +1,23 @@
+Artifact,Number or claim,Source
+GeoNexus S1 GPU-1,0.6177 / 0.6180,docs/experiments/20260608_dota2_s1_complete_and_s2_launch.md
+RoI Transformer R50,0.6088 / 0.6090,docs/experiments/20260603_s0_dota2_roi_trans_validpng_metrics.json
+GeoNexus S2 main epoch 4,0.6038 / 0.6040,docs/experiments/20260608_dota2_s1_complete_and_s2_launch.md
+GeoNexus S1 GPU-0 LR 5e-5,0.6047 / 0.6050,docs/experiments/20260608_dota2_s1_complete_and_s2_launch.md
+GeoNexus S1 GPU-6 LR 1e-4,0.5997 / 0.6000,docs/experiments/20260608_dota2_s1_complete_and_s2_launch.md
+Oriented R-CNN R50,0.5973 / 0.5970,docs/experiments/20260605_dota2_baseline_status.md
+S2ANet,0.5869 / 0.5870,docs/experiments/20260605_dota2_baseline_status.md
+R3Det-KFIoU,0.5633 / 0.5630,docs/experiments/20260605_dota2_baseline_status.md
+OpenRSD epoch 12,0.4202 / 0.4200,docs/experiments/20260602_opensrd_dota2_epoch12_ssval_metrics.json
+RTMDet-M,0.3312 / 0.3310,docs/experiments/20260605_dota2_baseline_status.md
+RTMDet-L,0.2779 / 0.2780,docs/experiments/20260605_dota2_baseline_status.md
+S0 RoITrans,0.6088 / 0.6090,20260603_s0_dota2_roi_trans_validpng_metrics.json
+S1 prompt GPU-1,0.6177 / 0.6180,20260608_dota2_s1_complete_and_s2_launch.md
+S2 hierarchy e4,0.6038 / 0.6040,20260608_dota2_s1_complete_and_s2_launch.md
+DIOR-R S0,Pending / Pending,20260607_dior_orcnn_nan_diag_and_roi_trans_launch.md
+DOTA v1.5 S1,0.3800 / 0.3800,20260605_geonexus_s1_retry2_metrics.json
+DOTA v1.5 S2,0.3858 / 0.3860,20260605_geonexus_s2_rerun_s1e32_metrics.json
+DOTA v1.5 S3,0.3827 / 0.3830,20260605_geonexus_s3_rerun_s2e4_metrics.json
+DOTA v1.5 S3 off,0.3772 / 0.3770,20260606_geonexus_s3_adapter_off_rerun_s2e4_metrics.json
+DIOR-R NaN diagnosis,invalid; do not cite,docs/experiments/20260607_dior_orcnn_nan_diag_and_roi_trans_launch.md
+DOTA2 S1/S2 launch note,S1 complete; S2 epoch-4 active,docs/experiments/20260608_dota2_s1_complete_and_s2_launch.md
+Route gate,DOTA2 before DIOR-R before FAIR1M,PROJECT_INSTRUCTIONS.md

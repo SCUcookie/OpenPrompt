@@ -1,0 +1,12 @@
+Detector,Dataset,Status,mAP,AP50,Note
+GeoNexus S1 GPU-1,DOTA2 ss_val,Complete,0.6177,0.6180,Completed S1; positive over S0
+RoI Transformer R50,DOTA2 ss_val,Complete,0.6088,0.6090,S0 gate; valid-PNG recovery
+GeoNexus S2 main epoch 4,DOTA2 ss_val,Active,0.6038,0.6040,Active S2; not yet stronger than S1/S0
+GeoNexus S1 GPU-0 LR 5e-5,DOTA2 ss_val,Complete,0.6047,0.6050,Low-LR replicate; below S0
+GeoNexus S1 GPU-6 LR 1e-4,DOTA2 ss_val,Complete,0.5997,0.6000,Low-LR replicate; below S0
+Oriented R-CNN R50,DOTA2 ss_val,Complete,0.5973,0.5970,Secondary baseline
+S2ANet,DOTA2 ss_val,Complete,0.5869,0.5870,Secondary baseline
+R3Det-KFIoU,DOTA2 ss_val,Complete,0.5633,0.5630,Secondary baseline
+OpenRSD epoch 12,DOTA2 ss_val,Reference,0.4202,0.4200,Completed OpenRSD checkpoint; not GeoNexus
+RTMDet-M,DOTA2 ss_val,Complete,0.3312,0.3310,Low secondary baseline
+RTMDet-L,DOTA2 ss_val,Complete,0.2779,0.2780,Completed and deprioritized

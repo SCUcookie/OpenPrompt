@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Prompt and module design table. Pending rows are not reported as completed results.}
+\label{tab:prompt_design}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lllll}
+\toprule
+Design & Mechanism & DOTA2 status & DIOR-R status & Use \\
+\midrule
+Flat class prompts & RemoteCLIP text embedding per class name & S1 complete & Blocked & Measured DOTA2 S1 evidence \\
+Hierarchy prompts & parent/alias/confusion descriptors plus relation matrix & S2 active & Pending & Do not claim final gain yet \\
+Context adapter & tile/region-conditioned prompt modulation & Paused & Pending & Future ablation after S2/DIOR-R \\
+Pseudo-label purification & detector score plus hierarchy plus crop-text agreement & Paused & Pending & Planned; no numeric claim \\
+Routing & optional class/module route selector & Paused & Paused & Secondary future work \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

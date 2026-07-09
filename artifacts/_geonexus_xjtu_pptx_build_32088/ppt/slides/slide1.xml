@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cSld><p:spTree>
+    <p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr>
+    <p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="12192000" cy="6858000"/><a:chOff x="0" y="0"/><a:chExt cx="12192000" cy="6858000"/></a:xfrm></p:grpSpPr>
+    
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="2" name="Band 2"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="12191695" cy="6858000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="F8FAFC"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="3" name="Band 3"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="12191695" cy="566928"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="8C1515"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="4" name="TextBox 4"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="658368" y="1325880"/><a:ext cx="9692640" cy="822960"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="4000" b="1"><a:solidFill><a:srgbClr val="8C1515"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>GeoNexus-RSD</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="5" name="TextBox 5"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="685800" y="2176272"/><a:ext cx="9966960" cy="594360"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="2000" b="1"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Hierarchy- and Context-Aware Vision-Language Prompting for Oriented Remote Sensing Detection</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="6" name="TextBox 6"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="713232" y="3063240"/><a:ext cx="4754880" cy="685800"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:ln w="9525"><a:solidFill><a:srgbClr val="CBD5E1"/></a:solidFill></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="1800"><a:solidFill><a:srgbClr val="334155"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Progress report | DOTA2 first, DIOR-R validation</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="7" name="TextBox 7"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="713232" y="4251960"/><a:ext cx="4754880" cy="868680"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="1800" b="1"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Dinghao Li</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:r><a:rPr lang="en-US" sz="1500"><a:solidFill><a:srgbClr val="475569"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Xi&#x27;an Jiaotong University</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:r><a:rPr lang="en-US" sz="1500"><a:solidFill><a:srgbClr val="475569"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>June 13, 2026</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="8" name="TextBox 8"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="6400800" y="1417320"/><a:ext cx="4663440" cy="3474720"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:ln w="9525"><a:solidFill><a:srgbClr val="CBD5E1"/></a:solidFill></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="2000" b="1"><a:solidFill><a:srgbClr val="8C1515"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Current Status</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1700"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>DOTA2 S1 improves over RoI Transformer S0.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1700"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>S2 shows repeatable early-checkpoint gain, but final checkpoints are unstable.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1700"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>DIOR-R sanitized route is active with S1 replicas and S2 metrics pending.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+  </p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>
+</p:sld>

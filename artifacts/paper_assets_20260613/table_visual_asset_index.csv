@@ -1,0 +1,9 @@
+Asset,Format,Use
+fig_method_framework_tikz,TikZ/PDF,method framework with current vs paused modules
+fig_dota2_s2_stability,PDF/SVG,DOTA2 S0/S1/S2 stability plot
+fig_dior_r_transfer,PDF/SVG,DIOR-R S0/S1 plus pending S2
+fig_route_status,PDF/SVG,route gate/status diagram
+fig_dota2_class_heatmap,PDF/SVG,appendix-style class diagnostic
+table_dota2_current,TEX/CSV,DOTA2 metrics table
+table_dior_r_current,TEX/CSV,DIOR-R metrics table
+table_route_status,TEX/CSV,route gate table

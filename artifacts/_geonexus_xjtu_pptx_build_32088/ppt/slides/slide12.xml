@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cSld><p:spTree>
+    <p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr>
+    <p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="12192000" cy="6858000"/><a:chOff x="0" y="0"/><a:chExt cx="12192000" cy="6858000"/></a:xfrm></p:grpSpPr>
+    
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="2" name="Band 2"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="12191695" cy="566928"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="8C1515"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="3" name="TextBox 3"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="640080" y="914400"/><a:ext cx="9875520" cy="594360"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="3000" b="1"><a:solidFill><a:srgbClr val="8C1515"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Summary and Next Steps</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="10" name="TextBox 10"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="685800" y="1874519"/><a:ext cx="3337560" cy="3337560"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:ln w="9525"><a:solidFill><a:srgbClr val="CBD5E1"/></a:solidFill></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="2000" b="1"><a:solidFill><a:srgbClr val="8C1515"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Completed</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1600"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>DOTA2 S0/S1 archived.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1600"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>DOTA2 S2 loss-0 stability analyzed.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1600"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>DIOR-R sanitized S0/S1 evidence available.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="11" name="TextBox 11"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="4434840" y="1874519"/><a:ext cx="3337560" cy="3337560"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:ln w="9525"><a:solidFill><a:srgbClr val="CBD5E1"/></a:solidFill></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="2000" b="1"><a:solidFill><a:srgbClr val="8C1515"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Risks</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1600"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>S2 final checkpoints remain unstable.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1600"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>DIOR-R S2 metrics are pending.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1600"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Pseudo-label and context modules are not yet measured.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+<p:sp>
+  <p:nvSpPr><p:cNvPr id="12" name="TextBox 12"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>
+  <p:spPr><a:xfrm><a:off x="8183879" y="1874519"/><a:ext cx="3337560" cy="3337560"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:ln w="9525"><a:solidFill><a:srgbClr val="CBD5E1"/></a:solidFill></a:ln></p:spPr>
+  <p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="2000" b="1"><a:solidFill><a:srgbClr val="8C1515"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Next</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1600"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Archive DIOR-R S2 best/final metrics separately.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1600"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Decide whether S2 is best-checkpoint evidence or stays diagnostic.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p><a:p><a:pPr marL="285750" indent="-171450"><a:buChar char="•"/></a:pPr><a:r><a:rPr lang="en-US" sz="1600"><a:solidFill><a:srgbClr val="1F2937"/></a:solidFill><a:latin typeface="Aptos"/></a:rPr><a:t>Only then reopen context adapter and pseudo-label purification.</a:t></a:r><a:endParaRPr lang="en-US"/></a:p></p:txBody>
+</p:sp>
+  </p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>
+</p:sld>

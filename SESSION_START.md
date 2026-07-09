@@ -93,6 +93,20 @@ ps -p PID1,PID2,PID3 -o pid,ppid,user,cmd --forest
   another unchanged detector.
 - 2026-06-07 RTMDet-L status: completed and deprioritized after epoch-12
   `dota/mAP=0.2779`, `dota/AP50=0.2780`.
+- 2026-07-09 status: DIOR-R S3 scene/context adapter (best mean `0.6979`,
+  final mean `0.6859`) is the strongest local result and the primary
+  GeoNexus-RSD DIOR-R claim. DIOR-R S4 pseudo-label purification is formally
+  closed after three attempts topped out at best mean `0.697272`, below the
+  S3 gate. The TGRS manuscript
+  (`_local_archive_20260601_pull_backup/docs/TGRS/geonexus_tgrs.tex`) was
+  refreshed to this evidence state, including a new DIOR-R comparator
+  section/table/figure (OrientedFormer Swin-T confirmed by our own rerun at
+  `0.6883`; Strip R-CNN-S and AOPG are unverified public-paper rows; this is
+  comparator context, not a SOTA claim). This was a no-GPU local session; see
+  `PROJECT_INSTRUCTIONS.md`'s `2026-07-09 local-only status` entry for the
+  full list of what was and was not done. The segmentation lane
+  (`BRIEF_LIST.md`) stays paused/secondary behind the core DOTA2/DIOR-R route
+  by default.
 
 ## Main Decision
 
@@ -385,7 +399,24 @@ Then:
 6. Keep the scope aligned with a 1-month deadline for finishing experiments and starting paper writing.
 7. Update Markdown notes in /data5/2025/ldh/OpenPrompt when you learn something important.
 
-Default priority order:
+Default priority order (updated 2026-07-09; superseded the original bullets
+below once DOTA2 S1/S2 and DIOR-R S0-S4 all completed):
+- If no GPU/server access this session: resolve blocked-file research
+  (Strip R-CNN DIOR-R checkpoint, PKINet/PKINet-v2/LSKNet status, literature
+  tracker refresh), reconcile manuscript/doc drift, and stage a ready-to-run
+  GPU queue for the next server session. Do not open new training routes from
+  local reasoning alone.
+- If GPU/server access is available: first confirm whether the blocked-file
+  research from the last local session found a usable Strip R-CNN-S DIOR-R
+  checkpoint or new PKINet/PKINet-v2/LSKNet comparator target; run whichever
+  of those became unblocked before anything else.
+- Do not relaunch DIOR-R S4 pseudo-label training with the same recipe; it is
+  closed (best mean `0.697272` < S3 gate `0.6979`) unless a new design change
+  is proposed and separately approved.
+- FAIR1M, routing, and the segmentation lane (`BRIEF_LIST.md`) stay paused
+  behind the core DOTA2/DIOR-R route unless explicitly reprioritized.
+
+Original priority order (superseded, kept for history):
 - DOTA2 S1 first-validation comparison against RoI Transformer S0 0.6088/0.6090
 - DOTA2 S2 from the better clean S1 checkpoint
 - DIOR-R data/box/loss-target diagnosis before detector relaunch

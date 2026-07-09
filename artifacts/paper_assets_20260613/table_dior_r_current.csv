@@ -1,0 +1,5 @@
+Run,Status,mAP,AP50,Use
+DIOR-R S0 RoI Transformer,sanitized S0,0.6531,0.6530,current S0 leader
+DIOR-R S1 rep0,complete,0.6751,0.675,stronger S1 replica; source for S2
+DIOR-R S1 rep1,complete,0.6690,0.669,stability replica
+DIOR-R S2 hierarchy reps,launched,pending,pending,clean startup; no metric claim

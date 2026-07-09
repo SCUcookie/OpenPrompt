@@ -1,0 +1,6 @@
+Track,Role,Status
+DOTA2,primary benchmark,S0/S1 measured; S2 best-checkpoint candidate
+DIOR-R,required validation,S0/S1 measured; S2 metrics pending
+DOTA v1.5,archive only,"diagnostic history, not headline evidence"
+S3/S4,paused,resume only after S2 and DIOR-R gates are stable
+Pseudo-label / FAIR1M,planned,no paper-facing metric claim yet

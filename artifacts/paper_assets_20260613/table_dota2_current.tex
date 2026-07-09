@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\small
+\caption{DOTA2 evidence after the June 13 S2 stabilization analysis.}
+\label{tab:dota2_current}
+\begin{tabular}{lllrl}
+\toprule
+Run & Status & mAP & AP50 & Use \\
+\midrule
+DOTA2 S0 RoI Transformer & complete & 0.6088 & 0.6090 & matched valid-PNG detector baseline \\
+DOTA2 S1 RemoteCLIP & complete & 0.6177 & 0.6180 & paper-facing positive DOTA2 result \\
+DOTA2 S2 loss-0 best mean & candidate & 0.620606 & - & all-seven best-checkpoint mean; early only \\
+DOTA2 S2 loss-0 final mean & unstable & 0.616655 & - & all-seven final mean; below S1 \\
+\bottomrule
+\end{tabular}
+\end{table}

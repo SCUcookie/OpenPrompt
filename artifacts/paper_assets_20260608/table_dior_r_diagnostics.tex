@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\small
+\caption{DIOR-R diagnostic failures; invalid runs are not baseline evidence.}
+\label{tab:dior_r_diagnostics}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llll}
+\toprule
+Run & Failure signature & Evidence status & Next action \\
+\midrule
+ORCNN R50 initial & accepted startup; later unstable/invalid & Not cited & Inspect DIOR-R records and rotated boxes \\
+ORCNN R50 low-LR diagnostic & grad\_norm/loss NaN; final validation 0 dets & Invalid & Check class mapping and loss targets \\
+RoI Transformer R50 & loss\_rpn and cascade losses NaN before epoch-1 validation & Invalid & Diagnose data/box-coder path before relaunch \\
+Rotated RetinaNet R50 & loss\_bbox=inf at epoch 1 iteration 1200 & Invalid & Do not relaunch unchanged detector \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

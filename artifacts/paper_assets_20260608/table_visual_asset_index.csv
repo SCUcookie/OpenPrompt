@@ -1,0 +1,11 @@
+Asset,Format,Use
+method_framework,standalone TikZ PDF; archived SVG,detector-centered GeoNexus-RSD architecture with planned branch marked dashed
+dota2_baseline_lollipop,PPT PNG/SVG; paper PDF/SVG,ranked DOTA2 evidence including S1/S2
+dota2_class_heatmap,PPT PNG/SVG; paper PDF/SVG,grouped class evidence panels
+detector_family_grouped,PPT PNG/SVG; paper PDF/SVG,detector-family status comparison
+route_progression,PPT PNG/SVG; paper PDF/SVG,DOTA2-first route gate
+dior_diagnostic_timeline,PPT PNG/SVG; paper PDF/SVG,DIOR-R diagnostic flow
+status_table,PPT PNG/SVG,slide-friendly current status table
+dotav2_contact_sheet,PPT PNG/SVG; paper PDF/SVG,deterministic real DOTAv2 crop/contact sheet
+prompt_design,CSV/TEX,prompt/module design and status
+efficiency_reporting,CSV/TEX,efficiency shell with TBD measurements
