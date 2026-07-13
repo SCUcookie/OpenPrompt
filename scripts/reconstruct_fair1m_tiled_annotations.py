@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import re
@@ -27,6 +28,8 @@ CANONICAL_CLASSES = (
 )
 KNOWN_CLASSES = frozenset(CANONICAL_CLASSES)
 TILE_RE = re.compile(r"^(?P<source>.+)__(?P<size>\d+)__(?P<x>-?\d+)___(?P<y>-?\d+)$")
+COORDINATE_FORMAT = ".15g"
+SERIALIZATION_VERSION = "fair1m-dota-precision-v2"
 
 
 @dataclass(frozen=True)
@@ -52,6 +55,21 @@ def polygon_area(points: Iterable[tuple[float, float]]) -> float:
     pts = tuple(points)
     return abs(sum(x * pts[(i + 1) % len(pts)][1] - pts[(i + 1) % len(pts)][0] * y
                    for i, (x, y) in enumerate(pts))) * 0.5
+
+
+def format_coordinate(value: float) -> str:
+    """Serialize a coordinate without the six-significant-digit loss from :g."""
+    return format(value, COORDINATE_FORMAT)
+
+
+def annotation_manifest_sha256(output_dir: Path) -> str:
+    digest = hashlib.sha256()
+    for path in sorted(output_dir.glob("*.txt")):
+        digest.update(path.name.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
 
 
 def parse_raw_line(line: str, source: str, line_no: int, width: int, height: int) -> RawObject:
@@ -120,7 +138,7 @@ def reconstruct_tile(objects: Iterable[RawObject], x: int, y: int, size: int,
         # Match the archived splitter: retain the original quadrilateral and translate it.
         coords = [coordinate for px, py in obj.points for coordinate in (px - x, py - y)]
         difficulty = 0 if math.isclose(iof, 1.0, rel_tol=0.0, abs_tol=1e-9) else 2
-        lines.append(" ".join(f"{value:g}" for value in coords) +
+        lines.append(" ".join(format_coordinate(value) for value in coords) +
                      f" {obj.class_name} {difficulty}")
     return lines
 
@@ -205,6 +223,8 @@ def reconstruct(raw_image_dir: Path, raw_label_dir: Path, tile_stems_path: Path 
         "tile_stems": str(tile_stems_path) if tile_stems_path else None,
         "tile_image_dir": str(tile_image_dir) if tile_image_dir else None,
         "output_dir": str(output_dir),
+        "serialization_version": SERIALIZATION_VERSION,
+        "coordinate_format": COORDINATE_FORMAT,
         "iof_threshold": iof_threshold, "num_tile_stems": len(tile_stems),
         "num_annotations_written": len(list(output_dir.glob("*.txt"))),
         "num_objects_written": written_objects,
@@ -212,6 +232,7 @@ def reconstruct(raw_image_dir: Path, raw_label_dir: Path, tile_stems_path: Path 
         "difficulty_counts": dict(sorted(difficulty_counts.items())),
         "num_rejections": len(rejections),
         "rejection_reason_counts": dict(Counter(item.reason for item in rejections)),
+        "annotation_manifest_sha256": annotation_manifest_sha256(output_dir),
         "rejections": [asdict(item) for item in rejections],
     }
     report_path.parent.mkdir(parents=True, exist_ok=True)

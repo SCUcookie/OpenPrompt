@@ -74,6 +74,13 @@ def main() -> None:
     args = ap.parse_args()
 
     import cv2
+    from mmdet.utils import register_all_modules as register_all_modules_mmdet
+    from mmrotate.utils import register_all_modules
+    from mmengine import DefaultScope
+    register_all_modules_mmdet(init_default_scope=False)
+    register_all_modules(init_default_scope=False)
+    DefaultScope.get_instance("mmrotate", scope_name="mmrotate")
+    import geonexus_mmrotate.prompt_bbox_head  # noqa: F401
     from mmdet.apis import inference_detector, init_detector
 
     args.out_dir.mkdir(parents=True, exist_ok=True)

@@ -32,12 +32,23 @@ def main() -> None:
     ap.add_argument("--runs", type=int, default=200)
     ap.add_argument("--warmup", type=int, default=20)
     ap.add_argument("--out", type=Path, default=None)
+    ap.add_argument("--device", default="cuda:0")
     args = ap.parse_args()
 
     import torch
+    # Match MMRotate's test entrypoint: importing packages is insufficient for
+    # this installed package mix because task modules are registered lazily.
+    from mmdet.utils import register_all_modules as register_all_modules_mmdet
+    from mmrotate.utils import register_all_modules
+    from mmengine import DefaultScope
+    register_all_modules_mmdet(init_default_scope=False)
+    register_all_modules(init_default_scope=False)
+    DefaultScope.get_instance("mmrotate", scope_name="mmrotate")
+    import mmrotate.models.task_modules.coders.delta_xywh_hbbox_coder  # noqa: F401
+    import geonexus_mmrotate.prompt_bbox_head  # noqa: F401
     from mmdet.apis import inference_detector, init_detector
 
-    model = init_detector(args.config, args.ckpt, device="cuda:0")
+    model = init_detector(args.config, args.ckpt, device=args.device)
     n_params = sum(p.numel() for p in model.parameters())
 
     gflops = None
@@ -51,13 +62,15 @@ def main() -> None:
 
     for _ in range(args.warmup):
         inference_detector(model, args.image)
-    torch.cuda.synchronize()
+    if args.device.startswith("cuda"):
+        torch.cuda.synchronize()
 
     times = []
     for _ in range(args.runs):
         t0 = time.perf_counter()
         inference_detector(model, args.image)
-        torch.cuda.synchronize()
+        if args.device.startswith("cuda"):
+            torch.cuda.synchronize()
         times.append(time.perf_counter() - t0)
 
     median_s = statistics.median(times)
@@ -65,7 +78,7 @@ def main() -> None:
         "tag": args.tag,
         "config": args.config,
         "ckpt": args.ckpt,
-        "gpu": torch.cuda.get_device_name(0),
+        "gpu": torch.cuda.get_device_name(0) if args.device.startswith("cuda") else "cpu",
         "params_M": round(n_params / 1e6, 2),
         "gflops": gflops,
         "fps_median": round(1.0 / median_s, 2),

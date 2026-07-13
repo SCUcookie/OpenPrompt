@@ -59,7 +59,7 @@ def sanitize(image_dir: Path, input_dir: Path, output_dir: Path, report_path: Pa
                     continue
                 coords = [coordinate for point in obj.points for coordinate in point]
                 difficulty = int(line.split()[9]) if len(line.split()) > 9 else 0
-                lines.append(" ".join(f"{value:g}" for value in coords) +
+                lines.append(" ".join(MODULE.format_coordinate(value) for value in coords) +
                              f" {obj.class_name} {difficulty}")
                 class_counts[obj.class_name] += 1
         (output_dir / f"{stem}.txt").write_text(
@@ -67,11 +67,14 @@ def sanitize(image_dir: Path, input_dir: Path, output_dir: Path, report_path: Pa
         objects_written += len(lines)
     report = {
         "image_dir": str(image_dir), "input_dir": str(input_dir), "output_dir": str(output_dir),
+        "serialization_version": MODULE.SERIALIZATION_VERSION,
+        "coordinate_format": MODULE.COORDINATE_FORMAT,
         "num_images": len(image_stems), "num_input_annotations": len(label_stems),
         "num_output_annotations": len(list(output_dir.glob("*.txt"))),
         "num_objects_written": objects_written, "class_counts": dict(sorted(class_counts.items())),
         "num_rejections": len(rejections),
         "rejection_reason_counts": dict(Counter(item["reason"] for item in rejections)),
+        "annotation_manifest_sha256": MODULE.annotation_manifest_sha256(output_dir),
         "rejections": rejections,
     }
     report_path.parent.mkdir(parents=True, exist_ok=True)

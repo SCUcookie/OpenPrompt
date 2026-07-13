@@ -43,6 +43,17 @@ class ReconstructionTests(unittest.TestCase):
         obj = MODULE.RawObject(((-4, 10), (6, 10), (6, 20), (-4, 20)), "van", 1)
         self.assertEqual(MODULE.reconstruct_tile([obj], 0, 0, 100, iof_threshold=0.7), [])
 
+    def test_precision_preserves_16088_other_airplane_area(self):
+        obj = MODULE.parse_raw_line(
+            "16088.0000001 16088.0000001 16088.0000002 16088.0000001 "
+            "16088.0000002 16088.0000002 16088.0000001 16088.0000002 "
+            "other-airplane 0", "16088", 1, 20000, 20000)
+        line = MODULE.reconstruct_tile([obj], 16088, 16088, 800)[0]
+        coords = [float(value) for value in line.split()[:8]]
+        points = list(zip(coords[0::2], coords[1::2]))
+        self.assertGreater(MODULE.polygon_area(points), 0.0)
+        self.assertNotIn("0 0 0 0", line)
+
 
 if __name__ == "__main__":
     unittest.main()
