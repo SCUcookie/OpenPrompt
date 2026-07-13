@@ -1,0 +1,13 @@
+{
+  "xml_dir": "/data2/2023/lcs/xyun/FAIR1M1.0/train/labelXml",
+  "out_dir": "artifacts/fair1m_xml_sample_20260710/labelTxt",
+  "num_files": 20,
+  "num_objects": 831,
+  "num_warnings": 1,
+  "warnings_sample": [
+    "1.xml: degenerate polygon with area=0.0 and edge_lengths=[0.0, 0.0, 0.0, 0.0], skipped"
+  ],
+  "warnings": [
+    "1.xml: degenerate polygon with area=0.0 and edge_lengths=[0.0, 0.0, 0.0, 0.0], skipped"
+  ]
+}

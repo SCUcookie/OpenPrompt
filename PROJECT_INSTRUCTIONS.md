@@ -6,6 +6,30 @@ Paper-first rule: if the research direction, claim, experiment sequence, or
 submission target changes, update the canonical manuscript and this file before
 changing code, configs, or secondary docs.
 
+2026-07-10 FAIR1M staging update: the split train archive was correctly read as
+a 14-volume ZIP and contains `208927` PNG tiles; `134486` is the auxiliary PKL
+subset count, not the complete image count. A new non-destructive root now
+exists at `/data2/2023/lcs/xyun/FAIR1M_2_800_400_sanitized_20260710` with exact
+`208927` train image/annotation stems and `10970` ss_val image/sanitized-
+annotation stems. Train reconstruction writes `1785001` active objects,
+including `54901` truncated objects at difficulty `2`, and records `6513`
+rejected raw records. ss_val sanitization writes `199347` active objects and
+records `2020` rejected archived records. All 37 canonical hyphenated classes
+are present. The source train archive fails CRC for exactly one member,
+`14777__533__0___801.png`; the staged copy was deterministically replaced from
+raw `14777.tif` using the original OpenCV crop geometry and now decodes as
+`533x533` (SHA-256 `66fdbadb2bf7ac5c6a0de8e49bd55fec604e862fb294a1dcca1b03fbb4e96f96`).
+Both ss_val archives pass CRC. Taxonomy order is canonical, and the new finite
+`[37,512]` artifact
+`artifacts/generated/remoteclip_vit_b32_fair1m_prompt_embeddings_canonical.pt`
+matches it exactly; the old artifact remains as superseded evidence. An S0
+runtime config is staged in OpenRSD, but the official torchvision ResNet-50
+download was interrupted and left no usable file. No GPU poll, diagnostic,
+training screen, or GPU process was started. The GPU gate remains closed until
+the weight checksum, full active-label/rbox/decode checks, config+dataloader
+batch check, and exact 1000-step train-step diagnostic pass. Full handoff:
+`docs/experiments/20260710_fair1m_sanitized_staging_handoff.md`.
+
 2026-07-06 status: Strip R-CNN-S DIOR-R released-checkpoint protocol eval is archived as blocked because the official/user-provided files do not include a usable full DIOR-R detector checkpoint: `stripnet_s.pth` is backbone/ImageNet-only, `strip_rcnn_s_dota.pth` has DOTA head shape `(16, 1024)`, and `strip_rcnn_s_fair1m.pth` has FAIR1M head shape `(38, 1024)` while DIOR-R requires `(21, 1024)`. Preserve the validated bridge/config staging, but do not launch GPU evaluation, train a replacement, or evaluate mismatched DOTA/FAIR1M/backbone weights; no route change opened.
 
 2026-07-09 local-only status: this was a no-GPU local session (no server/GPU access). Work was limited to documentation, figures, manuscript editing, and blocked-file research; no training was launched and no route decision was made from local reasoning alone.

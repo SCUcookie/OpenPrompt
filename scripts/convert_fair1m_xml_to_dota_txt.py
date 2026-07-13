@@ -45,6 +45,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -110,6 +111,20 @@ def parse_points(points_elem: ET.Element) -> list[tuple[float, float]]:
         raw = raw[:4]
     if len(raw) != 4:
         raise ConversionError(f"expected 4 (or 5 closed) points, got {len(raw)}")
+    if not all(math.isfinite(value) for point in raw for value in point):
+        raise ConversionError("polygon contains non-finite coordinates")
+    edge_lengths = [
+        math.hypot(raw[(index + 1) % 4][0] - x, raw[(index + 1) % 4][1] - y)
+        for index, (x, y) in enumerate(raw)
+    ]
+    area = abs(
+        sum(
+            x * raw[(index + 1) % 4][1] - raw[(index + 1) % 4][0] * y
+            for index, (x, y) in enumerate(raw)
+        )
+    ) * 0.5
+    if area <= 0 or any(length <= 0 for length in edge_lengths):
+        raise ConversionError(f"degenerate polygon with area={area} and edge_lengths={edge_lengths}")
     return raw
 
 
@@ -146,10 +161,13 @@ def main() -> None:
     parser.add_argument("--xml-dir", required=True, type=Path, help="Directory of FAIR1M *.xml label files")
     parser.add_argument("--out-dir", required=True, type=Path, help="Output directory for DOTA-style *.txt files")
     parser.add_argument("--report-path", type=Path, default=None, help="Optional JSON report of counts/warnings")
+    parser.add_argument("--max-files", type=int, default=None, help="Convert only the first N sorted XML files.")
     args = parser.parse_args()
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
     xml_files = sorted(args.xml_dir.glob("*.xml"))
+    if args.max_files is not None:
+        xml_files = xml_files[: args.max_files]
     if not xml_files:
         raise SystemExit(f"No .xml files found under {args.xml_dir}")
 
@@ -172,6 +190,7 @@ def main() -> None:
     }
     print(json.dumps(report, indent=2))
     if args.report_path:
+        args.report_path.parent.mkdir(parents=True, exist_ok=True)
         args.report_path.write_text(json.dumps({**report, "warnings": total_warnings}, indent=2), encoding="utf-8")
 
     if total_warnings:
