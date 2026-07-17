@@ -6,6 +6,44 @@ Paper-first rule: if the research direction, claim, experiment sequence, or
 submission target changes, update the canonical manuscript and this file before
 changing code, configs, or secondary docs.
 
+2026-07-15 FAIR1M S0 launch update: the repaired precision-v2 root
+`/data2/2023/lcs/xyun/FAIR1M_2_800_400_sanitized_20260713` passed the final
+MMRotate audit. It contains `208927` train and `10970` ss_val image/label
+pairs, `1785001` active train objects and `199347` active validation objects,
+exact stems, zero active malformed/zero-area records, zero unknown classes,
+zero invalid MMRotate rboxes, and no decode failures in 1000 representatives
+per split, including 533/800/1024-sized tiles. The expected provenance count
+of `6513` rejected raw train records remains excluded and recorded; the older
+20260710 root is preserved unchanged. The canonical RemoteCLIP artifact loads
+as `[37,512]`, and the ResNet-50 checkpoint SHA-256 remains
+`0676ba61b6795bbe1773cffd859882e5e297624d384b6993f7c9e683e722fb8a`.
+
+The config/dataloader gate passed on the rep3407 config (37 canonical classes,
+batch size 2, 12 epochs, validation/checkpoint interval 4, complete batch with
+2 and 6 instances). The real 1000-batch train-step diagnostic was finite.
+Three detached 12-epoch S0 replicas were launched on dynamically selected
+GPUs 0/1/2 with seeds 3407/4407/5407; current startup logs have reached
+`Epoch(train) [1][1000/66467]` with finite losses. Full launch provenance and
+current failure scans are in
+`docs/experiments/20260715_fair1m_s0_campaign_launch.md`. The audit observed
+155 out-of-bounds objects among the first 1000 decoded train representatives;
+this is retained as a follow-up geometry observation and is not conflated with
+the zero-malformed gate. Do not launch FAIR1M TPC/GeoNexus, DOTA2 follow-up,
+DIOR-R S4, pseudo-labeling, or segmentation work automatically.
+
+2026-07-17 FAIR1M S0 campaign complete: all three replicas reached epoch-12
+validation cleanly. Final mAP/AP50 is `3407=0.3045/0.3040`,
+`4407=0.3043/0.3040`, and `5407=0.3109/0.3110`; epoch-12 mean/std is
+`0.306567/0.003065`. The epoch-8 best-checkpoint mAP mean/std is
+`0.316867/0.000665` (`0.3178`, `0.3165`, `0.3163`). Class-wise final AP,
+checkpoint provenance, and clean failure scans are recorded in
+`docs/experiments/20260717_fair1m_s0_completion.md`. The FAIR1M TPC/S1
+campaign is now staged from each matching S0 epoch-12 checkpoint with the
+canonical `[37,512]` RemoteCLIP artifact and `PromptShared2FCBBoxHead` in
+both cascade stages; launch remains gated on config/model/data, 1000-step,
+and three-poll GPU checks. Do not launch FAIR1M S2/GeoNexus or unrelated
+paused work automatically.
+
 2026-07-10 FAIR1M staging update: the split train archive was correctly read as
 a 14-volume ZIP and contains `208927` PNG tiles; `134486` is the auxiliary PKL
 subset count, not the complete image count. A new non-destructive root now
@@ -49,7 +87,7 @@ batch check, and exact 1000-step train-step diagnostic pass. Full handoff:
 - Matplotlib was installed in the local Python 3.14 environment (previously absent) so TGRS figures can be regenerated locally going forward without server access.
 - TGRS figures/tables/architecture diagram were redesigned for publication quality: a dataviz-skill-validated CVD-safe categorical palette (see `scripts/make_tgrs_result_assets_20260709.py` header comment for the exact validated hex values and command), bold-best-value in every comparison table, and a rebuilt architecture figure with a proper color-coded legend and an accurate S3-active/S4-closed-feedback-loop structure instead of the old vague "future gated modules" framing. Also fixed a pre-existing double-escaping bug that made every table caption in the old script render literal `\_` artifacts in the PDF.
 - Per the user's explicit instruction, the TGRS paper directory stays local-only (not pushed to git) by design; do not add it to git tracking without asking first.
-- FAIR1M next-work staging (`artifacts/next_work_fair1m_20260709/README.md`): confirmed FAIR1M is the correctly-sequenced next dataset per this file's own Experiment Sequence item 4 and `docs/setup/complete_experiment_plan.md`'s run order, now that DOTA2 and DIOR-R are both stable. **The 500GB FAIR1M dataset is already staged on the server** — an earlier pass in this session mistakenly started downloading it via a Hugging Face partial mirror; that download was killed and the partial ~2.7GB deleted once the mistake was caught. The genuinely missing pieces, now staged: `assets/hierarchies/fair1m_remote_sensing_taxonomy.json` (37-class taxonomy, verified against the official FAIR1M class list) and `scripts/convert_fair1m_xml_to_dota_txt.py` (a FAIR1M-XML-to-DOTA-txt label converter, needed because MMRotate has no native FAIR1M dataset class; XML schema verified against `torchgeo.datasets.fair1m`'s parser and unit-tested against a synthetic sample, but not yet run against real FAIR1M XML — validate on a small server-side sample first). Still missing: a RemoteCLIP prompt-embedding artifact for FAIR1M (trivial to generate server-side once the taxonomy file lands there) and a DIOR-R-style geometry/train-step diagnostic pass on the converted labels before any detector training.
+- FAIR1M next-work staging (`artifacts/next_work_fair1m_20260709/README.md`): the dataset, canonical taxonomy, RemoteCLIP prompt embeddings, repaired precision-v2 labels, full geometry/rbox/decode audit, config+dataloader gate, and finite 1000-step diagnostic are now complete. The active work is the three-replica S0 campaign recorded in `docs/experiments/20260715_fair1m_s0_campaign_launch.md`; do not advance to FAIR1M TPC/GeoNexus until its epoch-4/8/12 results are stable and reviewed.
 
 ## Token-Saving Startup Protocol
 
