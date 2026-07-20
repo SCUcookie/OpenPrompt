@@ -1,0 +1,27 @@
+{
+  "tag": "geonexus_sca_rep0_e8",
+  "log": "/data5/2025/ldh/OpenRSD/work_dirs/paper_eval_20260617/dior_r_s3_rep0_epoch8/20260617_092800/20260617_092800.log",
+  "per_class_ap50_pct": {
+    "APL": 72.1,
+    "APO": 52.0,
+    "BF": 79.6,
+    "BC": 90.0,
+    "BR": 50.6,
+    "CH": 79.3,
+    "DAM": 33.3,
+    "ESA": 87.0,
+    "ETS": 75.3,
+    "GF": 78.1,
+    "GTF": 84.3,
+    "HA": 53.0,
+    "OP": 62.7,
+    "SH": 81.2,
+    "STA": 76.4,
+    "STO": 71.2,
+    "TC": 89.7,
+    "TS": 60.3,
+    "VE": 50.4,
+    "WM": 72.0
+  },
+  "mAP_pct": 69.92
+}

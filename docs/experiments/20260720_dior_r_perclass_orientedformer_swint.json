@@ -1,0 +1,27 @@
+{
+  "tag": "orientedformer_swint",
+  "log": "/data5/2025/ldh/orientedformer_protocol_eval_20260702/orientedformer_swin_t_dior_r_geonexus_eval_20260704_rerun/20260704_105235/20260704_105235.log",
+  "per_class_ap50_pct": {
+    "APL": 67.5,
+    "APO": 50.9,
+    "BF": 78.4,
+    "BC": 86.2,
+    "BR": 43.0,
+    "CH": 77.9,
+    "DAM": 40.8,
+    "ESA": 84.1,
+    "ETS": 75.5,
+    "GF": 77.8,
+    "GTF": 81.8,
+    "HA": 46.2,
+    "OP": 56.6,
+    "SH": 88.6,
+    "STA": 75.3,
+    "STO": 73.8,
+    "TC": 86.7,
+    "TS": 60.6,
+    "VE": 56.9,
+    "WM": 68.1
+  },
+  "mAP_pct": 68.84
+}
