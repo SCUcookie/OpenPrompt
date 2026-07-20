@@ -44,6 +44,22 @@ both cascade stages; launch remains gated on config/model/data, 1000-step,
 and three-poll GPU checks. Do not launch FAIR1M S2/GeoNexus or unrelated
 paused work automatically.
 
+2026-07-20 FAIR1M TPC/S1 campaign archived: all three replicas completed
+cleanly through epoch 12. Best checkpoints are rep3407 epoch 8
+`0.3175/0.3170`, rep4407 epoch 4 `0.3179/0.3180`, and rep5407 epoch 4
+`0.3202/0.3200`
+(mAP/AP50); the best mean is `0.318533/0.318333`. Final epoch-12 mean is
+`0.306933/0.306667`. Checkpoint/config provenance remains in
+`OpenRSD/work_dirs/geonexus_fair1m/roi_trans_tpc_s1_rep{3407,4407,5407}_20260717`;
+selected analysis outputs are under
+`OpenRSD/work_dirs/paper_eval_20260720/fair1m_tpc_s1_best_epoch8_rep3407` and
+`fair1m_tpc_s1_best_epoch4_rep{4407,5407}`.
+Training logs passed scoped traceback, OOM, decode/CRC, invalid-box, NaN/Inf,
+and interruption scans. Analysis-only evaluations use GPUs 0/1/2 and screens
+`fair1m_s1_eval_rep{3407,4407,5407}_20260720_gpu{0,1,2}`; their evaluator
+metrics must reconcile to the training values before archival is complete.
+FAIR1M S2/GeoNexus remains explicitly closed pending a separate route review.
+
 2026-07-10 FAIR1M staging update: the split train archive was correctly read as
 a 14-volume ZIP and contains `208927` PNG tiles; `134486` is the auxiliary PKL
 subset count, not the complete image count. A new non-destructive root now
