@@ -1,28 +1,34 @@
 #!/usr/bin/env python3
-"""Extract per-class AP50 from an MMRotate DOTAMetric runtime log (job A1).
+"""Extract per-class AP50 from an MMRotate DOTAMetric runtime log.
 
-Feeds Table V (tab:perclass) of the TGRS manuscript. Stdlib only, so it runs
-in any Python on the server; no mmrotate import needed because the per-class
-table is already printed into every evaluation log by DOTAMetric.
+Serves two jobs:
+  * Job A1 (default, --dataset dior): the TGRS manuscript per-class Table V.
+  * Job N1 (--dataset fair1m): the FAIR1M S1-vs-S0 per-class delta analysis
+    (see docs/experiments/20260720_fair1m_s1_route_review_and_next_steps.md).
+    FAIR1M mode loads the 37 canonical class names and their parent groups
+    from assets/hierarchies/fair1m_remote_sensing_taxonomy.json and adds a
+    per-parent rollup (airplane/ship/vehicle/court/road) to the outputs.
+
+Stdlib only, so it runs in any Python on the server; no mmrotate import is
+needed because the per-class table is already printed into every evaluation
+log by DOTAMetric.
 
 Usage (server):
 
+    # DIOR-R manuscript job A1
     python scripts/extract_perclass_ap_20260713.py \
         --log /path/to/eval_runtime.log \
-        --tag geonexus_sca_rep0_e8 \
-        --out-json perclass_ap50_geonexus.json
+        --tag geonexus_sca_rep0_e8
 
-Target logs (see docs/experiments/20260713_paper_finalization_schedule.md,
-job A1, for the full provenance):
-  * DIOR-R baseline: the epoch-52 RoI Transformer evaluation log under
-    the paper-eval workdirs of 2026-06-17 (S0 epoch52 preds run).
-  * GeoNexus best run: the scene-adapter rep0 epoch-8 evaluation log under
-    the paper-eval workdirs of 2026-06-17.
-  * OrientedFormer reproduction: the 2026-07-04 protocol-eval rerun log.
+    # FAIR1M analysis job N1 (per replica log; also parses training logs --
+    # pass --epoch to select a specific epoch's table instead of the last)
+    python scripts/extract_perclass_ap_20260713.py --dataset fair1m \
+        --log /path/to/runtime.log --tag s1_rep3407_e8
 
-The script parses the LAST per-class table in the log (the final validation),
-verifies 20 DIOR-R classes were found, and emits JSON, CSV, and a
-ready-to-paste LaTeX row in the manuscript's class order.
+The script parses the LAST per-class table in the log (or the table
+immediately following the requested --epoch marker), verifies the full class
+list was found, and emits JSON, CSV, and (DIOR-R mode) a ready-to-paste
+LaTeX row in the manuscript's class order.
 """
 
 from __future__ import annotations
@@ -89,41 +95,66 @@ def parse_last_table(log_path: Path) -> dict[str, float]:
 
 
 def normalize(name: str) -> str:
-    return re.sub(r"[^a-z]", "", name.lower())
+    # Keep digits: FAIR1M has a220/a321/a330/boeing737/... which would
+    # collide if digits were stripped.
+    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+def load_fair1m_classes() -> list[tuple[str, str, str]]:
+    """Return [(display_name, log_name, parent)] in canonical FAIR1M order."""
+    taxonomy_path = Path(__file__).resolve().parents[1] / "assets" / "hierarchies" / "fair1m_remote_sensing_taxonomy.json"
+    payload = json.loads(taxonomy_path.read_text(encoding="utf-8"))
+    parents = {c["name"]: c["parent"] for c in payload["classes"]}
+    order = payload["_provenance"]["canonical_order"]
+    return [(name, name, parents[name]) for name in order]
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--log", required=True, type=Path, help="MMRotate evaluation runtime log")
+    ap.add_argument("--log", required=True, type=Path, help="MMRotate evaluation/training runtime log")
     ap.add_argument("--tag", required=True, help="Short method tag for outputs (e.g. baseline_e52)")
+    ap.add_argument("--dataset", choices=["dior", "fair1m"], default="dior")
     ap.add_argument("--out-json", type=Path, default=None)
     args = ap.parse_args()
 
     raw = parse_last_table(args.log)
     lookup = {normalize(k): v for k, v in raw.items()}
 
-    ordered: list[tuple[str, float]] = []
+    if args.dataset == "dior":
+        class_spec = [(abbrev, cls, None) for abbrev, cls in DIOR_CLASSES_IN_TABLE_ORDER]
+    else:
+        class_spec = load_fair1m_classes()
+
+    ordered: list[tuple[str, float, str | None]] = []
     missing: list[str] = []
-    for abbrev, cls in DIOR_CLASSES_IN_TABLE_ORDER:
-        key = normalize(cls)
+    for display, log_name, parent in class_spec:
+        key = normalize(log_name)
         if key in lookup:
-            ordered.append((abbrev, lookup[key]))
+            ordered.append((display, lookup[key], parent))
         else:
-            missing.append(cls)
+            missing.append(log_name)
     if missing:
         print(f"WARNING: {len(missing)} classes not found in log: {missing}", file=sys.stderr)
         print(f"Classes present in log: {sorted(raw)}", file=sys.stderr)
         raise SystemExit(1)
 
-    values_pct = [100.0 * v for _, v in ordered]
+    values_pct = [100.0 * v for _, v, _ in ordered]
     mean_pct = sum(values_pct) / len(values_pct)
 
     result = {
         "tag": args.tag,
+        "dataset": args.dataset,
         "log": str(args.log),
-        "per_class_ap50_pct": {abbrev: round(v, 2) for (abbrev, _), v in zip(ordered, values_pct)},
+        "per_class_ap50_pct": {display: round(100.0 * v, 2) for display, v, _ in ordered},
         "mAP_pct": round(mean_pct, 2),
     }
+    if args.dataset == "fair1m":
+        groups: dict[str, list[float]] = {}
+        for display, v, parent in ordered:
+            groups.setdefault(parent, []).append(100.0 * v)
+        result["parent_group_mean_ap50_pct"] = {
+            parent: round(sum(vals) / len(vals), 2) for parent, vals in sorted(groups.items())
+        }
     print(json.dumps(result, indent=2))
 
     out_json = args.out_json or Path(f"perclass_ap50_{args.tag}.json")
@@ -131,14 +162,15 @@ def main() -> None:
     out_csv = out_json.with_suffix(".csv")
     with out_csv.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["class", "ap50_pct"])
-        for (abbrev, _), v in zip(ordered, values_pct):
-            w.writerow([abbrev, f"{v:.2f}"])
-        w.writerow(["mAP", f"{mean_pct:.2f}"])
+        w.writerow(["class", "parent", "ap50_pct"])
+        for display, v, parent in ordered:
+            w.writerow([display, parent or "", f"{100.0 * v:.2f}"])
+        w.writerow(["mAP", "", f"{mean_pct:.2f}"])
 
-    latex_row = " & ".join(f"{v:.2f}" for v in values_pct)
-    print("\nLaTeX row (paste into tables/table_perclass.tex data row):")
-    print(f"{args.tag} & {latex_row} & {mean_pct:.2f} \\\\")
+    if args.dataset == "dior":
+        latex_row = " & ".join(f"{v:.2f}" for v in values_pct)
+        print("\nLaTeX row (paste into tables/table_perclass.tex data row):")
+        print(f"{args.tag} & {latex_row} & {mean_pct:.2f} \\\\")
     print(f"\nWrote {out_json} and {out_csv}")
 
 

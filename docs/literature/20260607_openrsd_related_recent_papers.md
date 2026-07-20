@@ -182,3 +182,41 @@ Sources:
 - Pi-Seg / OVRSISBenchV2 arXiv: <https://arxiv.org/abs/2604.15652>
 - RSKT-Seg arXiv: <https://arxiv.org/abs/2509.12040>
 - GiPL arXiv: <https://arxiv.org/abs/2605.29539>
+
+## 2026-07-16 Top-Venue Refresh
+
+Requested scope: the three most recent papers relevant to GeoNexus-RSD that
+are verifiably recorded at a top meeting or journal (OpenReview acceptance
+counts; arXiv-only does not). Every venue below was confirmed from the
+primary proceedings/journal page on 2026-07-16, per the hard verification
+rule (a repo README badge alone is insufficient — that rule exists because
+this project was previously misled by two such badges).
+
+| Paper | Venue (verified) | Checked | Relation to GeoNexus-RSD | Math principle | Route impact |
+|---|---|---:|---|---|---|
+| HSGDet: Prompt-Free Unknown Label Generation for Open World Detection in Remote Sensing (Azeem, Wang, Li, Siddique) | **CVPR 2026 main**, pp. 34662--34672 (CVF open access page fetched; bibtex `Azeem_2026_CVPR`) | 2026-07-16 | The closest published neighbor to our core design: it navigates a **hierarchical semantic graph** with **scene-conditioned coarse-to-fine classification** to name unknown objects at test time without prompts — the same two structural priors (taxonomy hierarchy + scene context) GeoNexus injects into a closed-set detector, applied to the open-world setting. | Detected region features traverse a class hierarchy graph; scene conditioning re-weights branch decisions at each level; unknowns receive labels from graph leaves rather than external prompts. | **Must-cite** in the TGRS Related Work (open-world vs. our closed-set prompting positions the claim precisely); check whether it reports DIOR-R rows usable as comparator context. Does not change the experiment route. |
+| ConInfer: Context-Aware Inference for Training-Free Open-Vocabulary Remote Sensing Segmentation (Chen, Hu, Zhang, Ning, Tai) | **CVPR 2026 Findings**, pp. 7408--7418 (CVF page fetched; bibtex `Chen_2026_CVPR`; +2.80/+6.13 avg over SegEarth-OV) | 2026-07-16 | The segmentation-lane target this repo already cloned (`artifacts/blocked_files_20260709/coninfer_repo`, commit `ebaddcc`) is now a published CVPR 2026 Findings paper — upgrades the lane's anchor from arXiv to a recorded venue. Its core idea (joint prediction across spatial units with explicit inter-unit semantic dependencies, instead of independent per-patch predictions) is the segmentation analogue of our scene-context adapter. | Joint inference over spatial units with inter-unit semantic dependency modeling; global contextual cues constrain per-unit open-vocabulary label assignment. | Segmentation lane stays paused/secondary, but this strengthens the case for the lane whenever it is reopened (published baseline + our clone + known unblockers). Also future inspiration: context-joint inference could extend the SCA from per-RoI to inter-RoI. |
+| AutoFGOR: Weak supervision makes strong details — fine-grained object recognition in remote sensing images via regional diffusion with VLM | **ISPRS J. Photogramm. Remote Sens.**, published 2026-01-23 (ScienceDirect PII S0924271626000249) | 2026-07-16 | Directly on the FAIR1M-next route: weakly-supervised fine-grained recognition on FAIR1M-v2.0 (31.72 mAP) via a hierarchical dual-pipeline — region detection with weak supervision, then regional diffusion (SDXL) + VLM (LLaVA) to recover fine detail for classification. Overlaps our planned FAIR1M fine-grained hierarchy claims and our VLM-assisted labeling ideas. | Region proposals from weak labels; low-resolution regions super-resolved by diffusion conditioned on region context; VLM assigns fine-grained labels; hierarchical pipeline separates coarse detection from fine recognition. | Reference row and framing for the FAIR1M stage (its FAIR1M-v2.0 mAP gives a sense of task difficulty under weak supervision — our fully-supervised route should target well above it); its VLM-labeling design is prior art to cite if a redesigned pseudo-label attempt is ever approved. |
+
+Verification notes from the same pass (honest negatives):
+
+- **Strip R-CNN is now confirmed AAAI 2026** (AAAI OJS: Vol. 40 No. 15,
+  pp. 12259--12267, DOI `10.1609/aaai.v40i15.38217`, published 2026-03-14) —
+  previously cited as arXiv-only in the TGRS bib; upgraded on 2026-07-16.
+  Not counted among the three because it is already a tracked comparator;
+  the news is the venue confirmation. The DIOR-R checkpoint remains
+  unreleased (the 2026-07-09 finding stands).
+- **PKINet-v2** (arXiv 2603.16341): repo description claims "ECCV 2026" but
+  the arXiv page shows no acceptance comment and no proceedings/OpenReview
+  record exists yet — still arXiv-only, does not qualify.
+- **OS-W2S** (OpenReview `K0idbmzcgc`, ICLR 2026 submission): OpenReview is
+  currently behind a challenge wall for both the site and API from this
+  environment; acceptance status could not be verified either way. Recheck
+  next pass.
+
+Sources (2026-07-16 pass):
+
+- HSGDet CVF page: <https://openaccess.thecvf.com/content/CVPR2026/html/Azeem_Prompt-Free_Unknown_Label_Generation_for_Open_World_Detection_in_Remote_CVPR_2026_paper.html>
+- ConInfer CVF page: <https://openaccess.thecvf.com/content/CVPR2026F/html/Chen_ConInfer_Context-Aware_Inference_for_Training-Free_Open-Vocabulary_Remote_Sensing_Segmentation_CVPRF_2026_paper.html>
+- AutoFGOR ScienceDirect: <https://www.sciencedirect.com/science/article/abs/pii/S0924271626000249>
+- Strip R-CNN AAAI OJS: <https://ojs.aaai.org/index.php/AAAI/article/view/38217>

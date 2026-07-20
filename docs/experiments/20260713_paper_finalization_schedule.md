@@ -130,14 +130,14 @@ manuscript cites FAIR1M only as future work.
 5. TGRS package: final PDF + source (.tex, .bib, tables/, figure/ PDFs,
    biography photo), cover letter, ORCID; decide on an arXiv preprint.
 
-## Status Tracking
+## Status Tracking (updated 2026-07-20)
 
 | Job | Blocking | Status |
 | --- | --- | --- |
-| A1 per-class AP | Table V | pending server |
-| A2 qualitative strip | Fig. 4 | pending server |
-| A3 efficiency | Table VI | pending server |
+| A1 per-class AP | Table V | **still pending — only paper-blocking item** |
+| A2 qualitative strip | Fig. 4 | done 2026-07-13 (strip written; scenes need visual curation before manuscript use) |
+| A3 efficiency | Table VI | done 2026-07-13 (55.39M/19.13FPS vs 58.31M/18.96FPS; FLOPs=None, needs manual fix or column drop) |
 | A4 prompt robustness | optional | pending server |
 | A5 confusion matrix | optional | pending server |
-| B FAIR1M gate steps 1-6 | future work only | pending server |
-| C submission package | final step | blocked on A1-A3 |
+| B FAIR1M gate steps 1-6 | future work only | complete through S0 (2026-07-17) and TPC/S1 (2026-07-20); route review + next steps in `20260720_fair1m_s1_route_review_and_next_steps.md` |
+| C submission package | final step | blocked on A1 + A2 curation + FLOPs decision |
