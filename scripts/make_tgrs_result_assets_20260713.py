@@ -526,11 +526,16 @@ def write_table_perclass(data: dict) -> None:
     def row(label: str, tag: str, map_value: object) -> list[object]:
         return [Raw(label)] + [Raw(f"{records[tag][a]:.1f}") for a in DIOR_CLASS_ABBREVS] + [map_value]
 
+    # Per the 2026-07-21 manuscript evidence handoff: the per-class table's
+    # mAP column uses the parsed-table means (65.44/68.84/69.92) so the row
+    # is self-consistent with its 20 cells; Table I keeps the full-precision
+    # evaluator value 68.83 for the OrientedFormer reproduction, and the
+    # caption explains the 0.01 rounding-accumulation difference.
     rows = [
-        row(r"RoI Transformer~\cite{ding2019roit}", "baseline", 0.6544),
-        row(r"OrientedFormer$^\dagger$~\cite{zhao2024orientedformer}", "orientedformer", data["comparators"]["orientedformer_swint_ours"]),
+        row(r"RoI Transformer~\cite{ding2019roit}", "baseline", Raw("65.44")),
+        row(r"OrientedFormer$^\dagger$~\cite{zhao2024orientedformer}", "orientedformer", Raw("68.84")),
         ["<midrule>"],
-        row(r"GeoNexus-RSD (ours)", "geonexus", Bold(d["sca_single"])),
+        row(r"GeoNexus-RSD (ours)", "geonexus", Bold(Raw("69.92"))),
     ]
     table = latex_table(
         headers=["Method"] + DIOR_CLASS_ABBREVS + ["mAP"],
@@ -542,10 +547,11 @@ def write_table_perclass(data: dict) -> None:
             "service area (ESA), expressway toll station (ETS), golf field (GF), ground "
             "track field (GTF), harbor (HA), overpass (OP), ship (SH), stadium (STA), "
             "storage tank (STO), tennis court (TC), train station (TS), vehicle (VE), and "
-            "windmill (WM). GeoNexus-RSD is the best single run; per-class values are "
-            "rounded to one decimal from the evaluation logs, and the mAP column reports "
-            "the full-precision evaluator value, so a recomputed row mean may differ by "
-            "$\\pm$0.01."
+            "windmill (WM). GeoNexus-RSD is the best single run. Per-class values and the "
+            "mAP column are taken from the per-class evaluation tables; for OrientedFormer "
+            "the row mean (68.84) differs from the full-precision evaluator value used in "
+            "Table~\\ref{tab:dior_sota} (68.83) by rounding accumulation of the per-class "
+            "entries."
         ),
         label="tab:perclass",
         colspec="@{}l" + "c" * 21 + "@{}",

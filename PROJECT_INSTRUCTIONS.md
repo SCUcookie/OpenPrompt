@@ -60,6 +60,24 @@ and interruption scans. Analysis-only evaluations use GPUs 0/1/2 and screens
 metrics must reconcile to the training values before archival is complete.
 FAIR1M S2/GeoNexus remains explicitly closed pending a separate route review.
 
+2026-07-21 manuscript complete and next training route staged: the evidence
+bundle (`5274d9b8`) delivered the qualitative strip into the repo; it was
+curated (airport/ESA scenes match the two largest per-class gains), wired
+into Fig. 4 with an accurate caption, and Table V was switched to the
+handoff's parsed-table values (65.44/68.84/69.92, with the 68.83/68.84
+rounding note in the caption; Table I keeps the evaluator 68.83). **The
+manuscript now compiles at 8 pages with zero undefined references and zero
+`[TO FILL]` markers — every table and figure carries committed evidence.**
+Remaining to submission: advisor review -> author list -> package. The next
+training route is designed in
+`docs/experiments/20260721_next_training_route_plan.md`: R1 cross-detector
+generality (port the TPC/HRR/SCA stack to Oriented R-CNN on DIOR-R, staged
+S1->S2->S3 with 3 seeds, pre-registered success criteria, ~3 days on 3
+GPUs after a 1-2 day head port) and R2 backbone generality (RoI Transformer
+Swin-T baseline + full stack, headline target >=70 AP50). Both are new
+route decisions that do not reopen the closed FAIR1M-S2/DIOR-R-S4/
+segmentation/DOTA2-follow-up routes and do not block the submission.
+
 2026-07-20 route resolution (supersedes the staged gate below): the server
 route review (`docs/experiments/20260720_fair1m_route_review_and_next_analysis.md`)
 **closed FAIR1M S2/GeoNexus** — the TPC/S1 best-mean gain `+0.001666` over S0

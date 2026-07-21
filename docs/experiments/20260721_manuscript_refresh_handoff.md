@@ -50,7 +50,16 @@ table caption.
 - [x] Historical `68.83` remains preserved in the dated schedule/provenance.
 - [x] Table VI retains the measured parameter, FPS, latency, and RTX 4090 values.
 - [x] GFLOPs are explicitly unavailable rather than inferred.
-- [ ] Transfer and curate the host-local Fig. 4 strip.
-- [ ] Compile the canonical local manuscript after the Fig. 4 update.
+- [x] Transfer and curate the host-local Fig. 4 strip (done 2026-07-21: the
+      committed bundle copy was placed at the manuscript's
+      `figure/geonexus_tgrs_qualitative.png`; visual curation found the
+      airport and expressway-service-area scenes align with the two largest
+      per-class gains, and the caption was rewritten to describe what the
+      figure actually shows; an optional stronger re-render focused on
+      harbor/bridge confusion scenes is noted in the 2026-07-21 route plan).
+- [x] Compile the canonical local manuscript after the Fig. 4 update (done
+      2026-07-21: 8 pages, zero undefined references, zero `[TO FILL]`
+      markers; Table V uses 65.44/68.84/69.92 per this handoff with the
+      68.83/68.84 rounding note in the caption).
 - [x] No GPU training, checkpoint movement, FAIR1M route expansion, or TGRS
       replacement tree was started by this handoff.
