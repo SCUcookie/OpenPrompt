@@ -60,6 +60,50 @@ and interruption scans. Analysis-only evaluations use GPUs 0/1/2 and screens
 metrics must reconcile to the training values before archival is complete.
 FAIR1M S2/GeoNexus remains explicitly closed pending a separate route review.
 
+2026-07-20 route resolution (supersedes the staged gate below): the server
+route review (`docs/experiments/20260720_fair1m_route_review_and_next_analysis.md`)
+**closed FAIR1M S2/GeoNexus** — the TPC/S1 best-mean gain `+0.001666` over S0
+does not justify another stage, and independently no FAIR1M relation matrix or
+S2 config exists (inventing one would be irreproducible, per
+`20260720_server_artifact_obstacles_and_remote_handoff.md`). FAIR1M S0/TPC-S1
+is archived as supplementary stretch evidence with best and final means kept
+separate. The paper route is now the only active route: DOTA2 S1 stable
+positive + S2 early-checkpoint evidence, DIOR-R S2 stable hierarchy + S3
+best-checkpoint scene context as the primary result. On the same day the A1
+per-class records were committed (`20260720_dior_r_perclass_*.{json,csv}`) and
+the local manuscript was updated: Table V (per-class) and Table VI
+(efficiency, GFLOPs column dropped as unavailable) are now filled with real
+evidence, the per-class claim sentence cites the measured gains (airport
++9.5, airplane +8.9, ESA +7.6, harbor +7.0, bridge +6.9 vs ship +0.0 / tennis
+court +0.4), and the manuscript compiles clean at 7 pages with exactly one
+remaining `[TO FILL]`: the Fig. 4 qualitative strip, which exists on the
+server (`work_dirs/paper_analysis_20260713/qualitative/geonexus_tgrs_qualitative.png`)
+and needs transfer + visual curation. OrientedFormer rounding is standardized
+to the evaluator value `68.83` everywhere (parsed-table mean `68.84` differs
+by per-class rounding accumulation; noted in the Table V caption). Remaining
+path to submission: transfer/curate Fig. 4 -> advisor review -> author-list
+finalization -> package. No training route is open anywhere.
+
+2026-07-20 route review staged: the requested FAIR1M route review now exists as
+`docs/experiments/20260720_fair1m_s1_route_review_and_next_steps.md`. Summary:
+S1 vs S0 is flat at the mean level (best mean `+0.0017`, final mean `+0.0004`,
+per-seed best deltas `-0.0003/+0.0014/+0.0039` — seed-noise order, unlike
+DIOR-R S1 `+0.0176` and DOTA2 S1 `+0.0089`), so the decision input is the
+per-class S1-vs-S0 delta analysis (job N1; the fine-grained airplane subtypes
+were the FAIR1M motivation and the mean can hide their movement). The note
+pre-registers a three-branch gate: D-A (fine-grained lift confirmed -> launch
+FAIR1M HRR/S2 from best S1 checkpoints with DIOR-R hierarchy settings), D-B
+(flat -> exactly one controlled S1-v2 low-LR-from-S0-e8 variant pack, hard
+cap), D-C (negative -> archive FAIR1M as neutral stretch evidence; the TGRS
+manuscript already treats FAIR1M as future work only). Supporting analysis:
+`extract_perclass_ap_20260713.py` gained `--dataset fair1m` (canonical 37
+classes + parent-group rollup from the taxonomy JSON; digit-safe matching;
+fixture-tested). Do not launch FAIR1M S2 or any variant before the N1-N3
+analysis is recorded and one D-branch is explicitly applied. Paper critical
+path unchanged: job A1 (DIOR-R per-class, CPU-only) is still the only
+paper-blocking item; A2/A3 outputs from 2026-07-13 await transfer into the
+manuscript (see the route-review note, Phase P).
+
 2026-07-10 FAIR1M staging update: the split train archive was correctly read as
 a 14-volume ZIP and contains `208927` PNG tiles; `134486` is the auxiliary PKL
 subset count, not the complete image count. A new non-destructive root now

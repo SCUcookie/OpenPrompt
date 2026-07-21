@@ -500,19 +500,40 @@ def write_table_stability(data: dict) -> None:
     )
 
 
-def write_table_perclass_placeholder(data: dict) -> None:
+def write_table_perclass(data: dict) -> None:
+    """Real per-class Table V from the committed A1 records (2026-07-20).
+
+    Sources: docs/experiments/20260720_dior_r_perclass_{baseline_e52,
+    geonexus_sca_rep0_e8,orientedformer_swint}.json. The mAP column uses the
+    full-precision evaluator values (65.44 / 68.83 / 69.92); the per-class
+    cells are the one-decimal values parsed from the evaluation logs, so a
+    reader-recomputed row mean may differ from the printed mAP by +/-0.01
+    (stated in the caption). OrientedFormer's evaluator metric is 0.688288 ->
+    68.83; its parsed-table mean is 68.84 (rounding accumulation).
+    """
     d = data["dior"]
-    c = data["comparators"]
-    header = ["Method"] + DIOR_CLASS_ABBREVS + ["mAP"]
-    dash = Raw("--")
+    records = {}
+    for tag, fname in [
+        ("baseline", "20260720_dior_r_perclass_baseline_e52.json"),
+        ("orientedformer", "20260720_dior_r_perclass_orientedformer_swint.json"),
+        ("geonexus", "20260720_dior_r_perclass_geonexus_sca_rep0_e8.json"),
+    ]:
+        records[tag] = load_json(DOCS / fname)["per_class_ap50_pct"]
+    for tag, rec in records.items():
+        if sorted(rec) != sorted(DIOR_CLASS_ABBREVS):
+            raise AssertionError(f"per-class record {tag} classes mismatch")
+
+    def row(label: str, tag: str, map_value: object) -> list[object]:
+        return [Raw(label)] + [Raw(f"{records[tag][a]:.1f}") for a in DIOR_CLASS_ABBREVS] + [map_value]
+
     rows = [
-        [Raw(r"RoI Transformer~\cite{ding2019roit}")] + [dash] * 20 + [0.6544],
-        [Raw(r"OrientedFormer$^\dagger$~\cite{zhao2024orientedformer}")] + [dash] * 20 + [c["orientedformer_swint_ours"]],
+        row(r"RoI Transformer~\cite{ding2019roit}", "baseline", 0.6544),
+        row(r"OrientedFormer$^\dagger$~\cite{zhao2024orientedformer}", "orientedformer", data["comparators"]["orientedformer_swint_ours"]),
         ["<midrule>"],
-        [Raw(r"GeoNexus-RSD (ours)")] + [dash] * 20 + [Bold(d["sca_single"])],
+        row(r"GeoNexus-RSD (ours)", "geonexus", Bold(d["sca_single"])),
     ]
     table = latex_table(
-        headers=header,
+        headers=["Method"] + DIOR_CLASS_ABBREVS + ["mAP"],
         rows=rows,
         caption=(
             "Per-class AP$_{50}$ (\\%) on the DIOR-R test set. Class abbreviations follow "
@@ -521,7 +542,10 @@ def write_table_perclass_placeholder(data: dict) -> None:
             "service area (ESA), expressway toll station (ETS), golf field (GF), ground "
             "track field (GTF), harbor (HA), overpass (OP), ship (SH), stadium (STA), "
             "storage tank (STO), tennis court (TC), train station (TS), vehicle (VE), and "
-            "windmill (WM)."
+            "windmill (WM). GeoNexus-RSD is the best single run; per-class values are "
+            "rounded to one decimal from the evaluation logs, and the mAP column reports "
+            "the full-precision evaluator value, so a recomputed row mean may differ by "
+            "$\\pm$0.01."
         ),
         label="tab:perclass",
         colspec="@{}l" + "c" * 21 + "@{}",
@@ -529,40 +553,37 @@ def write_table_perclass_placeholder(data: dict) -> None:
         scale_to_width=r"\textwidth",
         size_cmd=r"\scriptsize",
     )
-    banner = (
-        "% [TO FILL] Per-class AP50 values. Produce them on the server with:\n"
-        "%   python scripts/extract_perclass_ap_20260713.py --log <runtime log of each eval run>\n"
-        "%   (see docs/experiments/20260713_paper_finalization_schedule.md, job A1, for the\n"
-        "%    three exact checkpoint/eval-log paths). Then re-run this generator with the\n"
-        "%    produced JSON files placed in docs/experiments/ and the placeholder branch removed.\n"
-    )
-    (TAB_DIR / "table_perclass.tex").write_text(banner + table, encoding="utf-8")
+    (TAB_DIR / "table_perclass.tex").write_text(table, encoding="utf-8")
 
 
-def write_table_efficiency_placeholder() -> None:
-    dash = Raw("--")
+def write_table_efficiency() -> None:
+    """Real efficiency Table VI from the committed A3 evidence (2026-07-20).
+
+    Values recorded in docs/experiments/20260720_fair1m_route_review_and_next_analysis.md
+    (source JSONs live on the server under work_dirs/paper_analysis_20260713/):
+    NVIDIA GeForce RTX 4090, 1024x1024, batch 1, median over 200 runs.
+    GFLOPs analysis was unavailable in both runs (recorded warning); the
+    column is omitted rather than inventing a value.
+    """
     rows = [
-        [Raw(r"RoI Transformer~\cite{ding2019roit}"), dash, dash, dash],
-        [Raw(r"GeoNexus-RSD (ours)"), dash, dash, dash],
+        [Raw(r"RoI Transformer~\cite{ding2019roit}"), Raw("55.39"), Raw("19.13"), Raw("52.27")],
+        [Raw(r"GeoNexus-RSD (ours)"), Raw("58.31"), Raw("18.96"), Raw("52.75")],
     ]
     table = latex_table(
-        headers=["Method", "Params (M)", "GFLOPs", "FPS"],
+        headers=["Method", "Params (M)", "FPS", "Latency (ms)"],
         rows=rows,
         caption=(
             "Model complexity and inference speed at $1024\\times1024$ input on a single "
-            "GPU (batch size 1). GeoNexus-RSD adds only the prompt-conditioned classifier "
-            "and the scene-context adapter on top of the baseline; the frozen text encoder "
-            "runs once offline."
+            "NVIDIA RTX 4090 (batch size 1; median over 200 runs). GeoNexus-RSD adds only "
+            "the prompt-conditioned classifier and the scene-context adapter (+2.92M "
+            "parameters) at less than 1\\% throughput cost; the frozen text encoder runs "
+            "once offline and contributes no inference cost."
         ),
         label="tab:efficiency",
         colspec="@{}lccc@{}",
         starred=False,
     )
-    banner = (
-        "% [TO FILL] Params/GFLOPs/FPS. Produce on the server with:\n"
-        "%   python scripts/measure_efficiency_20260713.py (see schedule doc, job A3).\n"
-    )
-    (TAB_DIR / "table_efficiency.tex").write_text(banner + table, encoding="utf-8")
+    (TAB_DIR / "table_efficiency.tex").write_text(table, encoding="utf-8")
 
 
 # --------------------------------------------------------------------------
@@ -712,8 +733,8 @@ def main() -> None:
     write_table_dota2(data)
     write_table_ablation(data)
     write_table_stability(data)
-    write_table_perclass_placeholder(data)
-    write_table_efficiency_placeholder()
+    write_table_perclass(data)
+    write_table_efficiency()
     render_dior_ablation(data)
     render_dota2_stability(data)
     write_fragments()

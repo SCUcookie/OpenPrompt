@@ -130,14 +130,14 @@ manuscript cites FAIR1M only as future work.
 5. TGRS package: final PDF + source (.tex, .bib, tables/, figure/ PDFs,
    biography photo), cover letter, ORCID; decide on an arXiv preprint.
 
-## Status Tracking
+## Status Tracking (updated 2026-07-20, second pass)
 
 | Job | Blocking | Status |
 | --- | --- | --- |
-| A1 per-class AP | Table V | pending server |
-| A2 qualitative strip | Fig. 4 | pending server |
-| A3 efficiency | Table VI | pending server |
-| A4 prompt robustness | optional | pending server |
-| A5 confusion matrix | optional | pending server |
-| B FAIR1M gate steps 1-6 | future work only | pending server |
-| C submission package | final step | blocked on A1-A3 |
+| A1 per-class AP | Table V | **done** — records committed as `20260720_dior_r_perclass_*.{json,csv}`; manuscript Table V filled 2026-07-20 (mAP column uses evaluator values 65.44/68.83/69.92; OrientedFormer parsed-table mean 68.84 differs by rounding, noted in caption) |
+| A2 qualitative strip | Fig. 4 | strip complete on server (`work_dirs/paper_analysis_20260713/qualitative/geonexus_tgrs_qualitative.png`, 2048x1024); **transfer + visual curation is the ONLY remaining manuscript gap** |
+| A3 efficiency | Table VI | **done** — manuscript Table VI filled 2026-07-20 (55.39M/19.13FPS/52.27ms vs 58.31M/18.96FPS/52.75ms, RTX 4090; GFLOPs column dropped, analysis unavailable) |
+| A4 prompt robustness | optional | pending server; non-blocking |
+| A5 confusion matrix | optional | pending server; non-blocking |
+| B FAIR1M gate | closed | S0 + TPC/S1 complete; **FAIR1M S2 closed by route review** (`20260720_fair1m_route_review_and_next_analysis.md`); FAIR1M archived as supplementary stretch evidence |
+| C submission package | final step | blocked only on: Fig. 4 transfer/curation -> advisor review -> author list finalization -> package |
