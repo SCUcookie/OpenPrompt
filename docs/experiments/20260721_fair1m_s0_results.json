@@ -1,0 +1,15 @@
+{
+  "dataset": "FAIR1M-2.0",
+  "stage": "S0",
+  "status": "complete",
+  "selected_epoch": 8,
+  "replicas": [
+    {"seed": 3407, "map": 0.3178, "ap50": 0.3180, "workdir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_fair1m/roi_trans_s0_rep3407_20260715"},
+    {"seed": 4407, "map": 0.3165, "ap50": 0.3160, "workdir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_fair1m/roi_trans_s0_rep4407_20260715"},
+    {"seed": 5407, "map": 0.3163, "ap50": 0.3160, "workdir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_fair1m/roi_trans_s0_rep5407_20260715"}
+  ],
+  "mean_map": 0.316867,
+  "mean_ap50": 0.316667,
+  "source_record": "docs/experiments/20260717_fair1m_s0_completion.md",
+  "host_local_only": true
+}

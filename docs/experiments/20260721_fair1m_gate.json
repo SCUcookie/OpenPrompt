@@ -1,0 +1,15 @@
+{
+  "dataset": "FAIR1M-2.0",
+  "protocol": "FAIR1M_2_800_400_sanitized_20260713",
+  "status": "closed_supplementary",
+  "class_count": 37,
+  "train_validation_pairs": "208927/10970",
+  "embedding_shape": [37, 512],
+  "finite_train_step_gate": true,
+  "source_workdirs": [
+    "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_fair1m/roi_trans_s0_precision_diag1000_20260713",
+    "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_fair1m/roi_trans_tpc_s1_precision_diag1000_20260717"
+  ],
+  "host_local_only": true,
+  "portable_note": "Dataset, checkpoints, logs, and evaluator outputs remain host-local and are not included."
+}

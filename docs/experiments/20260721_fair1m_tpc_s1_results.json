@@ -1,0 +1,17 @@
+{
+  "dataset": "FAIR1M-2.0",
+  "stage": "TPC/S1",
+  "status": "complete_closed",
+  "best_checkpoint_results": [
+    {"seed": 3407, "epoch": 8, "map": 0.3174866736, "ap50": 0.317, "workdir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_fair1m/roi_trans_tpc_s1_rep3407_20260717", "evaluator_workdir": "/data5/2025/ldh/OpenRSD/work_dirs/paper_eval_20260720/fair1m_tpc_s1_best_epoch8_rep3407"},
+    {"seed": 4407, "epoch": 4, "map": 0.3178664148, "ap50": 0.318, "workdir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_fair1m/roi_trans_tpc_s1_rep4407_20260717", "evaluator_workdir": "/data5/2025/ldh/OpenRSD/work_dirs/paper_eval_20260720/fair1m_tpc_s1_best_epoch4_rep4407"},
+    {"seed": 5407, "epoch": 4, "map": 0.3202100992, "ap50": 0.320, "workdir": "/data5/2025/ldh/OpenRSD/work_dirs/geonexus_fair1m/roi_trans_tpc_s1_rep5407_20260717", "evaluator_workdir": "/data5/2025/ldh/OpenRSD/work_dirs/paper_eval_20260720/fair1m_tpc_s1_best_epoch4_rep5407"}
+  ],
+  "best_mean_map": 0.318533,
+  "best_mean_ap50": 0.318333,
+  "final_epoch": 12,
+  "final_mean_map": 0.306933,
+  "final_mean_ap50": 0.306667,
+  "source_record": "docs/experiments/20260720_fair1m_tpc_s1_completion.md",
+  "host_local_only": true
+}

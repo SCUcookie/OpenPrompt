@@ -1,0 +1,37 @@
+{
+  "bundle": "portable_experiment_evidence",
+  "basis_commit": "41067fcb",
+  "created": "2026-07-21",
+  "included": {
+    "a1": "Existing committed DIOR-R per-class JSON/CSV records are preserved.",
+    "a2": "artifacts/paper_analysis_20260713/qualitative/geonexus_tgrs_qualitative.png",
+    "a3": ["docs/experiments/20260721_efficiency_baseline.json", "docs/experiments/20260721_efficiency_geonexus_sca.json"],
+    "runtime_configs": "docs/experiments/runtime_configs/"
+  },
+  "provenance": {
+    "taxonomy": "FAIR1M canonical 37-class taxonomy; gate JSON and runtime configs retain source paths.",
+    "prompt_artifacts": "GeoNexus taxonomy/prompt artifacts are host-local and are referenced by the exact runtime configs; generated embedding binaries are excluded.",
+    "metrics": [
+      "docs/experiments/20260721_fair1m_s0_results.json",
+      "docs/experiments/20260721_fair1m_tpc_s1_results.json",
+      "docs/experiments/20260721_fair1m_gate.json",
+      "docs/experiments/20260720_dior_r_perclass_baseline_e52.json",
+      "docs/experiments/20260720_dior_r_perclass_geonexus_sca_rep0_e8.json",
+      "docs/experiments/20260720_dior_r_perclass_orientedformer_swint.json"
+    ]
+  },
+  "host_local_boundaries": {
+    "datasets": "Excluded; referenced absolute paths are host-local.",
+    "checkpoints": "Excluded; no checkpoint was moved.",
+    "logs": "Excluded; source workdirs are recorded in dated notes and JSON.",
+    "hidden_manuscript": "Excluded and unmodified; canonical TGRS tree remains host-local."
+  },
+  "closures": {
+    "fair1m_s2": "closed after TPC/S1; no S2/GeoNexus training",
+    "dior_r_s4": "closed; no relaunch",
+    "segmentation": "closed/not pursued",
+    "dota2_followup_training": "closed; no follow-up training"
+  },
+  "excluded": ["datasets", "checkpoints", "prediction_dumps", "raw_logs", "generated_embedding_binaries", "hidden_TGRS_tree"],
+  "submodule_policy": "third_party/Pi-Seg dirty state preserved unchanged"
+}
