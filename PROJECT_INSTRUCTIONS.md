@@ -60,6 +60,30 @@ and interruption scans. Analysis-only evaluations use GPUs 0/1/2 and screens
 metrics must reconcile to the training values before archival is complete.
 FAIR1M S2/GeoNexus remains explicitly closed pending a separate route review.
 
+2026-07-20 route resolution (supersedes the staged gate below): the server
+route review (`docs/experiments/20260720_fair1m_route_review_and_next_analysis.md`)
+**closed FAIR1M S2/GeoNexus** — the TPC/S1 best-mean gain `+0.001666` over S0
+does not justify another stage, and independently no FAIR1M relation matrix or
+S2 config exists (inventing one would be irreproducible, per
+`20260720_server_artifact_obstacles_and_remote_handoff.md`). FAIR1M S0/TPC-S1
+is archived as supplementary stretch evidence with best and final means kept
+separate. The paper route is now the only active route: DOTA2 S1 stable
+positive + S2 early-checkpoint evidence, DIOR-R S2 stable hierarchy + S3
+best-checkpoint scene context as the primary result. On the same day the A1
+per-class records were committed (`20260720_dior_r_perclass_*.{json,csv}`) and
+the local manuscript was updated: Table V (per-class) and Table VI
+(efficiency, GFLOPs column dropped as unavailable) are now filled with real
+evidence, the per-class claim sentence cites the measured gains (airport
++9.5, airplane +8.9, ESA +7.6, harbor +7.0, bridge +6.9 vs ship +0.0 / tennis
+court +0.4), and the manuscript compiles clean at 7 pages with exactly one
+remaining `[TO FILL]`: the Fig. 4 qualitative strip, which exists on the
+server (`work_dirs/paper_analysis_20260713/qualitative/geonexus_tgrs_qualitative.png`)
+and needs transfer + visual curation. OrientedFormer rounding is standardized
+to the evaluator value `68.83` everywhere (parsed-table mean `68.84` differs
+by per-class rounding accumulation; noted in the Table V caption). Remaining
+path to submission: transfer/curate Fig. 4 -> advisor review -> author-list
+finalization -> package. No training route is open anywhere.
+
 2026-07-20 route review staged: the requested FAIR1M route review now exists as
 `docs/experiments/20260720_fair1m_s1_route_review_and_next_steps.md`. Summary:
 S1 vs S0 is flat at the mean level (best mean `+0.0017`, final mean `+0.0004`,

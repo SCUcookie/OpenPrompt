@@ -1,5 +1,20 @@
 # 2026-07-20 FAIR1M S1 Route Review And Detailed Next Steps
 
+> **Resolution addendum (2026-07-20, applied server-side):** the server's own
+> route review (`20260720_fair1m_route_review_and_next_analysis.md`) closed
+> FAIR1M S2/GeoNexus on the mean-level evidence — effectively branch **D-C**
+> of the gate below, applied without running the N1 per-class delta analysis.
+> Two independent grounds: (1) the `+0.001666` mAP gain does not justify
+> another training stage; (2) no FAIR1M relation matrix or S2 config exists,
+> and inventing one would be irreproducible
+> (`20260720_server_artifact_obstacles_and_remote_handoff.md`). The decision
+> is accepted and recorded. The N1 FAIR1M per-class S1-vs-S0 extraction
+> remains **optional supplementary material** (analysis-only, existing logs)
+> if a reviewer or the FAIR1M discussion ever needs it — it is no longer
+> route-deciding. Phase P below was executed on 2026-07-20: A1 per-class
+> records are committed, manuscript Tables V and VI are filled, and the only
+> remaining manuscript gap is the Fig. 4 qualitative-strip transfer.
+
 ## Purpose
 
 The FAIR1M TPC/S1 campaign completed (`20260720_fair1m_tpc_s1_completion.md`).
