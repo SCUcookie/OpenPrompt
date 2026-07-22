@@ -1,5 +1,31 @@
 # Project Instructions
 
+## 2026-07-22 R1 Oriented R-CNN Port And Gate Status
+
+R1-P0 was implemented and staged for the DIOR-R cross-detector campaign.
+`OpenRSD/geonexus_mmrotate/prompt_rotated_bbox_head.py` adds the
+`PromptRotatedShared2FCBBoxHead` on top of MMRotate's rotated loss head, and
+`hierarchy_prompt_rotated_bbox_head.py` adds the R1-S2 hierarchy variant. The
+R1-S1/S2 configs and three seed-specific S1 configs are under
+`OpenRSD/M_configs/G02_Baselines/Data2_DIOR_R/`; the existing epoch-28 ORCNN
+checkpoint was reused. A bootstrap import shim registers the repository's
+local `OrientedRPNHead` when installed OpenMMLab packages are preloaded.
+
+The CPU-safe R1-P0 gate passed: 20 classes, prompt embeddings `[20,512]`,
+hierarchy relation matrix `[20,20]`, exact sanitized train/validation pair
+counts `11725/11725` and `11738/11738`, 12 epochs, validation/checkpoint
+interval 4, and verified checkpoint/artifact SHA-256 values. The rotated-head
+forward/loss unit check and checkpoint compatibility check also passed.
+
+The exact 1000-step train-step gate did not complete. A host run reached 50
+finite steps, but two unintended foreground GPU-0 jobs were stopped because
+they had no detached-screen provenance. The shared diagnostic also requires
+`custom_hooks=[]` because its EMA hook fails during checkpoint loading before
+initialization. No R1-S1 training screen was launched. GPUs 2-6 were idle at
+the final poll; GPUs 0-1 were occupied by existing work. Full details:
+`docs/experiments/20260722_r1_orcnn_port_and_gate_status.md` and
+`OpenRSD/work_dirs/geonexus_dior_r/r1_s1_gate_status_20260722.md`.
+
 This file is the persistent project memory. Keep it updated when the research
 scope, repository structure, server workflow, or experiment protocol changes.
 Paper-first rule: if the research direction, claim, experiment sequence, or
