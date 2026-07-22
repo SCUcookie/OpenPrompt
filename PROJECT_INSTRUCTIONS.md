@@ -86,6 +86,33 @@ and interruption scans. Analysis-only evaluations use GPUs 0/1/2 and screens
 metrics must reconcile to the training values before archival is complete.
 FAIR1M S2/GeoNexus remains explicitly closed pending a separate route review.
 
+2026-07-22 R1 gate status reviewed and skills installed: the server completed
+R1-P0 (Oriented R-CNN prompt/hierarchy head port, replica configs for seeds
+3407/4407/5407, CPU gates all passed, artifacts and epoch-28 source checkpoint
+SHA-verified) but stopped before launch — the 1,000-step diagnostic was
+aborted at 50 steps by stray foreground GPU-0 jobs, and the shared EMA hook
+raises `AttributeError: ema_model` in the standalone diagnostic (fix:
+`custom_hooks=[]` for the diagnostic only). The executable continuation is
+`docs/experiments/20260722_r1_launch_next_actions.md`: N0 GPU hygiene -> N1
+clean diagnostic rerun (detached, EMA fix) -> N2 R1-S1 3-replica launch ->
+N3 completion + pre-registered criteria -> N4 in parallel, port the missing
+SCA head for Oriented R-CNN (only S1/S2 heads exist; R1-S3 has no head yet).
+Skills split established: local skills under `New/.claude/skills/` (travel
+with the repo) are `tgrs-manuscript` and `server-update-review` (custom;
+manuscript hard rules + pre-submission proofread checklist, and the
+server-commit review loop) plus two third-party skills installed after a
+full content review from `fcakyon/phd-skills` (MIT, 338 stars):
+`paper-verification` (claims-vs-evidence audit) and `reviewer-defense`
+(pre-review vulnerability analysis), each with a GeoNexus-specific context
+addendum. The third-party evaluation log — what was searched on GitHub,
+reviewed, installed, adapted (flonat-research proofread checks folded into
+`tgrs-manuscript`), and rejected with reasons — is the bottom half of
+`docs/setup/server_skills_20260722.md`; the top half remains the three
+server-side skill prompts (`gpu-launch-gate`, `experiment-completion-record`,
+`mmrotate-failure-playbook`) ready to install into `/home/zwl/.codex/skills/`
+next to the existing `jupyter-notebook` skill. Paper track unchanged: manuscript complete, awaiting advisor review ->
+author list -> package.
+
 2026-07-21 manuscript complete and next training route staged: the evidence
 bundle (`5274d9b8`) delivered the qualitative strip into the repo; it was
 curated (airport/ESA scenes match the two largest per-class gains), wired
