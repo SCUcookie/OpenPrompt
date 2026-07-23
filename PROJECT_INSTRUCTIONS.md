@@ -1,5 +1,43 @@
 # Project Instructions
 
+## 2026-07-23 R1-S1 completion record
+
+The three R1-S1 Oriented R-CNN replicas completed epoch 12 cleanly. Final
+metrics are rep3407 on physical GPU 2: `dota/mAP=0.6618`, `dota/AP50=0.6620`;
+rep4407 on physical GPU 3: `0.6607/0.6610`; and rep5407 on physical GPU 4:
+`0.6564/0.6560`. Completion markers were recorded at 14:33:19, 14:32:45,
+and 14:37:52 +0800 respectively. Checkpoints and logs are in
+`OpenRSD/work_dirs/geonexus_dior_r/orcnn_tpc_s1_r1_rep{3407,4407,5407}_20260722/`.
+The original detached screens have exited; no R1-S2 or later stage was
+launched. A new training route requires an explicit stage/config decision and
+the GPU gate must be rechecked before launch.
+
+## 2026-07-23 R1-S1 diagnostic recovery and launch
+
+The previous GPU failure was caused by sandbox device isolation: elevated
+host access exposes the RTX 4090s, while the ordinary sandbox has no
+`/dev/nvidia*` nodes. The exact 1,000-step diagnostic passed on physical GPU
+2 with finite batches at 200 and 1000. Three R1-S1 replicas are running on
+physical GPUs 2/3/4 with seeds 3407/4407/5407 in detached screens
+`geonexus_r1_s1_rep3407_gpu2_20260723`,
+`geonexus_r1_s1_rep4407_gpu3_20260723`, and
+`geonexus_r1_s1_rep5407_gpu4_20260723`. Launch records are in their
+respective `launch_provenance.txt` files. Do not launch R1-S2 or later
+stages automatically.
+
+## 2026-07-23 R1-S1 GPU Gate Blocked
+
+The repeated CPU-safe R1-S1 gate passed in
+`OpenRSD/work_dirs/geonexus_dior_r/r1_s1_gate_20260723/config_gate.json`.
+The exact 1,000-step `train-step` diagnostic with `custom_hooks=[]` was not
+started because three consecutive `nvidia-smi` polls could not communicate
+with the NVIDIA driver. The blocked command and result are recorded under
+`OpenRSD/work_dirs/geonexus_dior_r/r1_s1_gate_20260723/` and
+`OpenRSD/work_dirs/geonexus_dior_r/r1_s1_diag_20260723/`. No R1-S1 training
+screen was launched and no R1-S2 or later stage may be launched until the
+GPU access issue is resolved and the 1,000 finite-batch plus three-poll gate
+passes.
+
 ## 2026-07-22 R1 Oriented R-CNN Port And Gate Status
 
 R1-P0 was implemented and staged for the DIOR-R cross-detector campaign.
