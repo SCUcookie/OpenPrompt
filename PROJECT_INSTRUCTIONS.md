@@ -1,5 +1,25 @@
 # Project Instructions
 
+## 2026-07-23 R1-S1 reviewed (local) and next steps issued
+
+Local review of the server's R1-S1 completion: **success and a strong
+cross-detector generality signal.** Oriented R-CNN + TPC reaches DIOR-R
+final mean 65.96 AP50 (66.18/66.07/65.64, std 0.23), +2.55 over the ORCNN
+baseline 63.41 — larger than the RoI Transformer's +1.76 for the same step,
+and measured final-vs-best so the true best-vs-best gain is higher. Stage 1
+alone clears the pre-registered R1 criterion (≥ +2.0). Next steps for the
+server are in `docs/experiments/20260723_r1_s1_review_and_next_steps.md`:
+(A0) analysis-only extraction of R1-S1 best-checkpoint + per-class AP to
+close the best/final documentation gap; (R1-S2) launch +HRR from the best
+R1-S1 checkpoints with the full gate chain (DIOR-R hierarchy artifact
+already has the `[20,20]` relation matrix, settings unchanged); (parallel)
+port the still-missing `SceneContextPromptRotatedShared2FCBBoxHead` so R1-S3
+is ready when R1-S2 finishes. GPU-access lesson recorded: the 0722 failure
+was sandbox device isolation (no `/dev/nvidia*` in the ordinary sandbox) —
+launches need elevated host access; added to the `gpu-launch-gate` server
+skill notes in `docs/setup/server_skills_20260722.md`. Closures unchanged;
+paper track complete and independent.
+
 ## 2026-07-23 R1-S1 completion record
 
 The three R1-S1 Oriented R-CNN replicas completed epoch 12 cleanly. Final

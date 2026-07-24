@@ -214,6 +214,22 @@ Verification notes from the same pass (honest negatives):
   environment; acceptance status could not be verified either way. Recheck
   next pass.
 
+## 2026-07-23 Detection+Segmentation Intersection Pick
+
+One-paper deep dive requested at the detection/segmentation intersection in
+remote sensing. Selected: **ZODS-RS — Zero-training Oriented Detection &
+Segmentation for Remote Sensing** (arXiv 2606.10769, 2026-06-09; arXiv-only,
+NOT a top-venue record — chosen for topical fit and recency). Training-free
+one-shot detection+instance-segmentation from DINOv3 features + SAM2
+proposals via robust prototype purification (Tyler scatter, spectral
+projection, negative mining, optional OT anchoring to text),
+rotation/scale-equivariant matching with Hungarian mask-class assignment,
+and uncertainty-aware pixel merging. Route impact: analysis-only candidate
+for the closed segmentation lane (no training needed, so no route
+reopening); its Robust-PP chain is a future-work upgrade path for our TPC
+prompt prototypes; its named future work ("true OBB") is our home turf.
+Full method introduction: `20260723_zods_rs_method_introduction.md`.
+
 Sources (2026-07-16 pass):
 
 - HSGDet CVF page: <https://openaccess.thecvf.com/content/CVPR2026/html/Azeem_Prompt-Free_Unknown_Label_Generation_for_Open_World_Detection_in_Remote_CVPR_2026_paper.html>

@@ -50,6 +50,12 @@ on corrupt tiles. Walk every step; none are optional.
    A GPU qualifies only below 1 GB memory and at 0% utilization in all
    three polls. Select dynamically; never reserve by habit; never touch
    GPUs occupied by other users' processes.
+   **Sandbox device-isolation gotcha (verified 2026-07-23):** if
+   `nvidia-smi` reports it "cannot communicate with the NVIDIA driver" or
+   `/dev/nvidia*` nodes are absent, this is sandbox isolation, NOT a driver
+   outage — the ordinary sandbox hides the devices. Use elevated/escalated
+   host access, under which all seven RTX 4090s are visible, then re-poll.
+   Do not declare a GPU-access failure until host access has been tried.
 4. **Detached launch with provenance.** Every job runs in a named detached
    screen (`<experiment>_<seed>_<date>_gpu<N>`), writes
    `launch_provenance.txt` (timestamp, GPU, PID, exact command, config
