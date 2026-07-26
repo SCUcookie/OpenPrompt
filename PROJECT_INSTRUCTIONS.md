@@ -1,4 +1,4 @@
-# Project Instructions
+2026-07-26 R1-S1 completion and R1-S2 launch: The three R1-S1 Oriented R-CNN replicas completed cleanly (mAP/AP50 for 3407: 0.6618/0.6620, 4407: 0.6607/0.6610, 5407: 0.6564/0.6560). R1-S2 1000-step diagnostic passed. Launched R1-S2 reps 3407, 4407, 5407 on GPUs 2, 3, 4 respectively in detached screens. See docs/experiments/20260726_r1_s1_completion_and_r1_s2_launch.md.\n\n# Project Instructions
 
 ## 2026-07-23 R1-S1 reviewed (local) and next steps issued
 
