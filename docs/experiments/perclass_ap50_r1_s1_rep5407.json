@@ -1,0 +1,28 @@
+{
+  "tag": "r1_s1_rep5407",
+  "dataset": "dior",
+  "log": "../OpenRSD/work_dirs/geonexus_dior_r/orcnn_tpc_s1_r1_rep5407_20260722/train.log",
+  "per_class_ap50_pct": {
+    "APL": 71.3,
+    "APO": 39.4,
+    "BF": 78.8,
+    "BC": 89.3,
+    "BR": 43.4,
+    "CH": 72.5,
+    "DAM": 28.5,
+    "ESA": 79.6,
+    "ETS": 69.8,
+    "GF": 74.5,
+    "GTF": 83.3,
+    "HA": 43.6,
+    "OP": 58.4,
+    "SH": 81.1,
+    "STA": 79.8,
+    "STO": 69.9,
+    "TC": 81.3,
+    "TS": 54.9,
+    "VE": 48.1,
+    "WM": 65.5
+  },
+  "mAP_pct": 65.65
+}
