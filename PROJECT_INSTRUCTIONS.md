@@ -1,4 +1,35 @@
-2026-07-26 R1-S1 completion and R1-S2 launch: The three R1-S1 Oriented R-CNN replicas completed cleanly (mAP/AP50 for 3407: 0.6618/0.6620, 4407: 0.6607/0.6610, 5407: 0.6564/0.6560). R1-S2 1000-step diagnostic passed. Launched R1-S2 reps 3407, 4407, 5407 on GPUs 2, 3, 4 respectively in detached screens. See docs/experiments/20260726_r1_s1_completion_and_r1_s2_launch.md.\n\n# Project Instructions
+# Project Instructions
+
+## 2026-07-27 R1-S2 reviewed (local): success, R1 at +3.46 — R1-S3 plan issued
+
+Local review of the server's R1-S2 completion (and the A0 R1-S1
+extraction): **R1-S2 succeeded and clears its pre-registered criterion.**
+Oriented R-CNN + TPC + HRR reaches DIOR-R best mean 66.87 AP50
+(66.77 E8 / 66.91 E8 / 66.93 E12; final mean 66.81), vs R1-S1 best mean
+65.96 — per-seed best deltas +0.59/+0.84/+1.29, all positive, beyond seed
+noise. Cumulative over the ORCNN baseline 63.41: **+3.46, monotone**, well
+past the R1 bar (≥ +2.0). Per-class gains land on the HRR-target classes
+(CH +5.2, TC +5.0, DAM +3.1, APO +2.3, ESA +2.3, HA +2.0, sign-consistent),
+mirroring the RoI Transformer story. A0 finding: ORCNN best checkpoints are
+late (S1 best = E12 for all reps) — the early-peak heuristic is
+detector-specific. Flags (non-invalidating): R1-S2 records omit source
+checkpoint + SHA-256 and the scoped-scan statement — append them. Next
+steps in `docs/experiments/20260727_r1_s2_review_and_r1_s3_plan.md`:
+(1) port `SceneContextPromptRotatedShared2FCBBoxHead` for ORCNN (still
+missing — R1-S3 is blocked on it); (2) stage 3 configs + CPU gate; (3)
+full gate chain, then launch R1-S3 from best R1-S2 checkpoints (3407 E8,
+4407 E8, 5407 E12); criterion: R1-S3 best mean ≥ 66.87, regression ends
+the campaign at S2 with no chasing; (4) then the R1 campaign summary with
+the full generality table. R2 (Swin-T) needs its own decision after that.
+Closures unchanged; paper track independent (advisor review pending).
+
+## 2026-07-26 R1-S1 completion and R1-S2 launch (server)
+
+The three R1-S1 Oriented R-CNN replicas completed cleanly (mAP/AP50 for
+3407: 0.6618/0.6620, 4407: 0.6607/0.6610, 5407: 0.6564/0.6560). R1-S2
+1000-step diagnostic passed. Launched R1-S2 reps 3407, 4407, 5407 on GPUs
+2, 3, 4 respectively in detached screens. See
+docs/experiments/20260726_r1_s1_completion_and_r1_s2_launch.md.
 
 ## 2026-07-23 R1-S1 reviewed (local) and next steps issued
 
